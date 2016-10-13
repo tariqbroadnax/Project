@@ -1,0 +1,33 @@
+
+		/*Player player = new Player(),
+			   copy = (Player)
+			   objInStream.readObject();
+		
+		// don't want default loose movement
+		player.copy(copy, MovementComponent.class);
+		
+		int serverID = resources
+				.getScene()
+				.getResources()
+				.requestServerID();
+
+		player.setServerID(serverID);
+	
+		resources.getScene()
+				 .addEntity(player);
+		
+		objOutStream.writeObject(serverID);
+		
+		GameClientRecord record =
+				new GameClientRecord(
+						resources,
+						player, 
+						objInStream,
+						objOutStream);
+		
+		resources.addRecord(record);
+		
+		record.getListener()
+			  .startListening();
+		*/
+	
