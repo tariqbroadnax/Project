@@ -1,0 +1,9 @@
+This project is 2D game and editor for that game.
+
+The editor is heavily inspired by eclipse.
+
+There is a bunch of networking code that needs to be deleted because the scope of the project changed.
+
+Not all classes are used and some need to be deleted.
+
+Trello: https://trello.com/b/2ycw4703/2d-game-editor
