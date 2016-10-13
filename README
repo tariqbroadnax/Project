@@ -1,6 +1,7 @@
-This project is 2D game and editor for that game.
+This project is 2D game and editor implemented in java. So far, it only uses swing and java2d but I
+will eventually begin using SWT and libgdx.
 
-The editor is heavily inspired by eclipse.
+The editor is heavily inspired by eclipse. Eclipse is a really good editor and heavily recommend.
 
 There is a bunch of networking code that needs to be deleted because the scope of the project changed.
 
