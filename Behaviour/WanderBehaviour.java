@@ -1,0 +1,56 @@
+package Behaviour;
+
+import java.time.Duration;
+
+import Game.Entity;
+import Maths.Circle2D;
+
+public class WanderBehaviour extends Behaviour
+{
+	private PathingBehaviour pathing;
+
+	private Circle2D.Double zone;
+	
+	private boolean waiting;
+	private long elapsed, waitDelay;
+	
+	public WanderBehaviour()
+	{
+		pathing = new PathingBehaviour();
+	
+		zone = new Circle2D.Double(0, 0, 100);		
+		
+		waitDelay = elapsed = 2000;
+		
+		waiting = true;
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		if(waiting)
+		{
+			elapsed += delta.toMillis();
+			
+			if(elapsed > waitDelay)
+			{
+				elapsed = 0;
+				pathing.setTarget(zone.randomPoint());
+				waiting = false;
+			}
+		}
+		else // wander
+		{
+			pathing.update(delta);
+			
+			if(!pathing.hasTargets())
+				waiting = true;
+		}
+	}
+	
+	public void setSrc(Entity src) 
+	{
+		super.setSrc(src);
+		pathing.setSrc(src);
+	}
+}
