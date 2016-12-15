@@ -1,134 +1,34 @@
 package Ability;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
-import EntityComponent.MetaComponent;
-import Game.Entity;
+import Entity.Entity;
+import Game.Updatable;
+import Modifiers.Effect;
 
 public abstract class Ability
-implements Serializable
-{
-	private transient Collection<Entity> abilityEntities;
+implements Serializable, Updatable
+{	
+	protected Entity src;
 	
-	private transient Map<Entity, LinkedList<AbilityInitiator>> initiators;	
-		
-	protected transient AbilityEvent event;
-	
-	protected String name;
-	
-	protected int iconID;
+	protected List<Effect> effects;
 	
 	public Ability()
 	{
-		abilityEntities = new LinkedList<Entity>();
-		
-		initiators = new HashMap<Entity, LinkedList<AbilityInitiator>>();		
+		effects = new LinkedList<Effect>();
 	}
 	
-	public Ability(Ability ability)
-	{
-		this();
-		
-		for(Entity e : ability.abilityEntities)
-		{
-			addAbilityEntity(e);
-		
-			for(AbilityInitiator initiator : ability.initiators.get(e))
-				addAbilityInitiator(e, initiator);
-		}		
-		
-		name = ability.name;
-		
-		iconID = ability.iconID;
+	public void setSrc(Entity src) {
+		this.src = src;
+	}
+
+	public void addEffect(Effect effect) { 
+		effects.add(effect);
 	}
 	
-	public void addAbilityEntity(Entity ability)
-	{
-		abilityEntities.add(ability);
-	}
-	
-	public void addAbilityEntity(Entity e, AbilityInitiator... initiators)
-	{
-		abilityEntities.add(e);
-		
-		this.initiators.put(e, new LinkedList<AbilityInitiator>());
-		
-		for(int i = 0; i < initiators.length; i++)
-			this.initiators.get(e).add(initiators[i]);
-	}
-	
-	public void addAbilityInitiator(Entity e, AbilityInitiator listener)
-	{
-		if(initiators.get(e) == null)
-			initiators.put(e, new LinkedList<AbilityInitiator>());
-		
-		initiators.get(e).add(listener);
-	}
-	
-	public Collection<Entity> createAbilityEntities(Entity caster)
-	{
-		Collection<Entity> createdEntities =
-				new LinkedList<Entity>();
-		
-		Entity entity;
-		AbilityEvent e;
-		for(Entity modelEntity : abilityEntities)
-		{
-			entity = new Entity(modelEntity);
-			
-			event.abilityEntity = entity;
-			
-			for(AbilityInitiator initiator : initiators.get(modelEntity))
-				initiator.abilityActivated(event);
-			
-			entity.get(MetaComponent.class)
-				  .setCreator(caster);
-			
-			createdEntities.add(entity);
-		}
-		
-		event = null;
-		return createdEntities;
-	}
-	
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-	
-	public void setIconID(int iconID)
-	{
-		this.iconID = iconID;
-	}
-	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public int getIconID()
-	{
-		return iconID;
-	}
-	
-	public String toString()
-	{
-		String str = super.toString();
-		
-		str += "\nAbility Entities: ";
-		for(Entity abilityEntity : abilityEntities)
-		{
-			str += '\n' + abilityEntity.toString2();
-			str += "\nAbility Intiators: ";
-			
-			for(AbilityInitiator initiator : initiators.get(abilityEntity))
-				str += '\n' + initiator.toString();
-		}
-		
-		return str;
+	public void removeEffect(Effect effect) {
+		effects.remove(effect);
 	}
 }

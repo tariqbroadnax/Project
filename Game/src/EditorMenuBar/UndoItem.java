@@ -2,6 +2,7 @@ package EditorMenuBar;
 
 import javax.swing.JMenuItem;
 
+import EditorActions.Undo;
 import EditorGUI.GUIResources;
 import EditorGUI.UndoListener;
 import EditorGUI.UndoManager;
@@ -9,10 +10,12 @@ import EditorGUI.UndoManager;
 public class UndoItem extends JMenuItem
 	implements UndoListener
 {
-	public UndoItem(GUIResources resources)
+	public UndoItem(GUIResources resources, Undo undo)
 	{
 		super("Undo - Ctrl+X");
 	
+		addActionListener(undo);
+		
 		UndoManager undoManager = 
 				resources.getUndoManager();
 		

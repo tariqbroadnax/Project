@@ -1,15 +1,17 @@
 package Game;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.geom.Area;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import Graphic.AddComposite;
 import Graphic.GraphicsContext;
-import Maths.Circle2D;
 
 public class LightMap implements Serializable
 {	
@@ -17,7 +19,9 @@ public class LightMap implements Serializable
 	
 	private Collection<Light> lights;
 	
-	private double t;
+	private BufferedImage img;
+	private Graphics2D g2d;
+	private boolean mapUpdated;
 	
 	public LightMap()
 	{
@@ -25,44 +29,86 @@ public class LightMap implements Serializable
 	
 		lights = new LinkedList<Light>();
 		
-		lights.add(new Light());		
-	}
-	
-	public void setAmbientVisibility(double visibilityPercentage)
-	{
-		if(visibilityPercentage < 0 || 
-		   visibilityPercentage > 100)
-			return;
+		mapUpdated = false;
 		
-		ambientColor = new Color(0, 0, 0,
-				255 - (int)(255 * visibilityPercentage));
+		lights.add(new Light());	
+		lights.add(new Light(50, 50));		
+		lights.add(new Light(25, 25));		
+
+	
+		img = new BufferedImage(800, 600,
+								BufferedImage.TYPE_INT_ARGB);
+	
+		g2d = (Graphics2D)img.getGraphics();
 	}
 	
 	public void paint(GraphicsContext gc)
-	{		
-		Point2D.Double screenFocus = gc.screenLoc(gc.focus);
-		
-		Rectangle2D.Double bound =
-				new Rectangle2D.Double(
-					    screenFocus.x - gc.screenDim.width / 2.0,
-					    screenFocus.y - gc.screenDim.height / 2.0,
-						gc.screenDim.width, gc.screenDim.height);
-		
-		Area area = new Area(bound);
-		for(Light light : lights)
+	{	
+		if(!mapUpdated)
 		{
-			Circle2D.Double lightBound =
-					light.screenBound(gc);
-			
-			if(Maths.Maths.overlaps(lightBound, bound))
-			{
-				area.subtract(new Area(lightBound));
-				light.paint(gc, ambientColor);
-			}
+			paintAmbientBackground();
+			paintLights(gc);
+			mapUpdated = true;
 		}
 		
-		gc.g2d.setColor(ambientColor);
+		paintOntoGC(gc);
+	}
+
+	private void paintAmbientBackground()
+	{
+		int imgWidth = img.getWidth(),
+			imgHeight = img.getHeight();
 		
-		gc.g2d.fill(area);		
+		g2d.setBackground(ambientColor);
+		g2d.clearRect(0, 0, imgWidth, imgHeight);
+	}
+	
+	private void paintLights(GraphicsContext gc)
+	{
+		Graphics2D g2d = (Graphics2D) this.g2d.create();
+		AffineTransform cameraTrans =
+				gc.g2d.getTransform();
+		
+	//	g2d.setComposite(AlphaComposite.DstOut);
+	//	g2d.setComposite(AddComposite.instance);
+		g2d.setTransform(cameraTrans);
+		
+		for(Light light : lights)
+			light.paint(gc.camera, g2d);
+		
+		g2d.dispose();
+	}
+	
+	private void paintOntoGC(GraphicsContext gc)
+	{
+		Graphics2D g = (Graphics2D) gc.g2d.create();
+		
+		g.setTransform(new AffineTransform());
+		g.drawImage(img, 0, 0, null);
+	}
+	
+	public void add(Light light) {
+		lights.add(light);
+		mapUpdated = false;
+	}
+	
+	public void remove(Light light) {
+		lights.remove(light);
+	}
+
+	public void setAmbientColor(Color color)
+	{
+		ambientColor = color;
+	}
+
+	public void setSize(Dimension size)
+	{
+		if(size.width == 0 || size.height == 0)
+			return;
+				
+		img = new BufferedImage(size.width, size.height,
+				BufferedImage.TYPE_INT_ARGB);
+		
+		g2d = (Graphics2D)img.getGraphics();
 	}
 }

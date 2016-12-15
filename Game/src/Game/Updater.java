@@ -1,11 +1,9 @@
 package Game;
 
-import static Utilities.MathUtilities.flat;
-import static Utilities.TimeUtilities.periodOf;
+import static Maths.Maths.flat;
+import static Utilities.Time.periodOf;
 
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +16,8 @@ public class Updater implements Runnable
 					  		 EQUAL = 0,
 					  		 LESS = -1;
 	
-	private boolean running = false;
+	private boolean running = false,
+					playing = false;
 	
 	private Collection<Updatable> updatables;
 	
@@ -52,7 +51,7 @@ public class Updater implements Runnable
 	{
 		if(running || thread.isAlive()) return;
 		
-		running = true;
+		running = playing = true;
 		
 		lastUpdate = lastMaintanance = System.nanoTime();
 		makeUpSleep = Duration.ZERO;
@@ -60,9 +59,34 @@ public class Updater implements Runnable
 		thread.start();
 	}
 	
+	public void play()
+	{
+		playing = true;
+		lastUpdate = System.nanoTime();
+	}
+	
+	public void pause()
+	{
+		playing = false;
+	}
+	
 	public void stop()
 	{
 		running = false;
+		
+		thread = new Thread(this);
+	}
+	
+	public void setRunning(boolean running)
+	{
+		if(running) start();
+		else stop();
+	}
+	
+	public void setPlaying(boolean playing)
+	{
+		if(playing) play();
+		else pause();
 	}
 
 	@Override
@@ -72,8 +96,8 @@ public class Updater implements Runnable
 		{
 			start = System.nanoTime();
 			
-			long s = System.nanoTime();
-			updateAll();
+			if(playing)
+				updateAll();
 			
 			end = System.nanoTime();
 			

@@ -1,35 +1,37 @@
 package Actions;
 
-import java.awt.Point;
-import java.awt.geom.Point2D;
-
+import Ability.TargetAbility;
+import Ability.TargetSourceAbility;
 import EntityComponent.AbilityComponent;
-import GameClient.GameClientResources;
+import Game.GameResources;
 
-public class AbilityAction extends GameAction
-{	
-	private int abilityIndex;
+public class AbilityAction extends SyncGameAction
+{
+	private TargetAbility ability;
 	
-	private Point2D.Double targetLoc;
-	
-	public AbilityAction(GameClientResources resources)
+	public AbilityAction(GameResources resources, int i) 
 	{
 		super(resources);
-		
-		abilityIndex = 1;
+	
+		ability = (TargetAbility)
+				resources.player
+						 .get(AbilityComponent.class)
+						 .getActive(i);
 	}
 
 	@Override
-	public void executeOnClient()
+	public void invoke() 
 	{
-		targetLoc = resources
-				.getCamera()
-				.screenLocToNormalLoc(mouseLoc);
-		
-		resources.getPlayer()
-				 .get(AbilityComponent.class)
-				 .castActiveAbility(abilityIndex, targetLoc);
-				
-		targetLoc = null;		
-	}
+		if(ability instanceof TargetSourceAbility)
+		{
+			TargetSourceAbility ability = 
+					(TargetSourceAbility)this.ability;
+			
+			resources.player
+			 	.get(AbilityComponent.class)
+			 	.cast(ability);
+		}
+		else
+			resources.miHandler.prepareToCast(ability);
+	}	
 }

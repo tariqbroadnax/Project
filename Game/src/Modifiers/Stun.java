@@ -4,19 +4,17 @@ import EntityComponent.AbilityComponent;
 
 public class Stun extends Root
 {
-	protected void apply()
+	public void start() 
 	{
-		super.apply();
+		super.start();
 		
 		target.get(AbilityComponent.class)
-			  .setAllActivesEnabled(false);
+			  .setEnabled(false);
 	}
 	
-	public void revert()
+	public void stop()
 	{
-		super.revert();
-		
 		target.get(AbilityComponent.class)
-		  	  .setAllActivesEnabled(true);
+		  	  .setEnabled(true);
 	}
 }

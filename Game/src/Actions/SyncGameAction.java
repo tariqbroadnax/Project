@@ -1,23 +1,25 @@
 package Actions;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 
-import Game.Resources;
+import Game.GameResources;
 
-public abstract class SyncGameAction extends GameAction 
+public abstract class SyncGameAction extends GameAction
 {
-	public SyncGameAction(Resources resources) 
-	{
+	public SyncGameAction(GameResources resources) {
 		super(resources);
 	}
 
-	protected abstract void invoke();
+	public abstract void invoke();
 	
 	@Override
-	public void actionPerformed(ActionEvent e) 
-	{
-		resources.getActionBuffer()
-				 .addAction(this);
+	public void actionPerformed(ActionEvent e) {
+		resources.buffer.addAction(this);
 	}
 	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		resources.buffer.addAction(this);
+	}
 }

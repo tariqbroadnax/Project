@@ -5,30 +5,31 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeSet;
 
+import Entity.Entity;
 import EntityComponent.EntityComponent;
-import EntityComponent.StatsComponent;
-import Game.Entity;
-import Maths.Direction;
-import Stat.CoreStatType;
-import Stat.Stats;
+import Modifiers.Modifier;
 
 public class MovementComponent extends EntityComponent
 {
-	private transient boolean enabled;
+	private boolean enabled;
 	
 	protected Movement normalMovement;
 
 	private Movement disablingMovement;
 
-	private Direction dir, prevDir;
+	private Cardinal dir, prevDir;
 	
 	private boolean moving;
 	
-	private transient Collection<MovementListener> listeners;
+	private Collection<MovementListener> listeners;
 
-	private transient Point2D.Double prevLoc,
-									 parentLoc;
+	private Point2D.Double prevLoc,
+						   parentLoc;
+
+	private TreeSet<Modifier> speedMods;
 	
 	public MovementComponent()
 	{
@@ -39,8 +40,10 @@ public class MovementComponent extends EntityComponent
 	{
 		enabled = true;
 		
-		normalMovement = new LooseMovement();
-		disablingMovement = new LooseMovement();
+		normalMovement = new Movement();
+		normalMovement.setSpeed(50);
+		
+		disablingMovement = new Movement();
 		
 		listeners = new LinkedList<MovementListener>();
 		
@@ -48,7 +51,9 @@ public class MovementComponent extends EntityComponent
 	
 		prevLoc = new Point2D.Double();
 		
-		dir = prevDir = Direction.N;
+		dir = prevDir = Cardinal.NORTH;
+	
+		speedMods = new TreeSet<Modifier>();
 	}
 	
 	public MovementComponent(MovementComponent comp)
@@ -61,26 +66,25 @@ public class MovementComponent extends EntityComponent
 	
 	@Override
 	public void update(Duration delta)
-	{
-		if(!parent.contains(StatsComponent.class)) return;
-		
-		Stats stats = parent.get(StatsComponent.class)
-							.getStats();
-
+	{		
 		Movement movement;
 
-		if(enabled)
-		{
-			movement = normalMovement;
-			movement.setSpeed(stats.getValue(CoreStatType.SPEED));
-		}
-		else
-			movement = disablingMovement;
-			
+		//System.out.println(enabled + " " + parent.getClass());
+		movement = enabled ? normalMovement :
+							 disablingMovement;
+	
 		prevLoc.setLocation(parentLoc);
+
+		double prevSpeed = movement.getSpeed(),
+			   currSpeed = prevSpeed;
+			
+		for(Modifier mod : speedMods)
+			currSpeed = mod.modify(currSpeed);
 		
+		movement.setSpeed(currSpeed);
 		movement.move(parentLoc, delta);
-		
+		movement.setSpeed(prevSpeed);
+				
 		notifyListeners();
 	}
 	
@@ -108,7 +112,11 @@ public class MovementComponent extends EntityComponent
 		if(moving)
 		{
 			prevDir = dir;
-			dir = Direction.directionFrom(prevLoc, parentLoc);
+			
+			double angle = Math.atan2(prevLoc.y - parentLoc.y,
+									  prevLoc.x - parentLoc.x);
+			
+			dir = Cardinal.angleToCardinal(angle);
 		}
 		if(!prevDir.equals(dir) &&
 			moving)
@@ -121,6 +129,16 @@ public class MovementComponent extends EntityComponent
 	public void addMovementListener(MovementListener listener)
 	{
 		listeners.add(listener);
+	}
+	
+	public void addSpeedMod(Modifier mod)
+	{
+		speedMods.add(mod);
+	}
+	
+	public void removeSpeedMod(Modifier mod)
+	{
+		speedMods.remove(mod);
 	}
 	
 	public void setEnabled(boolean enabled)
@@ -148,12 +166,12 @@ public class MovementComponent extends EntityComponent
 		return normalMovement;
 	}
 	
-	public Direction getDirection()
+	public Cardinal getDirection()
 	{
 		return dir;
 	}
 	
-	public Direction getPreviousDirection()
+	public Cardinal getPreviousDirection()
 	{
 		return prevDir;
 	}

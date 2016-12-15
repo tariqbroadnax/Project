@@ -5,15 +5,12 @@ import java.awt.geom.Point2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 
-import EditorGUI.EntityResourceType;
-import EditorGUI.EntityWrapper;
-import EntityComponent.GraphicsComponent;
-import Game.Entity;
+import Entity.Entity;
 
 public class EntityEditor extends JPanel
+	implements ChangeListener
 {
 	private Point2DEditor locEditor;
 	
@@ -25,32 +22,52 @@ public class EntityEditor extends JPanel
 	
 	public EntityEditor()
 	{
-		this(new EntityWrapper(new Entity(), EntityResourceType.SCENE));
+		this(new Entity());
 	}
 	
-	public EntityEditor(EntityWrapper wrapper)
+	public EntityEditor(Entity entity)
 	{
-		entity = wrapper.entity;
+		this.entity = entity;
 				
 		compEditor = new EntityComponentEditor(entity);
 		
-		setLayout(new BorderLayout());
-		
-		add(compEditor, BorderLayout.CENTER);
+		locEditor = new Point2DEditor();
 
-		if(wrapper.type == EntityResourceType.SCENE) 
-		{
-			Point2D.Double loc = entity.getLoc();
-			locEditor = new Point2DEditor(loc);
+		setLayout(new BorderLayout());
+
+		Point2D.Double loc = entity.getLoc();
+
+		locEditor.setPoint2DValue(loc);
+		
+		locEditorBorder = 
+				BorderFactory.createTitledBorder(
+						"Location");
+		
+		locEditor.setBorder(locEditorBorder);
+
+		add(compEditor, BorderLayout.CENTER);
+		add(locEditor, BorderLayout.NORTH);	
+		
+		locEditor.addChangeListener(this);
+	}
 	
-			locEditorBorder = 
-					BorderFactory.createTitledBorder(
-							"Location");
-			
-			locEditor.setBorder(locEditorBorder);
+	public void setEntity(Entity entity)
+	{
+		this.entity = entity;
+		
+		Point2D.Double entityLoc = entity.getLoc();
+
+		locEditor.setPoint2DValue(entityLoc);
+		
+		compEditor.setEntity(entity);
+	}
 	
-			add(locEditor, BorderLayout.NORTH);
-		}
-				
+	@Override
+	public void fieldChanged() 
+	{
+		Point2D.Double pt = 
+				locEditor.getPoint2DValue();
+		
+		entity.setLoc(pt);
 	}
 }

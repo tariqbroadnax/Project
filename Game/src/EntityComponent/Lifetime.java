@@ -8,50 +8,53 @@ import Game.Updatable;
 public class Lifetime 
 implements Updatable
 {
-	public static final Duration INFINITE = null;
+	public static final long FOREVER = -1;
 	
-	private Duration len,
-					 elapsed;
+	private long remaining, elapsed;
 	
 	public Lifetime()
 	{
-		len = INFINITE;
-		elapsed = Duration.ZERO;
+		this(FOREVER);
 	}
 	
 	public Lifetime(Lifetime lifetime)
 	{
-		len = lifetime.len;
-		elapsed = Duration.ZERO;
+		this(lifetime.remaining);
+	}
+	
+	public Lifetime(long length)
+	{
+		remaining = length;
+		elapsed = 0;
 	}
 	
 	public void update(Duration delta)
 	{
-		elapsed = elapsed.plus(delta);
+		elapsed += delta.toMillis();
 	}
 	
 	public boolean isLifeOver()
 	{
-		if(len == INFINITE)
+		if(remaining == FOREVER)
 			return false;
 		else
-			return elapsed.compareTo(len) >=  0;
+			return elapsed > remaining;
 	}
 	
-	public void setLength(Duration len)
-	{
-		this.len = len;
+	public void end() {
+		remaining = 0;
 	}
 	
-	public Duration getLength()
+	public void setRemaining(long remaining)
 	{
-		return len;
+		if(remaining < 0)
+			throw new IllegalArgumentException();
+		
+		this.remaining = remaining;
 	}
 	
-	public String toString()
+	public long getRemaining()
 	{
-		return super.toString() + 
-				" len: " + (len == INFINITE ? "INFINITE" : len.toMillis()) +
-				" elapsed: " + elapsed.toMillis();
+		return remaining;
 	}
 }

@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -20,8 +19,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 import Game.Updatable;
-import Utilities.FontUtilities;
-import Utilities.TimeUtilities;
+import Utilities.Fonts;
 
 public class MyMenu extends JComponent
 	implements MouseListener, Updatable
@@ -275,7 +273,7 @@ public class MyMenu extends JComponent
 				findLongestButtonText();
 					
 		Font buttonFont =
-				FontUtilities.fontWithDimension(
+				Fonts.fontWithDimension(
 				this.buttonFont, textDim,
 				longTxt, this);
 		

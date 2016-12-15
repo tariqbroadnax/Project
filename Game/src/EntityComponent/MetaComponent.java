@@ -2,7 +2,7 @@ package EntityComponent;
 
 import java.time.Duration;
 
-import Game.Entity;
+import Entity.Entity;
 
 public class MetaComponent extends EntityComponent
 {

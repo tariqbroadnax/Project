@@ -1,33 +1,40 @@
 package EditorGUI;
 
-import java.io.File;
+import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
 
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
-import Commands.Redo;
-import Commands.Undo;
+import EditorActions.Actions;
+import EditorActions.Exit;
+import EditorActions.Open;
+import EditorActions.Redo;
+import EditorActions.Save;
+import EditorActions.SaveAs;
+import EditorActions.Undo;
 import EditorMenuBar.RedoItem;
 import EditorMenuBar.UndoItem;
+import ToolBar.NewFileToolBarButton;
+import ToolBar.SaveToolBarButton;
 
 public class EditorFrame extends JFrame
 {
 	private JMenuBar menuBar;
 	
-	private JMenu fileMenu,
-				  editMenu;
+	private EditMenu editMenu;
+	private FileMenu fileMenu;
 		
 	private JMenuItem openItem,
-					  closeItem,
+					  exitItem,
 					  saveItem,
 					  saveAsItem,
 					  undoItem,
@@ -41,6 +48,8 @@ public class EditorFrame extends JFrame
 					  importTileItem;
 	
 	
+	private JToolBar toolBar;
+	
 	private GUIResources resources;
 		
 	public EditorFrame(GUIResources resources)
@@ -48,11 +57,11 @@ public class EditorFrame extends JFrame
 		super("Real Fiction Editor");
 	
 		this.resources = resources;
-				
+	
 		menuBar = new JMenuBar();
 		
-		fileMenu = new JMenu("File");
-		editMenu = new JMenu("Edit");
+		fileMenu = new FileMenu();
+		editMenu = new EditMenu();
 		
 		newSubMenu = new JMenu("New");
 		importSubMenu = new JMenu("Import");
@@ -61,52 +70,39 @@ public class EditorFrame extends JFrame
 		
 		newSceneItem = new JMenuItem("Scene");
 		newEntityItem = new JMenuItem("Entity");
-		openItem = new JMenuItem("Open");
-		closeItem = new JMenuItem("Close");
-		undoItem = new UndoItem(resources);
-		redoItem = new RedoItem(resources);
-		saveItem = new JMenuItem("Save");
-		saveAsItem = new JMenuItem("Save As");
+		openItem = new JMenuItem(Actions.OPEN);
+		exitItem = new JMenuItem(Actions.EXIT);
+		undoItem = new JMenuItem(Actions.UNDO);
+		redoItem = new JMenuItem(Actions.REDO);
+		saveItem = new JMenuItem(Actions.SAVE);
+		saveAsItem = new JMenuItem(Actions.SAVE_AS);
+		
+		fileMenu.setMnemonic('f');
+		
+		toolBar = new JToolBar("TESTING TESTING");
 		
 		addComponents();
 		addListeners();
 		
 		setJMenuBar(menuBar);
 	
-	    JPanel content = (JPanel) getContentPane();
-
-		InputMap inputMap = content.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		ActionMap actionMap = content.getActionMap();
+		toolBar.add(new NewFileToolBarButton());
+		toolBar.add(new SaveToolBarButton());
 		
-		Undo undo = new Undo(resources);
-		Redo redo = new Redo(resources);
-		
-		inputMap.put(KeyStroke.getKeyStroke("control X"), undo);
-		inputMap.put(KeyStroke.getKeyStroke("control Y"), redo);
-		
-		actionMap.put(undo, undo);
-		actionMap.put(redo, redo);
+	    JPanel content = (JPanel)getContentPane();
+	    
+	    content.setLayout(new BorderLayout());
+	    
+	    content.add(toolBar, BorderLayout.NORTH);
 	}
 	
 	private void addComponents()
 	{
 		menuBar.add(fileMenu);
 		menuBar.add(editMenu);
-		
-		JMenuItem[] items = 
-		{
-			newSubMenu, openItem, closeItem,
-			saveItem, saveAsItem, importSubMenu
-		};
-		
-		for(JMenuItem item : items)
-			fileMenu.add(item);
 	
 		addAll(newSubMenu,
 			   newSceneItem, newEntityItem);
-	
-		addAll(editMenu,
-			   undoItem, redoItem);
 		
 		importSubMenu.add(importTileItem);
 	}
@@ -122,56 +118,11 @@ public class EditorFrame extends JFrame
 		newSceneItem.addActionListener(
 				e -> resources.createNewScene());
 		
-		openItem.addActionListener(
-				e -> openScene());
-		closeItem.addActionListener(
-				e -> close());
-		
-		saveItem.addActionListener(
-				e -> resources.saveScene());
 		saveAsItem.addActionListener(
 				e -> resources.saveSceneAs());
 		
 		importTileItem.addActionListener(
 				e -> new ImportTileDialog(resources)
 					 .setVisible(true));
-	
-		Redo redo = new Redo(resources);		
-
-		redoItem.addActionListener(redo);
-	}
-	
-	private void openScene()
-	{
-		if(!resources.sceneShouldBeChanged())
-			return;
-		
-		JFileChooser chooser = 
-				new JFileChooser();
-		
-		chooser.setFileSelectionMode(
-				JFileChooser.FILES_ONLY);
-		
-	    FileNameExtensionFilter filter = 
-	    		new FileNameExtensionFilter(
-	    				"Scene Files", "scn");
-	    
-	    chooser.setFileFilter(filter);
-	    
-	    int returnVal = chooser.showOpenDialog(
-	    		resources.frame);
-
-	    if(returnVal == JFileChooser.APPROVE_OPTION)
-	    {
-	    	File file = chooser.getSelectedFile();
-	    	
-	    	resources.loadScene(file.toPath());
-	    }
-	}
-	
-	private void close()
-	{	
-		if(resources.sceneShouldBeChanged())
-			System.exit(1);
 	}
 }

@@ -1,31 +1,25 @@
 package EntityComponent;
 
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
-import java.io.IOException;
 import java.time.Duration;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
-import Game.Entity;
+import Entity.Entity;
+import Game.RigidBodyIndicator;
 import Utilities.Pack;
 
 public class RigidBodyComponent extends EntityComponent
 {
-	// this class should NEVER be sent over network
-	// clients and server should have copy
+	private RigidBody body;
+		
+	private Map<CollisionResponse, List<CollisionFilter>> map;
 	
-	private transient RigidBody body;
-	
-	private transient BodyType type;
-	
-	private transient 
-		Map<BodyType, Collection<CollisionResponse>> 
-			responseMap;
-	
-	private transient LinkedList<Entity> collisions;
-	private transient int maxCollisionsStored;
+	private RigidBodyIndicator indicator;
 	
 	public RigidBodyComponent()
 	{
@@ -33,166 +27,123 @@ public class RigidBodyComponent extends EntityComponent
 		
 		body = new RigidBody();
 		
-		type = BodyType.BEING;
-		
-		responseMap = new HashMap<BodyType, Collection<CollisionResponse>>();
+		body.addComponent(new Rectangle2D.Double(0, 0, 10, 10));
 	
-		collisions = new LinkedList<Entity>();
-		maxCollisionsStored = 5;
-	}
+		map = new HashMap<CollisionResponse,
+						  List<CollisionFilter>>();
 	
-	private void initTransient()
-	{
-		body = new RigidBody();
+		indicator = new RigidBodyIndicator();
 		
-		type = BodyType.BEING;
-		
-		responseMap = new HashMap<BodyType, Collection<CollisionResponse>>();
-	
-		collisions = new LinkedList<Entity>();
-		maxCollisionsStored = 5;
-	}
-
-	public RigidBodyComponent(RigidBodyComponent comp)
-	{
-		super();
-		
-		body = new RigidBody(comp.body);
-		
-		type = comp.type;
-		
-		responseMap = new HashMap<BodyType, Collection<CollisionResponse>>();
-
-		collisions = new LinkedList<Entity>();
-		maxCollisionsStored = comp.maxCollisionsStored;
-		
-		for(BodyType type : BodyType.values())
-			if(comp.responseMap.containsKey(type))
-				addCollisionResponses(type, comp.responseMap.get(type));
-	}
-	
-	public void addCollisionResponses(BodyType type, CollisionResponse... responses)
-	{
-		if(responseMap.get(type) == null)
-			responseMap.put(type, new LinkedList<CollisionResponse>());
-		
-		for(CollisionResponse response : responses)
-			responseMap.get(type).add(response);
-	}
-	
-	public void addCollisionResponses(BodyType type,
-			Collection<CollisionResponse> responses)
-	{
-		if(responses == null) return;
-		
-		if(responseMap.get(type) == null)
-			responseMap.put(type, new LinkedList<CollisionResponse>());
-		
-		responseMap.get(type)
-				   .addAll(responses);
+		indicator.setRigidBody(body);
 	}
 	
 	@Override
 	public void update(Duration delta)
 	{
 		if(enabled)
-			updateLoc();
+		{
+			Point2D.Double parentLoc = parent.getLoc();
+			body.setLoc(parentLoc);
+		}
 	}
 	
-	public void updateLoc()
+	public void update()
 	{
-		body.setLoc(parent.getLoc());			
+		if(enabled)
+		{
+			Point2D.Double parentLoc = parent.getLoc();
+			body.setLoc(parentLoc);
+		}
 	}
 	
-	public void checkForAndHandleCollision(RigidBodyComponent bodyComp)
+	public void add(CollisionResponse response,
+					CollisionFilter... filters)
+	{
+		map.put(response, new LinkedList<CollisionFilter>());
+	
+		for(CollisionFilter filter : filters)
+			put(response, filter);
+	}
+	
+	public void remove(CollisionResponse response)
+	{
+		map.remove(response);
+	}
+	
+	public void put(CollisionResponse response,
+					CollisionFilter filter)
+	{
+		map.get(response)
+		   .add(filter);
+	}
+	
+	public void checkForAndHandleCollision(RigidBodyComponent comp)
 	{
 		if(!enabled) return;
 		
-		Pack<RectangularShape, RectangularShape> collision;
-				
-		collision = this.body.collidesWith(bodyComp.getRigidBody());
+		RigidBody otherBody = comp.getRigidBody();
+		
+		Pack<RectangularShape, RectangularShape> collision =
+				body.collidesWith(otherBody);
 	
 		if(collision != null)
-			handleCollision(collision, bodyComp);	
+			handleCollision(collision, comp);
 	}
 	
 	private void handleCollision(
 			Pack<RectangularShape, RectangularShape> collision,
 			RigidBodyComponent collided)
-	{
-		Collection<CollisionResponse> responses = 
-				responseMap.get(collided.getBodyType());
+	{		
+		CollisionEvent e = new CollisionEvent(
+				parent, collided.parent,
+				collision.head, collision.tail);
 		
-		if(collisions.size() > maxCollisionsStored)
-			collisions.removeFirst();
+		Entity target = collided.parent;
 		
-		collisions.add(collided.parent);
-		
-		if(responses != null)
+		for(CollisionResponse response : map.keySet())
 		{
-			CollisionEvent e = new CollisionEvent(
-					parent, collided.parent,
-					collision.head, collision.tail);
-		
-			for(CollisionResponse response : responses)
+			List<CollisionFilter> filters = 
+					map.get(response);
+			
+			boolean valid = true;
+			
+			for(CollisionFilter filter : filters)
+			{
+				if(!filter.validCollision(target))
+				{
+					valid = false;
+					break;
+				}
+			}
+
+			if(valid)
 			{
 				response.collisionOccurred(e);
 			}
 		}
-		/*
-		else
-			System.out.println("COLLISION"); */
-	}
-	
-	private void readObject(java.io.ObjectInputStream in)
-			throws IOException, ClassNotFoundException
-	{
-		in.defaultReadObject();
-		initTransient();
-		
-	}
-	
-	public void setBodyType(BodyType type)
-	{
-		this.type = type;
 	}
 
-	public RigidBody getRigidBody()
+	public void setParent(Entity parent) 
 	{
+		super.setParent(parent);
+		
+//		parent.get(GraphicsComponent.class)
+//			  .getDecorations()
+//			  .addLayer(indicator);
+	}
+	
+	public void setRigidBody(RigidBody body) 
+	{
+		this.body = body;
+		indicator.setRigidBody(body);
+	}
+
+	public RigidBody getRigidBody() {
 		return body;
 	}
 	
-	public BodyType getBodyType()
-	{
-		return type;
-	}
-
-	public LinkedList<Entity> getCollisions()
-	{
-		return collisions;
-	}
-	
 	@Override
-	protected EntityComponent _clone()
-	{
-		return new RigidBodyComponent(this);
-	}
-	
-	public String toString()
-	{
-		String str = super.toString();
-		
-		str += "\ntype: " + type;
-		str += "\nbody: \n" + body;
-		str += "\nreponse map: ";
-		for(BodyType type : responseMap.keySet())
-		{
-			str += '\n' + type.toString();
-			str += "\nresponses: ";
-			for(CollisionResponse response : responseMap.get(type))
-				str += '\n' + response.toString();
-		}
-		
-		return str;
+	protected EntityComponent _clone() {
+		return null;
 	}
 }

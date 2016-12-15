@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.util.Date;
 
 import Game.Updatable;
-import Utilities.TimeUtilities;
+import Utilities.Time;
 
 public class SwingUpdater implements ActionListener
 {
@@ -35,8 +35,8 @@ public class SwingUpdater implements ActionListener
 	
 	private void update()
 	{
-		Duration delta = TimeUtilities
-				.between(lastUpdate, new Date());
+		Duration delta = 
+				Time.between(lastUpdate, new Date());
 		
 		updatable.update(delta);
 		

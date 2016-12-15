@@ -31,6 +31,12 @@ public class CircularIterator<E>
 			next();
 	}
 	
+	public void reset()
+	{
+		iter = coll.iterator();
+		position = 0;
+	}
+	
 	public E next()
 	{
 		if(coll.size() == 0)

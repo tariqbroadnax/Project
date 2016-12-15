@@ -11,15 +11,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class Point2DEditor extends JPanel
-	implements FieldContainer
+	implements ChangeNotifier, ChangeListener
 {
 	private JLabel xLabel, yLabel;
 
-	private DoubleTextField xField, yField;
-	
-	private Point2D.Double pt;
-	
-	private Collection<FieldListener> listeners;
+	private NumberTextField.Double xField, yField;
+		
+	private Collection<ChangeListener> listeners;
 	
 	public Point2DEditor()
 	{
@@ -29,31 +27,22 @@ public class Point2DEditor extends JPanel
 	public Point2DEditor(Point2D.Double pt)
 	{
 		xLabel = new JLabel("x: ");
+		
 		yLabel = new JLabel("y: ");
 		
-		xField = new DoubleTextField(pt.x);
-		yField = new DoubleTextField(pt.y);
+		xField = new NumberTextField.Double(pt.x);
+		yField = new NumberTextField.Double(pt.y);
+						
+		listeners = new LinkedList<ChangeListener>();
 		
 		addComponents();
+
+		setPoint2DValue(pt);
 		
-		FieldListener fl = () -> updatePoint2D();
-		
-		listeners = new LinkedList<FieldListener>();
-		
-		xField.addFieldListener(fl);
-		yField.addFieldListener(fl);
-		
-		setPoint2D(pt);
+		xField.addChangeListener(this);
+		yField.addChangeListener(this);
 	}
 	
-	private void updatePoint2D()
-	{
-		pt.x = xField.getDoubleValue();
-		pt.y = yField.getDoubleValue();
-		
-		System.out.println(pt);
-	}
-
 	private void addComponents()
 	{
 		setLayout(new GridBagLayout());
@@ -102,17 +91,28 @@ public class Point2DEditor extends JPanel
 		add(field, c);
 	}
 
-	public void setPoint2D(Point2D.Double pt)
-	{
-		this.pt = pt;
-		
+	public void setPoint2DValue(Point2D.Double pt)
+	{		
 		xField.setDoubleValue(pt.x);
 		yField.setDoubleValue(pt.y);		
 	}
+	
+	public Point2D.Double getPoint2DValue()
+	{
+		double x = xField.getDoubleValue(),
+			   y = yField.getDoubleValue();
+		
+		return new Point2D.Double(x, y);
+	}
 
 	@Override
-	public Collection<FieldListener> getFieldListeners() 
+	public Collection<ChangeListener> getChangeListeners() 
 	{
 		return listeners;
+	}
+
+	@Override
+	public void fieldChanged() {
+		notifyListeners();
 	}
 }

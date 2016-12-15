@@ -1,14 +1,23 @@
 package Modifiers;
 
-public class Heal extends HealthModifier
+import Entity.Entity;
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public class Heal
 {
+	private double val;
+	
 	public Heal()
 	{
-		super(10);
+		val = 10;
 	}
 	
-	protected boolean validAmount(double amount)
+	public void apply(Entity target)
 	{
-		return amount >= 0;
+		Stats stats = target.get(StatsComponent.class)
+							.getStats();
+		
+		stats.addHealth(val);
 	}
 }

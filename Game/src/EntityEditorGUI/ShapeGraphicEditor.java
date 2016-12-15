@@ -3,8 +3,11 @@ package EntityEditorGUI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.RectangularShape;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -15,6 +18,8 @@ import Graphic.Graphic;
 import Graphic.ShapeGraphic;
 
 public class ShapeGraphicEditor extends GraphicEditor
+	implements ChangeNotifier, ChangeListener,
+			   ActionListener
 {
 	private JLabel filledLabel;
 	
@@ -30,7 +35,9 @@ public class ShapeGraphicEditor extends GraphicEditor
 				   shapeBorder,
 				   strokeBorder;
 	
-	private ShapeGraphic graphic;
+	private Collection<ChangeListener> listeners;
+	
+	private boolean setting = false;
 	
 	public ShapeGraphicEditor(ShapeGraphic graphic) 
 	{
@@ -58,6 +65,8 @@ public class ShapeGraphicEditor extends GraphicEditor
 	    
 	    strokeEditor = new StrokeEditor();
 	
+	    listeners = new LinkedList<ChangeListener>();
+	    
 	    colorBorder = 
 	    		BorderFactory.createTitledBorder(
 	    		"Color");
@@ -73,29 +82,11 @@ public class ShapeGraphicEditor extends GraphicEditor
 	    colorEditor.setBorder(colorBorder);
 	    shapeEditor.setBorder(shapeBorder);
 	    strokeEditor.setBorder(strokeBorder);
-	   
-	    ActionListener l = e -> updateGraphic();
-	    FieldListener l2 = () -> updateGraphic();
 	    
-	    filledButton.addActionListener(l);
-	    colorEditor.addActionListener(l);
-	    strokeEditor.addActionListener(l);
-	    shapeEditor.addFieldListener(l2);
-	}
-	
-	private void updateGraphic()
-	{
-		boolean filled = filledButton.isSelected();
-		Color color = colorEditor.getColor();
-		BasicStroke stroke = strokeEditor.getStroke();
-		RectangularShape shape = shapeEditor.getShape();
-		
-		// shape editor handles shape automatically
-
-		graphic.setFilled(filled);
-		graphic.setPaint(color);
-		graphic.setStroke(stroke);
-		graphic.setShape(shape);
+	    filledButton.addActionListener(this);
+	    colorEditor.addChangeListener(this);
+	    strokeEditor.addChangeListener(this);
+	    shapeEditor.addChangeListener(this);
 	}
 	
 	protected void addComponents(GridBagConstraints c)
@@ -131,11 +122,9 @@ public class ShapeGraphicEditor extends GraphicEditor
 		add(strokeEditor, c);
 	}
 	
-	public void setGraphic(ShapeGraphic graphic)
-	{
-		super.setGraphic(graphic);
-		
-		this.graphic = graphic;
+	public void setShapeGraphic(ShapeGraphic graphic)
+	{		
+		setting = true;
 		
 		boolean filled = graphic.isFilled();
 		Color color = (Color)graphic.getPaint();
@@ -146,11 +135,55 @@ public class ShapeGraphicEditor extends GraphicEditor
 		colorEditor.setColor(color);
 		shapeEditor.setShape(shape);
 		strokeEditor.setStroke(stroke);
+	
+		setting = false;
 	}
 
-	public void setGraphic(Graphic graphic)
-	{
-		setGraphic((ShapeGraphic)graphic);
+	public ShapeGraphic getShapeGraphic()
+	{	
+		boolean filled = filledButton.isSelected();
+		Color color = colorEditor.getColor();
+		BasicStroke stroke = strokeEditor.getStroke();
+		RectangularShape shape = shapeEditor.getShape();
+		
+		ShapeGraphic graphic = new ShapeGraphic();
+		
+		graphic.setShape(shape); // this must go first
+		graphic.setFilled(filled);
+		graphic.setPaint(color);
+		graphic.setStroke(stroke);
+				
+		return graphic;
+	}
+
+	@Override
+	public Collection<ChangeListener> getChangeListeners() {
+		return listeners;
+	}
+
+	@Override
+	public void fieldChanged() {
+		if(!setting)
+			notifyListeners();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(!setting)
+			notifyListeners();
+	}
+
+	@Override
+	protected void _setGraphic(Graphic graphic) {
+		if(graphic instanceof ShapeGraphic)
+			setShapeGraphic((ShapeGraphic)graphic);
+		else
+			throw new IllegalArgumentException();
+	}
+
+	@Override
+	protected Graphic _getGraphic() {
+		return getShapeGraphic();
 	}
 	
 }

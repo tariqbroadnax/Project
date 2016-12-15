@@ -19,20 +19,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class RectShapeEditor extends JPanel
+	implements ChangeNotifier, ActionListener,
+			   ChangeListener
 {
 	private JLabel shapeLabel,
 				   widthLabel, heightLabel;
 	
-	private JComboBox<String> shapeBox;
+	private RectangularShapeChooser chooser;
 	
-	private DoubleTextField widthField, heightField;
-	
-	private RectangularShape shape;
-	
-	private Collection<FieldListener> listeners;
-	
-	private String currShape;
-	
+	private NumberTextField.Double widthField, heightField;
+		
+	private Collection<ChangeListener> listeners;
+		
 	public RectShapeEditor()
 	{
 		this(new Rectangle2D.Double());
@@ -44,20 +42,18 @@ public class RectShapeEditor extends JPanel
 		widthLabel = new JLabel("Width: ");
 		heightLabel = new JLabel("Height: ");
 		
-		String[] shapes = {"Rectangle", "Ellipse"};
+		chooser = new RectangularShapeChooser(shape);		
 		
-		shapeBox = new JComboBox<String>(shapes);
-	
-		currShape = shapeBox.getSelectedItem().toString();
+		double width = shape.getWidth(),
+			   height = shape.getHeight();
 		
+		widthField = new NumberTextField.Double (
+				0, 100, width);
 		
-		widthField = new DoubleTextField(
-				0, 100, shape.getWidth());
-		
-		heightField = new DoubleTextField(
-				0, 100, shape.getHeight());
+		heightField = new NumberTextField.Double (
+				0, 100, height);
 
-		listeners = new LinkedList<FieldListener>();
+		listeners = new LinkedList<ChangeListener>();
 
 		setLayout(new GridBagLayout());
 
@@ -70,44 +66,9 @@ public class RectShapeEditor extends JPanel
 				
 		addComponents(c);
 		
-		FieldListener l = () -> updateShape();
-		ActionListener l2 = e -> selectShape();
-		
-		heightField.addFieldListener(l);
-		widthField.addFieldListener(l);
-		shapeBox.addActionListener(l2);
-	}
-	
-	private void updateShape()
-	{
-		double width = widthField.getDoubleValue(),
-			   height = heightField.getDoubleValue();
-		
-		if(width == shape.getWidth() &&
-		   height == shape.getHeight())
-			return;
-		
-		shape.setFrame(
-				shape.getX(), shape.getY(),
-				width, height);
-		
-		notifyListeners();
-	}
-	
-	private void notifyListeners()
-	{
-		for(FieldListener listener : listeners)
-			listener.fieldChanged();
-	}
-
-	public void addFieldListener(FieldListener listener)
-	{
-		listeners.add(listener);
-	}
-	
-	public void removeFieldListener(FieldListener listener)
-	{
-		listeners.remove(listener);
+		heightField.addChangeListener(this);
+		widthField.addChangeListener(this);
+		chooser.addActionListener(this);
 	}
 	
 	private void addComponents(GridBagConstraints c)
@@ -120,7 +81,7 @@ public class RectShapeEditor extends JPanel
 		c.weightx = 1;
 		c.anchor = LINE_START;
 		c.gridx = 1; c.gridy = 0;
-		add(shapeBox, c);
+		add(chooser, c);
 
 		c.weightx = 0;
 		c.anchor = LINE_END;
@@ -144,40 +105,38 @@ public class RectShapeEditor extends JPanel
 	}
 
 	public void setShape(RectangularShape shape) 
-	{
-		this.shape = shape;
-		
+	{	
 		widthField.setDoubleValue(shape.getWidth());
 		heightField.setDoubleValue(shape.getHeight());
+	
+		chooser.setShape(shape);
 	}
 	
 	public RectangularShape getShape()
 	{
+		RectangularShape shape = chooser.getShape();
+		
+		double width = widthField.getDoubleValue(),
+			   height = heightField.getDoubleValue();
+		
+		shape.setFrame(0, 0, width, height);
+		
 		return shape;
 	}
-	
-	private void selectShape()
-	{
-		String prevShape = currShape;
-		
-		currShape =	shapeBox.getSelectedItem()
-							.toString();
-		
-		
-		if(prevShape.equals(shape))
-			return;
-		
-		switch(currShape)
-		{
-		case "Rectangle":
-			setShape(new Rectangle2D.Double(0,0,10,10));
-			break;
-		case "Ellipse":
-			setShape(new Ellipse2D.Double(0,0,10,10));
-			break;
-		}
-		
+
+	@Override
+	public void fieldChanged() {
 		notifyListeners();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		notifyListeners();
+	}
+
+	@Override
+	public Collection<ChangeListener> getChangeListeners() {
+		return listeners;
 	}
 	
 	

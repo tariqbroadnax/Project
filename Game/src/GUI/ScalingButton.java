@@ -7,7 +7,7 @@ import java.awt.event.ComponentListener;
 
 import javax.swing.JButton;
 
-import Utilities.FontUtilities;
+import Utilities.Fonts;
 
 public class ScalingButton extends JButton
 	implements ComponentListener
@@ -30,7 +30,7 @@ public class ScalingButton extends JButton
 		Graphics g = getParent().getGraphics();
 		
 		
-		Font newFont = FontUtilities.fontWithHeight(
+		Font newFont = Fonts.fontWithHeight(
 					 currFont, fontHeight, g);
 		
 		setFont(newFont);		

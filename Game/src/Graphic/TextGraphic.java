@@ -1,16 +1,13 @@
 package Graphic;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 
-import Utilities.FontUtilities;
+import Utilities.Fonts;
 
 public class TextGraphic extends Graphic
 {
@@ -18,7 +15,7 @@ public class TextGraphic extends Graphic
 
 	private Font font;
 	
-	private int normalHeight;
+	private int normHeight;
 		
 	private Paint paint;
 	
@@ -30,7 +27,7 @@ public class TextGraphic extends Graphic
 		
 		paint = Color.RED;
 		
-		normalHeight = 10;
+		normHeight = 10;
 	}
 	
 	public TextGraphic(TextGraphic graphic)
@@ -43,64 +40,48 @@ public class TextGraphic extends Graphic
 		
 		paint = graphic.paint;
 		
-		normalHeight = graphic.normalHeight;
+		normHeight = graphic.normHeight;
 	}
 			
 	protected void _paint(GraphicsContext gc)
 	{
 		double screenHeight = 
-				normalHeight * gc.viewDim.height / 100;
+				gc.camera.screenHeight(normHeight);
 		
-		Font font = FontUtilities.fontWithHeight(
+		Font font = Fonts.fontWithHeight(
 				this.font, (int) screenHeight, gc.g2d);
 		
-		Point2D.Double screenLoc = new Point2D.Double(
-				loc.x * gc.viewDim.width / 100,
-				loc.y * gc.viewDim.height / 100);
+		Point2D.Double screenLoc = 
+				gc.camera.screenLocation(loc);
 		
 		gc.g2d.setPaint(paint);
 		gc.g2d.setFont(font);
 		gc.g2d.drawString(text, (float)screenLoc.x, (float)screenLoc.y);		
 	}
-	
-	@Override
-	public void paint(Point screenLoc, Dimension dim, Graphics2D g2d) 
-	{
-		Font font = FontUtilities.fontWithDimension(
-				this.font, dim, text, g2d);
-	
-		g2d.setPaint(paint);
-		g2d.setFont(font);
-		g2d.drawString(text, (float)screenLoc.x, (float)screenLoc.y);		
-	}
 
-	public void setText(String text)
-	{
+	public void setText(String text) {
 		this.text = text;
 	}
 	
-	public void setFont(Font font)
-	{
+	public void setFont(Font font) {
 		this.font = font;
 	}
 	
-	public void setPaint(Paint paint)
-	{
+	public void setPaint(Paint paint) {
 		this.paint = paint;
 	}
-
-	@Override
-	protected Graphic _clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public Double getBound() 
 	{
 		return new Rectangle2D.Double(
-				loc.x , loc.y - normalHeight,
-				normalHeight * text.length(),
-				normalHeight);
+				loc.x , loc.y - normHeight,
+				normHeight * text.length(),
+				normHeight);
+	}
+
+	@Override
+	public Object clone() {
+		return new TextGraphic(this);
 	}
 }

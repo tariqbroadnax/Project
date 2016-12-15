@@ -4,31 +4,30 @@ import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import Graphic.Graphic;
-import Graphic.GraphicsComponentListener;
 import Graphic.GraphicsContext;
+import Graphic.LayeredGraphic;
 import Graphic.ShapeGraphic;
 
 public class GraphicsComponent extends EntityComponent
 {	
+	private LayeredGraphic decorations;
+	
 	protected Graphic graphic;
-	
-	private transient Collection<TemporaryGraphic> tempGraphics;
-	
+		
 	private Point2D.Double loc;
-	
-	private Collection<GraphicsComponentListener> listeners;
-	
+			
 	public GraphicsComponent()
 	{
-		graphic = new ShapeGraphic();
+		decorations = new LayeredGraphic();
 		
-		tempGraphics = new LinkedList<TemporaryGraphic>();
+		graphic = new ShapeGraphic();
 	
 		loc = new Point2D.Double();		
-	
-		listeners = new LinkedList<GraphicsComponentListener>();
+				
+		// decorations.addLayer(new ParticleEmitter());	
 	}
 	
 	public GraphicsComponent(GraphicsComponent comp)
@@ -47,55 +46,44 @@ public class GraphicsComponent extends EntityComponent
 		
 		graphic.update(delta);
 		
+		decorations.update(delta);
+		
 		//tempGraphics.removeIf(g -> g.getRemainingFrames() == 0);
+	
+		updateGraphicLocation();
 	}
 	
-	public void addTemporaryGraphic(Graphic graphic, int frames)
-	{
-		tempGraphics.add(
-				new TemporaryGraphic(graphic, frames));
-	}
-	
-	public void paint(GraphicsContext gc)
+	public void updateGraphicLocation()
 	{
 		Point2D.Double myloc = parent.getLoc();
 		
 		loc = new Point2D.Double(myloc.x, myloc.y);
 		
+		decorations.setLoc(loc);
 		graphic.setLoc(loc);
+	}
+
+	public void paint(GraphicsContext gc)
+	{	
+		updateGraphicLocation();
 		graphic.paint(gc);
-	}
-	
-	public void addGraphicsComponentListener(
-			GraphicsComponentListener listener)
-	{
-		listeners.add(listener);
-	}
-	
-	public void removeGraphicsComponentListener(
-			GraphicsComponentListener listener)
-	{
-		listeners.remove(listener);
+		decorations.paint(gc);
 	}
 	
 	public void setGraphic(Graphic graphic)
 	{
-		if(this.graphic != graphic)
-		{
-			notifiyListenersOfGraphicChanged(
-					graphic, this.graphic);
-			
-			this.graphic = graphic;
-		}
+		if(graphic == null)
+			throw new NullPointerException();
+		
+		this.graphic = graphic;
+		
+		setChanged();
+		notifyObservers();
 	}
 	
-	private void notifiyListenersOfGraphicChanged(
-			Graphic newGraphic, Graphic oldGraphic)
+	public LayeredGraphic getDecorations()
 	{
-		for(GraphicsComponentListener listener :
-									  listeners)
-			listener.graphicChanged(
-					this, newGraphic, oldGraphic);
+		return decorations;
 	}
 	
 	public Graphic getGraphic()

@@ -2,16 +2,15 @@ package Actions;
 
 import javax.swing.AbstractAction;
 
-import Game.Resources;
+import EditorGUI.MouseListener;
+import Game.GameResources;
 
 public abstract class GameAction extends AbstractAction
-{
-	protected Resources resources;
-		
-	public GameAction(Resources resources)
-	{
-		super();
-		
+	implements MouseListener
+{		
+	protected GameResources resources;
+	
+	public GameAction(GameResources resources) {
 		this.resources = resources;
 	}
 }

@@ -1,146 +1,81 @@
 package Stat;
 
-import java.io.Serializable;
-import java.time.Duration;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 
-import EntityComponent.Attacker;
-import Game.Entity;
-import Modifiers.Damage;
-import Modifiers.StatModifier;
+import Modifiers.Modifier;
 
-public class Stats 
-	implements BaseStatSupplier, Serializable
-{	
-	/* TODO
-	 * ---------
-	 * 1. add combat text
-	 * 2. handle no health
-	 * 3. handle giving exp
-	 */
+public class Stats
+{
+	private double maxHealth, health, speed;
 	
-	private transient HashSet<Attacker> attackers;
-	
-	private BaseStat[] baseStats;
-	private CoreStat[] coreStats;
+	private TreeSet<Modifier> healthMods;
 	
 	public Stats()
 	{
-		baseStats = 
-				new BaseStat[BaseStatType.values().length];
-			
-		coreStats =
-				new CoreStat[CoreStatType.values().length];
+		health = maxHealth = 100;
+		speed = 50;
 		
-		initStats();
+		healthMods = new TreeSet<Modifier>();
+	}
+	
+	public void setBaseSpeed(double speed) 
+	{
+		if(speed < 0) 
+			throw new IllegalArgumentException();
+	
+		this.speed = speed;
+	}
+	
+	public void addHealth(double val)
+	{
+		if(val < 0)
+			throw new IllegalArgumentException();
 		
-		attackers = new HashSet<Attacker>();
+		double maxHealth = getMaxHealth();
+		health += val;
+		health = health > maxHealth ? maxHealth : health;
 	}
 	
-	public Stats(Stats stats)
+	public void applyDamage(double val)
 	{
-		this();
+		if(val < 0)
+			throw new IllegalArgumentException();
 		
-		for(int i = 0; i < baseStats.length; i++)
-			baseStats[i].setBaseValue(
-					stats.baseStats[i].getBaseValue());
-	
-		for(int i = 0; i < coreStats.length; i++)
-			coreStats[i].setBaseValue(
-					stats.coreStats[i].getBaseValue());
+		health -= val;
+		health = health < 0 ? 0 : health;
 	}
 	
-	private void initStats()
+	public void addHealthMod(Modifier mod) {
+		healthMods.add(mod);
+	}
+	
+	public void removeHealthMod(Modifier mod) 
 	{
-		for(BaseStatType type : BaseStatType.values())
-			baseStats[type.ordinal()] = 
-				new BaseStat(type);
+		healthMods.remove(mod);
+	
+		double maxHealth = getMaxHealth();
+		health = health > maxHealth ? maxHealth : health;
+	}
+	
+	public double getSpeed() {
+		return speed;
+	}
+	
+	public double getHealth() {
+		return health;
+	}
+
+	public double getMaxHealth() 
+	{
+		double maxHealth = this.maxHealth;
 		
-		for(CoreStatType type : CoreStatType.values())
-			coreStats[type.ordinal()] =
-				new CoreStat(type, this);
-	}
-	
-	public void recieveDamage(int amount, Entity src)
-	{
+		for(Modifier mod : healthMods)
+			health = mod.modify(health);
 		
+		return maxHealth;
 	}
 	
-	public void update(Duration delta)
-	{
-		for(Attacker attacker : attackers)
-			attacker.update(delta);
-		
-		attackers.removeIf(a -> 
-			a.getElapsedSinceAttack().compareTo(
-			Duration.ofSeconds(3)) > 0);
-	}
-	
-	public void applyDamage(Damage damage, Entity target)
-	{
-		
-	}
-	
-	public void addBaseStatModifier(BaseStatType type, 
-			StatModifier modifier)
-	{
-		baseStats[type.ordinal()].addModifier(modifier);
-	}
-	
-	public void removeBaseStatModifier(BaseStatType type,
-			StatModifier modifier)
-	{
-		baseStats[type.ordinal()].removeModifier(modifier);
-	}
-	
-	public void addCoreStatModifier(CoreStatType type,
-			StatModifier modifier)
-	{
-		coreStats[type.ordinal()].addModifier(modifier);
-	}
-	
-	public void removeCoreStatModifier(CoreStatType type,
-			StatModifier modifier)
-	{
-		coreStats[type.ordinal()].removeModifier(modifier);
-	}
-	
-	public void setBaseStatValue(BaseStatType type, int val)
-	{
-		baseStats[type.ordinal()].setBaseValue(val);
-	}
-	
-	public void setCoreStatValue(CoreStatType type, int val)
-	{
-		coreStats[type.ordinal()].setBaseValue(val);
-	}
-	
-	public int getValue(BaseStatType type)
-	{
-		return baseStats[type.ordinal()].getValue();
-	}
-	
-	public int getValue(CoreStatType type)
-	{
-		return coreStats[type.ordinal()].getValue();
-	}
-	
-	public Collection<Attacker> getAttackers()
-	{
-		return attackers;
-	}
-	
-	public String toString()
-	{
-		String str = super.toString();
-		
-		for(Stat stat : baseStats)
-			str += "\n" + stat.toString();
-		
-		for(Stat stat : coreStats)
-			str += "\n" + stat.toString();
-		
-		return str;
+	public double getBaseMaxHealth() {
+		return maxHealth;
 	}
 }

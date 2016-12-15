@@ -1,55 +1,63 @@
 package Graphic;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.Paint;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 
 public class LineGraphic extends Graphic
-	implements NormalGraphic
 {	
 	private Point2D.Double pt1, pt2;
 	
-	private Color color;
+	private Paint paint;
+	
+	private Line2D.Double line;
 	
 	public LineGraphic()
 	{
-		this(new Point2D.Double(),
-			 new Point2D.Double());
+		this(0, 0, 0, 0);
+	}
+	
+	public LineGraphic(double x1, double y1, double x2, double y2)
+	{
+		pt1 = new Point2D.Double(x1, y1);
+		pt2 = new Point2D.Double(x2, y2);
+	
+		paint = Color.BLACK;
+	
+		line = new Line2D.Double();
+	}
+	
+	public LineGraphic(LineGraphic graph)
+	{
+		pt1 = new Point2D.Double(graph.pt1.x, graph.pt1.y);
+		pt2 = new Point2D.Double(graph.pt2.x, graph.pt2.y);
+		
+		paint = graph.paint;
+		
+		line = new Line2D.Double();
 	}
 	
 	public LineGraphic(Point2D.Double pt1, Point2D.Double pt2)
 	{
-		pt1 = new Point2D.Double(pt1.x, pt1.y);
-		pt2 = new Point2D.Double(pt2.x, pt2.y);
-		
-		color = Color.red;
+		this(pt1.x, pt1.y, pt2.x, pt2.y);
 	}
 	
 	@Override
 	protected void _paint(GraphicsContext gc)
 	{
-		gc.g2d.setColor(color);
+		gc.g2d.setPaint(paint);
 		
-		gc.g2d.fill(new Line2D.Double(
-				NormalGraphic.findScreenLoc(pt1, gc.screenDim),
-				NormalGraphic.findScreenLoc(pt2, gc.screenDim)));
-	}
-
-	@Override
-	protected Graphic _clone()
-	{
-		return new LineGraphic(pt1, pt2);
-	}
-
-	@Override
-	public void paint(Point screenLoc, Dimension dim, Graphics2D g2d) {
-		// TODO Auto-generated method stub
+		Point2D.Double scrPt1 = 
+				gc.camera.screenLocation(pt1),
+					   scrPt2 =
+				gc.camera.screenLocation(pt2);
 		
+		line.x1 = scrPt1.x; line.y1 = scrPt1.y;
+		line.x2 = scrPt2.x; line.y2 = scrPt2.y;
+		
+		gc.g2d.fill(line);
 	}
 
 	@Override
@@ -61,4 +69,8 @@ public class LineGraphic extends Graphic
 				pt2.y - pt1.y);
 	}
 	
+	@Override
+	public Object clone() {
+		return new LineGraphic(this);
+	}
 }

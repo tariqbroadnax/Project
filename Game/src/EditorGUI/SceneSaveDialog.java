@@ -33,7 +33,7 @@ public class SceneSaveDialog extends JDialog
 	
 	public SceneSaveDialog(GUIResources resources)
 	{
-		super(resources.frame, "Save Scene",
+		super(null, "Save Scene",
 			  ModalityType.DOCUMENT_MODAL);
 	
 		this.resources = resources;

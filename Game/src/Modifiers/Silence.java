@@ -1,37 +1,46 @@
 package Modifiers;
 
-import EntityComponent.AbilityComponent;
+import java.time.Duration;
 
-public class Silence extends Modifier
+import Entity.Entity;
+
+public class Silence extends Effect
 {
-	public Silence()
-	{
-		super();
-	}
-	
-	public Silence(Silence mod)
-	{
-		super(mod);
-	}
-	
 	@Override
-	protected void apply()
-	{
-		target.get(AbilityComponent.class)
-		  	  .setAllActivesEnabled(false);
-	}
-	
-	@Override
-	public void revert()
-	{
-		target.get(AbilityComponent.class)
-		  	  .setAllActivesEnabled(true);
+	public void update(Duration delta) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	protected Object _clone()
-	{
-		return new Silence(this);
+	public void start() {
+		// TODO Auto-generated method stub
+		
 	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected Effect _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean canBeApplied(Entity target) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 }

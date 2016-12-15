@@ -18,10 +18,15 @@ public class Circle2D
 			
 			radius = 10;
 		}
+		
+		public Double(Circle2D.Double circ)
+		{
+			this(circ.getX(), circ.getY(), circ.radius);
+		}
 
 		public Double(double x, double y, double radius)
 		{
-			super(x - radius, y - radius, 2 * radius, 2 * radius);
+			super(x, y, 2 * radius, 2 * radius);
 			
 			this.radius = radius;
 		}
@@ -55,7 +60,7 @@ public class Circle2D
 		public void setRadius(double radius)
 		{
 			this.radius = radius;
-			this.setFrame(x, y, radius, radius);
+			this.setFrame(x, y, 2 * radius, 2 * radius);
 		}
 		
 		public double getRadius()

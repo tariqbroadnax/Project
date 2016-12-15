@@ -16,14 +16,10 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import EntityComponent.GraphicsComponent;
-import Graphic.AnimatedGraphic;
 import Graphic.Graphic;
-import Graphic.LayeredGraphic;
-import Graphic.LineGraphic;
-import Graphic.ShapeGraphic;
-import Graphic.TextGraphic;
 
 public class GraphicsComponentEditor extends JPanel
+	implements ChangeListener
 {
 	private JLabel graphicLabel;
 	
@@ -34,6 +30,10 @@ public class GraphicsComponentEditor extends JPanel
 	private GraphicsComponent comp;
 	
 	private GraphicType currType;
+	
+	private ShapeGraphicEditor shapeGraphicEditor;
+	
+	private boolean setting;
 	
 	public GraphicsComponentEditor()
 	{
@@ -49,9 +49,11 @@ public class GraphicsComponentEditor extends JPanel
 		GraphicType[] values = GraphicType.values();
 		
 		graphicBox = new JComboBox<GraphicType>(values);
+
+		shapeGraphicEditor = new ShapeGraphicEditor();
 		
-		graphicEditor = new ShapeGraphicEditor();
-		
+		graphicEditor = shapeGraphicEditor;
+
 		Border border = 
 				BorderFactory.createLineBorder(
 						Color.black);
@@ -63,12 +65,14 @@ public class GraphicsComponentEditor extends JPanel
 		addComponents();				
 		
 		graphicBox.addActionListener(e -> selectGraphicType());
-		
+		graphicEditor.addChangeListener(this);
 		setGraphicsComponent(comp);
 	}
 	
 	public void setGraphicsComponent(GraphicsComponent comp)
 	{
+		setting = true;
+		
 		this.comp = comp;
 		
 		Graphic graphic = comp.getGraphic();
@@ -77,15 +81,18 @@ public class GraphicsComponentEditor extends JPanel
 		
 		remove(graphicEditor);
 
-		graphicEditor = currType.graphicEditor();
+		// fixme
+		graphicEditor = shapeGraphicEditor;
 
 		graphicEditor.setGraphic(graphic);
-	
+		
 		graphicBox.setSelectedItem(currType);
 	
 		addGraphicEditor();
 		revalidate();
 		repaint();
+	
+		setting = false;
 	}
 	
 	private void selectGraphicType()
@@ -153,5 +160,11 @@ public class GraphicsComponentEditor extends JPanel
 		c.anchor = CENTER;
 		c.gridx = 0; c.gridy = 1;
 		add(graphicEditor, c);
+	}
+
+	@Override
+	public void fieldChanged() {
+		if(!setting)
+			comp.setGraphic(graphicEditor.getGraphic());
 	}
 }

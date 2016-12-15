@@ -3,32 +3,45 @@ package GUI;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
-import Game.Resources;
-import GameClient.GameClientResources;
+import Game.Updatable;
+import Game.Updater;
 
 public class GFrame extends JFrame
+	implements WindowListener, ComponentListener,
+			   Updatable
 {
 	private static final Dimension DEFAULT_DIMENSION =
 			new Dimension(800, 600);
-	
-	private Resources resources;
-	
+		
 	private Timer timer;
 	
-	private boolean isFullScreen;
+	private boolean isFullScreen,
+					requestFullScreen;
 	
 	private GraphicsDevice device;
+	
+	private Updater updater;
 
-	public GFrame(Resources resources)
+	public GFrame(Updater updater)
 	{
 		setSize(DEFAULT_DIMENSION);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		this.resources = resources;
+		this.updater = updater;
 		
 		isFullScreen = false;
 		
@@ -38,7 +51,48 @@ public class GFrame extends JFrame
 				.getLocalGraphicsEnvironment()
 				.getDefaultScreenDevice();
 				
+		addWindowListener(this);
+		addComponentListener(this);
+		
+		updater.addUpdatable(this);
+		
+		getRootPane().getInputMap(
+				JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+				KeyStroke.getKeyStroke("F"),
+				"toggleFS");
+		
+		getRootPane().getActionMap()
+					 .put("toggleFS", new MyAction());
+		
 		timer.start();
+	}
+	
+	@Override
+	public void update(Duration delta)
+	{
+		if(requestFullScreen == isFullScreen)
+			return;
+		
+		isFullScreen = requestFullScreen;
+		
+		if(isFullScreen)
+		{
+			device.setFullScreenWindow(this);
+			timer.stop();
+		
+		}
+		else
+		{
+			device.setFullScreenWindow(null);
+			timer.start();
+		}
+	}
+	
+	private class MyAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e) {
+			toggleFullScreen();
+		}	
 	}
 	
 	public void toggleFullScreen()
@@ -48,36 +102,61 @@ public class GFrame extends JFrame
 	
 	public void setFullScreen(boolean isFullScreen)
 	{
-		if(this.isFullScreen == isFullScreen) 
-			return;
-		
-		this.isFullScreen = isFullScreen;
-	
-		if(isFullScreen)
-		{
-			device.setFullScreenWindow(this);
-			
-			resources.getGUI()
-					 .getDebugPanel()
-					 .setDebugTextEnabled(true);
-			
-			timer.stop();
-		}
-		else
-		{
-			device.setFullScreenWindow(null);
-			
-			resources.getGUI()
-					 .getDebugPanel()
-					 .setDebugTextEnabled(false);
-			
-			timer.start();
-		}
+		requestFullScreen = isFullScreen;
 	}
 
 	private void updateTitle()
 	{		
-		setTitle("UPS: " + resources.getUpdater()
-						  			.getActualFrequency());
+		setTitle("FPS: " + updater.getActualFrequency());
 	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		updater.play();
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+	}
+
+	@Override
+	public void windowClosing(WindowEvent arg0) {
+		updater.stop();
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent arg0) {
+		updater.pause();
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent arg0) {
+		updater.play();
+	}
+
+	@Override
+	public void windowIconified(WindowEvent arg0) {
+		updater.pause();
+	}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {
+		updater.start();
+	}
+	
+	@Override
+	public void componentHidden(ComponentEvent e) {}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {}
+
+	@Override
+	public void componentResized(ComponentEvent e) 
+	{		
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		createBufferStrategy(2);
+	}	
 }

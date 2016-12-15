@@ -3,8 +3,6 @@ package EntityComponent;
 import java.io.IOException;
 import java.time.Duration;
 
-import Game.SceneResources;
-
 public class LifetimeComponent extends EntityComponent
 {
 	private transient Lifetime lifetime;
@@ -23,16 +21,19 @@ public class LifetimeComponent extends EntityComponent
 	public void update(Duration delta)
 	{
 		lifetime.update(delta);
-	}
-	
-	public void checkAndRemoveParent(SceneResources resources)
-	{		
+		
 		if(lifetime.isLifeOver())
-			resources.removeQueue.add(parent);
+		{
+			parent.getSceneLoc()
+				  .removeEntity(parent);
+		}
 	}
 	
-	public Lifetime getLifetime()
-	{
+	public void setLifetime(Lifetime lifetime) {
+		this.lifetime = lifetime;
+	}
+	
+	public Lifetime getLifetime() {
 		return lifetime;
 	}
 	

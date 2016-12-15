@@ -1,12 +1,17 @@
 package Game;
 
+import Entity.Entity;
 import EntityComponent.EntityComponent;
 
 public interface EntityListener 
 {
-	public <E extends EntityComponent> void  componentAdded(
-			Entity src, Class<E> c);
+	public  void  componentAdded(
+			Entity src, EntityComponent comp);
 	
-	public <E extends EntityComponent> void componentRemoved(
-			Entity src, Class<E> c);
+	public void componentRemoved(
+			Entity src, EntityComponent comp);
+	
+	public void componentReplaced(
+			Entity src, EntityComponent oldComp,
+						EntityComponent newComp);
 }

@@ -11,13 +11,14 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.undo.UndoManager;
 
 import EditorGUI.ComponentShownListener;
 import EditorGUI.MouseListener;
 import EditorGUI.MouseMotionListener;
+import Entity.Entity;
 import EntityComponent.EntityComponent;
 import EntityComponent.GraphicsComponent;
-import Game.Entity;
 import Game.EntityListener;
 
 public class EntityComponentEditor extends JTabbedPane
@@ -165,17 +166,20 @@ public class EntityComponentEditor extends JTabbedPane
 	}
 
 	@Override
-	public <E extends EntityComponent> void componentAdded(
-			Entity src, Class<E> c) 
+	public void componentAdded(Entity src, EntityComponent comp) 
 	{
-		updateTabs();
+		updateTabs();	
 	}
 
 	@Override
-	public <E extends EntityComponent> void componentRemoved(
-			Entity src, Class<E> c) 
+	public void componentRemoved(Entity src, EntityComponent comp) 
 	{
-		updateTabs();
+		updateTabs();	
 	}
 
+	@Override
+	public void componentReplaced(Entity src, EntityComponent oldComp, EntityComponent newComp) 
+	{
+		updateTabs();	
+	}
 }

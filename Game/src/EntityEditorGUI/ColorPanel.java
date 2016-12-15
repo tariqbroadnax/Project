@@ -34,7 +34,6 @@ public class ColorPanel extends JPanel
 	}
 
 	public Color getColor() {
-		// TODO Auto-generated method stub
-		return null;
+		return color;
 	}
 }

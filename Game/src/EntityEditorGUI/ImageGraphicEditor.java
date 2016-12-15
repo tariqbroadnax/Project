@@ -1,13 +1,29 @@
 package EntityEditorGUI;
 
+import java.util.Collection;
+
 import Graphic.Graphic;
+import Utilities.ImagePool;
 
-public class ImageGraphicEditor extends GraphicEditor {
-
+public class ImageGraphicEditor extends GraphicEditor 
+{
+	private ImagePool imgPool;
+	
 	@Override
-	protected void _setGraphic(Graphic graphic) {
-		// TODO Auto-generated method stub
-
+	public Collection<ChangeListener> getChangeListeners() 
+	{
+		return null;
 	}
 
+	@Override
+	protected void _setGraphic(Graphic graphic) 
+	{
+		
+	}
+
+	@Override
+	protected Graphic _getGraphic() 
+	{
+		return null;
+	}	
 }

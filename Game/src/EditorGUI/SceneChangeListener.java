@@ -1,12 +1,14 @@
 package EditorGUI;
 
-import Game.Entity;
+import Entity.Entity;
 
 public interface SceneChangeListener 
 	extends ResourceListener
 {
-	public default void tilesChanged(GUIResources src){};
+	public default void sceneLoaded(GUIResources src){};
 	
+	public default void sceneSaved(GUIResources src){};
+
 	public default void objectSelected(GUIResources src){};
 	
 	public default void entityAdded(

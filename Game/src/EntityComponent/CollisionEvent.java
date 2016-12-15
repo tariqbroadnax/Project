@@ -2,7 +2,7 @@ package EntityComponent;
 
 import java.awt.geom.RectangularShape;
 
-import Game.Entity;
+import Entity.Entity;
 
 public class CollisionEvent
 {
@@ -14,7 +14,8 @@ public class CollisionEvent
 
 	public CollisionEvent(
 			Entity collider, Entity collided,
-			RectangularShape colliderComp, RectangularShape collidedComp)
+			RectangularShape colliderComp,
+			RectangularShape collidedComp)
 	{
 		this.collider = collider;
 		this.collided = collided;

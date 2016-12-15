@@ -16,30 +16,36 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
-
-import EditorGUI.SimpleDocumentListener;
+import javax.swing.event.ChangeEvent;
 
 public class StrokeEditor extends JPanel
+	implements ChangeNotifier,
+			   ChangeListener,
+			   javax.swing.event.ChangeListener,
+			   ActionListener
 {
 	private JLabel widthLabel, capLabel,
 				   joinLabel,
 				   miterLimitLabel,
 				   dashLabel;
 	
-	private JSlider widthSlider, miterLimitSlider,
+	private Slider.Float widthSlider, miterLimitSlider,
 					dashSlider;
 	
-	private IntTextField widthField, miterLimitField,
-					 	 dashField;
+	private NumberTextField.Float widthField,
+								  miterLimitField,
+								  dashField;
 	
-	private SliderTextFieldConnection widthConn, miterLimitConn,
-									  dashConn;
+	private SliderFieldConnection.Float widthConn,
+										miterLimitConn,
+										dashConn;
 
 	private JComboBox<Cap> capBox;
 	private JComboBox<Join> joinBox;
 	
-	private Collection<ActionListener> listeners;
+	private Collection<ChangeListener> listeners;
+	
+	private boolean setting = false;
 	
 	private enum Cap
 	{
@@ -50,8 +56,6 @@ public class StrokeEditor extends JPanel
 	{
 		Bevel, Miter, Round
 	}
-	
-	private BasicStroke stroke;
 
 	public StrokeEditor()
 	{
@@ -60,7 +64,7 @@ public class StrokeEditor extends JPanel
 	
 	public StrokeEditor(BasicStroke stroke)
 	{
-		listeners = new LinkedList<ActionListener>();
+		listeners = new LinkedList<ChangeListener>();
 		
 		widthLabel = new JLabel("Width: ");
 		capLabel = new JLabel("Cap: ");
@@ -68,20 +72,23 @@ public class StrokeEditor extends JPanel
 		miterLimitLabel = new JLabel("Miter Limit: ");
 		dashLabel = new JLabel("Dash: ");
 		
-		widthSlider = new JSlider(0, 50, 1);
-		miterLimitSlider = new JSlider(1, 100, 50);
-		dashSlider = new JSlider(0, 50, 0);
+		widthSlider = new Slider.Float(1, 50, 1);
+		miterLimitSlider = new Slider.Float(0, 100, 50);
+		dashSlider = new Slider.Float(0, 50, 0);
 		
-		widthField = new IntTextField(0, 50, 1);
-		miterLimitField = new IntTextField(1, 100, 50);
-		dashField = new IntTextField(0, 50, 0);	
+		widthField = new NumberTextField.Float(
+				1, 50, 1);
+		miterLimitField = new NumberTextField.Float(
+				0, 100, 50);
+		dashField = new NumberTextField.Float(
+				0, 50, 0);	
 		
-		widthConn = new SliderTextFieldConnection(
+		widthConn = new SliderFieldConnection.Float(
 							widthSlider, widthField);
-		miterLimitConn = new SliderTextFieldConnection(
+		miterLimitConn = new SliderFieldConnection.Float(
 							miterLimitSlider,
 							miterLimitField);
-		dashConn = new SliderTextFieldConnection(
+		dashConn = new SliderFieldConnection.Float(
 							dashSlider, dashField);
 		
 		Cap[] caps = Cap.values();
@@ -114,23 +121,17 @@ public class StrokeEditor extends JPanel
 		
 		for(JSlider slider : sliders)
 			slider.addChangeListener(
-					e -> updateStroke());
+					e -> notifyListeners());
 		
-		JTextField[] fields = {
+		NumberTextField.Float[] fields = {
 				widthField, miterLimitField,
 				dashField};
-		
-		SimpleDocumentListener l =
-				e -> updateStroke();
 				
-		for(JTextField field : fields)
-			field.getDocument()
-				 .addDocumentListener(l);
+		for(NumberTextField.Float field : fields)
+			field.addChangeListener(this);
 		
-		capBox.addActionListener(
-				e -> updateStroke());
-		joinBox.addActionListener(
-				e -> updateStroke());
+		capBox.addActionListener(this);
+		joinBox.addActionListener(this);
 	}
 	
 	private void addComponents(GridBagConstraints c)
@@ -205,13 +206,8 @@ public class StrokeEditor extends JPanel
 		c.gridx = 2; c.gridy = 4;
 		add(dashField, c);
 	}
-
-	public BasicStroke getStroke() 
-	{
-		return stroke;
-	}
 	
-	private void updateStroke()
+	public BasicStroke getStroke()
 	{
 		float width = widthSlider.getValue();
 		
@@ -254,57 +250,31 @@ public class StrokeEditor extends JPanel
 
 		float dashPhase = 0;
 		
-		BasicStroke newStroke;
+		BasicStroke stroke;
 		
 		if(dash[0] == 0)
-			newStroke = new BasicStroke(
+			stroke = new BasicStroke(
 					width, cap, join, miterLimit);
 		else
-			newStroke = new BasicStroke(
+			stroke = new BasicStroke(
 					width, cap, join, miterLimit,
 					dash, dashPhase);
 		
-		if(newStroke.equals(stroke))
-			return;
-		else
-		{	
-			stroke = newStroke;
-			notifyListeners();
-		}
+		//System.out.println("here " + width);
+
+		return stroke;
 	}
-	
-	private void notifyListeners()
-	{
-		int id = ActionEvent.ACTION_PERFORMED;
-		String command = "STROKE CHANGED";
 		
-		ActionEvent e = new ActionEvent(
-				this, id, command);
-		
-		for(ActionListener listener : listeners)
-			listener.actionPerformed(e);
-	}
-	
-	public void addActionListener(
-			ActionListener listener)
-	{
-		listeners.add(listener);
-	}
-	
-	public void removeActionListener(
-			ActionListener listener)
-	{
-		listeners.remove(listener);
-	}
-	
 	public void setStroke(BasicStroke stroke)
 	{
-		int width = (int)stroke.getLineWidth();
+		setting = true;
+		
+		float width = stroke.getLineWidth();
 		int cap = stroke.getEndCap();
 		int join = stroke.getLineJoin();
-		int miterLimit = (int)stroke.getMiterLimit();
-		int dash = stroke.getDashArray() == null ?
-				0 : (int)stroke.getDashArray()[0];
+		float miterLimit = stroke.getMiterLimit();
+		float dash = stroke.getDashArray() == null ?
+				0 : stroke.getDashArray()[0];
 
 		Cap capObj = null;
 		switch(cap)
@@ -337,13 +307,33 @@ public class StrokeEditor extends JPanel
 		capBox.setSelectedItem(capObj);
 		joinBox.setSelectedItem(joinObj);
 		
-		widthSlider.setValue(width);
-		miterLimitSlider.setValue(miterLimit);
-		dashSlider.setValue(dash);
+		widthSlider.setFloatValue(width);
+		miterLimitSlider.setFloatValue(miterLimit);
+		dashSlider.setFloatValue(dash);
+	
+		setting = false;
+	}
 
-		widthField.setIntValue(width);
-		miterLimitField.setIntValue(miterLimit);
-		dashField.setIntValue(dash);
-		
+	@Override
+	public Collection<ChangeListener> getChangeListeners() {
+		return listeners;
+	}
+
+	@Override
+	public void fieldChanged() {
+		if(!setting)
+			notifyListeners();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(!setting)
+			notifyListeners();
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		if(!setting)
+			notifyListeners();
 	}
 }

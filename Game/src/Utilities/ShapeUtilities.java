@@ -1,5 +1,7 @@
 package Utilities;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.pow;
 
 import java.awt.geom.Point2D;
@@ -20,7 +22,7 @@ public class ShapeUtilities
 		Collection<Point2D.Double> points = 
 				new LinkedList<Point2D.Double>();
 		
-		CollectionUtilities.addAll(points,
+		Collections2.addAll(points,
 				new Point2D.Double(rect.x, rect.y),
 				new Point2D.Double(rect.x + rect.width, rect.y),
 				new Point2D.Double(rect.x, rect.y + rect.height),
@@ -48,13 +50,32 @@ public class ShapeUtilities
 		Collection<Segment2D.Double> segments = 
 				new LinkedList<Segment2D.Double>();
 		
-		CollectionUtilities.addAll(segments,
+		Collections2.addAll(segments,
 				new Segment2D.Double(points[0], points[1]),
 				new Segment2D.Double(points[1], points[2]),
 				new Segment2D.Double(points[2], points[3]),
 				new Segment2D.Double(points[3], points[0]));
 		
 		return segments;
+	}
+	
+	public static boolean vertOverlap(
+			Rectangle2D.Double rect1,
+			Rectangle2D.Double rect2)
+	{
+		return max(rect1.y, rect2.y) < 
+			   min(rect1.y + rect1.height,
+				   rect2.y + rect2.height);
+	}
+	
+
+	public static boolean horizOverlap(
+			Rectangle2D.Double rect1,
+			Rectangle2D.Double rect2)
+	{
+		return max(rect1.x, rect2.x) < 
+			   min(rect1.x + rect1.width,
+				   rect2.x + rect2.width);
 	}
 	
 	public static void moveShape(Point2D.Double loc, RectangularShape shape)
@@ -90,7 +111,8 @@ public class ShapeUtilities
 			return false;
 	}
 	
-	public static boolean collides(Rectangle2D.Double rect, Rectangle2D.Double rect2)
+	public static boolean collides(
+			Rectangle2D.Double rect, Rectangle2D.Double rect2)
 	{		
 		return rect.x < rect2.x + rect.width &&
 			   rect.x + rect.width > rect2.x &&
@@ -100,19 +122,23 @@ public class ShapeUtilities
 	
 	public static boolean collides(Rectangle2D.Double rect, Circle2D.Double circle)
 	{
-		if(rect.contains(circle.getCenter()))
-			return true;
+		double nearestX = max(rect.x, min(circle.getCenterX(), rect.x + rect.width));
+		double nearestY = max(rect.y, min(circle.getCenterY(), rect.y + rect.height));
 		
-		for(Segment2D.Double edge : findEdges(rect))
-			if(edge.intersects(circle))
-				return true;
-		return false;
+		double deltaX = circle.getCenterX() - nearestX;
+		double deltaY = circle.getCenterY() - nearestY;
+		
+		// System.out.println(rect + "\n" + circle);
+		
+		return pow(deltaX, 2) + pow(deltaY, 2) < pow(circle.radius, 2);
 	}
 	
 	public static boolean collides(Circle2D.Double circ1, Circle2D.Double circ2)
 	{
 		Point2D.Double center1 = circ1.getCenter(),
 					   center2 = circ2.getCenter();
+		
+		//System.out.println(pow(circ1.radius + circ2.radius, 2)+ " " + center1.distanceSq(center2));
 		
 		return center1.distanceSq(center2) <
 			   pow(circ1.radius + circ2.radius, 2);

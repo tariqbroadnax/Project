@@ -1,69 +1,43 @@
 package Modifiers;
 
-import java.time.Duration;
-
-import Game.Entity;
-import Game.Updatable;
-
-public abstract class Modifier 
-	implements Updatable, Cloneable
+public abstract class Modifier
+	implements Comparable<Modifier>
 {
-	protected Duration lifetime;
-	private Duration elapsed;
+	protected double factor;
 	
-	protected Entity src, target;
-	
-	public Modifier()
+	public Modifier(double factor) 
 	{
-		lifetime = Duration.ofMillis(500);
+		this.factor = factor;
 	}
 	
-	public Modifier(Modifier mod)
+	public Modifier(Modifier mod) 
 	{
-		this();
+		factor = mod.factor;
+	}
+	
+	public abstract double modify(double val);
+	
+	public int compareTo(Modifier mod)
+	{
+		if(this instanceof AddModifier)
+		{
+			if(mod instanceof MultModifier)
+				return -1;
+		}
+		else if(this instanceof MultModifier)
+		{
+			if(mod instanceof AddModifier)
+				return 1;
+		}
 		
-		lifetime = mod.lifetime;
+		return 0;
 	}
 	
-	public void update(Duration delta)
-	{		
-		elapsed = elapsed.plus(delta);
+	public void setFactor(double factor) {
+		this.factor = factor;
 	}
 	
-	protected abstract void apply();
-	
-	public void revert(){}
-	
-	public boolean isOver()
-	{
-		return elapsed.compareTo(lifetime) >= 0;
+	public double getFactor() {
+		return factor;
 	}
-	
-	public void setTarget(Entity target)
-	{
-		if(this.target != null) revert();
-		
-		this.target = target;
-		
-		apply();
-		
-		elapsed = Duration.ZERO;
-	}
-	
-	public void setSource(Entity src)
-	{
-		this.src = src;
-	}
-	
-	public void setLifetime(Duration lifetime)
-	{
-		this.lifetime = lifetime;
-	}
-	
-	public Object clone()
-	{
-		return _clone();
-	}
-	
-	protected abstract Object _clone();
 }

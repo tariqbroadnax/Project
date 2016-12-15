@@ -1,43 +1,100 @@
 package Modifiers;
 
+import java.time.Duration;
+
+import Entity.Entity;
 import EntityComponent.StatsComponent;
-import Stat.CoreStatType;
 import Stat.Stats;
 
-public class Damage extends Modifier
+public class Damage extends Effect
 {
-	private int flatAmount;
+	private double flatAmount;
+	private int ticks, maxTicks;
 	
-	private int ratio; // 330 -> 
+	private long elapsed;
 	
-	private boolean physical;
-	
-	public Damage(int flatAmount, int ratio)
+	public Damage()
 	{
-		this.ratio = ratio;
+		this(1, 1);
 	}
 	
-	@Override
-	protected void apply()
+	public Damage(double flatAmount, int ticks)
 	{
-		Stats srcStats =
-				src.get(StatsComponent.class)	
-				   .getStats(),
-			 targetStats =
-			 	target.get(StatsComponent.class)
-			 	 	  .getStats();
-			
-		int amount = (int) (
-				srcStats.getValue(CoreStatType.PHYS_ATK)
-				 * ratio / 100.0);
+		setFlatAmount(flatAmount);
+		setMaxTicks(ticks);
+		ticks = 0;
+		elapsed = 0;
+	}
+	
+	public Damage(Damage damage)
+	{
+		flatAmount = damage.flatAmount;
+		ticks = 0;
+		maxTicks = damage.maxTicks;
+		elapsed = 0;
+	}
+
+	@Override
+	public void start() 
+	{
+		apply();
+		ticks++;
+	}
+
+	@Override
+	public void stop() {}
+	
+	public void apply()
+	{
+		Stats stats = target.get(StatsComponent.class)
+			    .getStats();
+
+		stats.applyDamage(flatAmount);
+	}
+
+	@Override
+	public void update(Duration delta) 
+	{
+		elapsed += delta.toMillis();
 		
-		targetStats.recieveDamage(amount, src);
+		if(elapsed >= 500)
+		{
+			apply();
+			ticks++;
+			elapsed = 0;
+		}
 	}
 	
-	@Override
-	protected Object _clone() 
+	public void setFlatAmount(double flatAmount) 
 	{
-		return null;
-	}	
-	
+		if(flatAmount < 0)
+			throw new IllegalArgumentException();
+
+		this.flatAmount = flatAmount;
+	}
+
+	public void setMaxTicks(int maxTicks) 
+	{
+		if(maxTicks < 1)
+			throw new IllegalArgumentException();
+		
+		this.maxTicks = maxTicks;
+	}
+
+	@Override
+	public boolean isFinished() {
+		return ticks == maxTicks;
+	}
+
+	@Override
+	protected Effect _clone() {
+		return new Damage(this);
+	}
+
+	// FIXME
+	@Override
+	public boolean canBeApplied(Entity target) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

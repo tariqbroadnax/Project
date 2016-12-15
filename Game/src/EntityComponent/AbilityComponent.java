@@ -1,200 +1,188 @@
 package EntityComponent;
 
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Queue;
 
-import Ability.AbilityEvent;
+import Ability.AbilityListener;
 import Ability.ActiveAbility;
-import Game.Entity;
+import Ability.CastingIndicator;
+import Ability.FreeProjectileAbility;
+import Ability.HomingProjectileAbility;
+import Ability.TargetSourceAbility;
+import Entity.Entity;
 import Modifiers.Root;
-import Stat.CoreStatType;
-import TestEntity.BasicAttack;
 
 public class AbilityComponent extends EntityComponent
 {
 	public static final int BASIC_ATTACK_INDEX = 0;
 	
 	private ArrayList<ActiveAbility> actives;
+	private ArrayList<AbilityListener> lists;
+		
+	private boolean enabled, casting;
 	
-	private transient Queue<AbilityEvent> castQueue;
+	private Root castRoot;
 	
-	private transient boolean casting;
-	
-	private transient Root castRoot;
+	private CastingIndicator indicator;
 
 	public AbilityComponent()
 	{
 		super();
 		
 		actives = new ArrayList<ActiveAbility>();
-	
+		lists = new ArrayList<AbilityListener>();
+		
+		enabled = true;
 		casting = false;
 		
-		castQueue = new LinkedList<AbilityEvent>();
-	
-		actives.add(new BasicAttack());
-		
 		castRoot = new Root();
-		castRoot.setLifetime(Duration.ofDays(1));
-	}
-	
-	public AbilityComponent(AbilityComponent comp)
-	{
-		this();
 		
-		for(int i = BASIC_ATTACK_INDEX + 1;
-				i < comp.actives.size(); i++)
-			actives.add(
-				new ActiveAbility(comp.actives.get(i)));
+		indicator = new CastingIndicator();
+		
+		addActiveAbility(new HomingProjectileAbility());
+		addActiveAbility(new FreeProjectileAbility());
+
+		castRoot.setLifetime(Lifetime.FOREVER);
 	}
 	
 	public void addActiveAbility(ActiveAbility active)
 	{
+		if(parent != null)
+			active.setSrc(parent);
+		
 		actives.add(active);
 	}
 	
-	public void castActiveAbility(int index)
+	public void cast(int i)
 	{
-		castActiveAbility(index, null, null);
+		ActiveAbility ability =
+				actives.get(i);
+		
+		cast(ability);
 	}
 	
-	public void castActiveAbility(int index, Entity target)
+	public void cast(ActiveAbility ability)
 	{
-		castActiveAbility(index, target, null);
-	}
-	
-	public void castActiveAbility(int index, Point2D.Double loc)
-	{
-		castActiveAbility(index, null, loc);
-	}
-	
-	private void castActiveAbility(int index, Entity target,
-			Point2D.Double loc)
-	{
-		if(!casting)
+		if(enabled && !casting && 
+		   actives.contains(ability))
 		{
-			castQueue.add(new AbilityEvent(
-					actives.get(index),
-					parent, target, loc));
+			ability.cast();
+			
+			if(ability.isCasting())
+			{
+				addCastRoot();
+				addCastingIndicator(ability);
+			}
 		}
 	}
-	
 	@Override
 	public void update(Duration delta)
-	{		
-		updateBasicAtkSpeed();
+	{				
+		boolean _casting = false;
 		
-		removeCastRoot();
+		for(ActiveAbility a : actives)
+		{
+			a.update(delta);
+			
+			if(a.isCasting())
+				_casting = true;
+		}
 		
-		checkAndHandleCasts();
+		if(casting && !_casting)
+		{
+			removeCastRoot();
+			removeCastingIndicator();
+		}
 		
-		updateAbilities(delta); // order is important
-
-		checkAndActivateAbilities();
-		
-		if(casting)
-			addCastRoot();
+		casting = _casting;
 	}
 	
 	private void addCastRoot()
 	{
-		parent.get(ModifierComponent.class)
-		  .recieveModifier(castRoot);
+		parent.get(EffectComponent.class)
+		  	  .add(castRoot);
+	}
+	
+	private void addCastingIndicator(
+			ActiveAbility ability)
+	{
+		indicator.setActiveAbility(ability);
+		
+		parent.get(GraphicsComponent.class)
+			  .getDecorations()
+			  .add(indicator, 0, -15);
+	}
+	
+	public void addListener(AbilityListener list) {
+		lists.add(list);
 	}
 	
 	private void removeCastRoot()
 	{
-		parent.get(ModifierComponent.class)
-		  	  .removeRecievedModifier(castRoot);
-	}
-
-	private void updateBasicAtkSpeed()
-	{		
-		int atkSpeed = parent
-				.get(StatsComponent.class)
-				.getStats()
-				.getValue(CoreStatType.ATK_SPEED);
-		
-		ActiveAbility basicAttack =
-				actives.get(BASIC_ATTACK_INDEX);
-		
-		basicAttack
-			.setCastTime(Duration.ofMillis((long)(250 * atkSpeed)));
-		
-		basicAttack
-			.setCooldown(Duration.ofMillis((long)(1000 * atkSpeed)));
+		parent.get(EffectComponent.class)
+			  .remove(castRoot);
 	}
 	
+	private void removeCastingIndicator()
+	{
+		parent.get(GraphicsComponent.class)
+			  .getDecorations()
+			  .remove(indicator);
+	}
+	
+	public void removeListener(AbilityListener list) {
+		lists.remove(list);
+	}
+
 	public void setAllActivesEnabled(boolean enabled)
 	{
 		for(ActiveAbility ability : actives)
 			ability.setEnabled(enabled);
 	}
 	
-	private void updateAbilities(Duration delta)
-	{
-		for(ActiveAbility ability : actives)
-			ability.update(delta);			
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
-	
-	private void checkAndHandleCasts()
-	{
-		casting = false;
-		
-		for(ActiveAbility ability : actives)
-			casting = ability.isCasting() ? true : casting;
-		
-		while(!(casting || castQueue.isEmpty()))
-		{
-			AbilityEvent event = castQueue.poll();
-			
-			ActiveAbility ability = (ActiveAbility) event.ability;
-			
-			casting = ability.cast(event);
-		}
-	}
-	
-	private void checkAndActivateAbilities()
-	{
-		SpawnComponent comp =
-				parent.get(SpawnComponent.class);
-		
-		for(ActiveAbility ability : actives)
-			if(ability.hasBeenActivated())
-			{				
-				for(Entity abilityEntity : ability.createAbilityEntities(parent))
-					comp.addChildren(abilityEntity);
-			}
-	}
-	
+
 	public Collection<ActiveAbility> getActives()
 	{
 		return actives;
+	}
+	
+	public ActiveAbility getActive(int i)
+	{
+		return actives.get(i);
+	}
+	
+	public HomingProjectileAbility getBasicAttack()
+	{
+		return (HomingProjectileAbility) actives.get(0);
+	}
+	
+	public void setParent(Entity parent)
+	{
+		super.setParent(parent);
+		
+		for(ActiveAbility a : actives)
+			a.setSrc(parent);
+		
+		castRoot.setTarget(parent);
 	}
 
 	private void readObject(java.io.ObjectInputStream in)
 		     throws IOException, ClassNotFoundException
      {
 		in.defaultReadObject();
-		
-		castQueue = new LinkedList<AbilityEvent>();
-		
-		actives.add(new BasicAttack());
-		
-		castRoot = new Root();
-		castRoot.setLifetime(Duration.ofDays(1));
-		
+						
+		castRoot = new Root();		
      }
 	 
 	@Override
 	protected EntityComponent _clone()
 	{
-		return new AbilityComponent(this);
+		return null;
 	}
 		
 	public String toString()

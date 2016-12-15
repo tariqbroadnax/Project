@@ -1,6 +1,6 @@
 package EditorGUI;
 
-import Game.Entity;
+import Entity.Entity;
 
 public interface ResourceEntityAddListener
 		extends ResourceListener

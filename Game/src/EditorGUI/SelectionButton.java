@@ -6,9 +6,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Stroke;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -25,9 +24,10 @@ public abstract class SelectionButton extends JButton
 	
 	private float selectionDashPhase;
 	
-	public SelectionButton(
-			GUIResources resources,
-			BufferedImage contentImg)
+	private SelectionListener selectListener;
+	private ActionListener actionListener;
+	
+	public SelectionButton(GUIResources resources)
 	{
 		this.resources = resources;		
 		
@@ -38,17 +38,21 @@ public abstract class SelectionButton extends JButton
 		selectionDashPhase = 0;
 		
 		setMargin(new Insets(0, 0, 0, 0));
+				
+		selectListener = src -> repaint();
+		resources.addResourceListener(selectListener);
 		
-		ImageIcon icon = new ImageIcon(contentImg);
+		actionListener = e -> selectContent();
+		addActionListener(actionListener);
+	}
+	
+	public void removeNotify()
+	{
+		super.removeNotify();
 		
-		setFocusPainted(false);
-		setIcon(icon);
+		timer.stop();
 		
-		SelectionListener sList = src -> repaint();
-		resources.addResourceListener(sList);
-		
-		ActionListener aList = e -> selectContent();
-		addActionListener(aList);
+		//resources.removeResourceListener(selectListener);
 	}
 	
 	protected abstract Object getContent();

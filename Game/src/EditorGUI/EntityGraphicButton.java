@@ -8,8 +8,8 @@ import java.awt.Point;
 
 import javax.swing.JButton;
 
+import Entity.Entity;
 import EntityComponent.GraphicsComponent;
-import Game.Entity;
 
 public class EntityGraphicButton extends JButton
 {

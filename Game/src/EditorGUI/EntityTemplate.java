@@ -1,6 +1,6 @@
 package EditorGUI;
 
-import Game.Entity;
+import Entity.Entity;
 
 public class EntityTemplate 
 {

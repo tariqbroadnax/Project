@@ -3,17 +3,23 @@ package EntityManager;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
+import Entity.Entity;
+import Entity.Fire;
+import EntityComponent.RigidBody;
 import EntityComponent.RigidBodyComponent;
-import Game.Entity;
-import Game.SceneResources;
+import Game.Scene;
+import Game.Updatable;
+import Maths.Circle2D;
 
-public class CollisionManager
-	extends EntityManager
+public class CollisionManager implements Updatable
 {	
-	public CollisionManager(SceneResources resources)
+	private Scene scene;
+	
+	public CollisionManager(Scene scene)
 	{
-		super(resources);
+		this.scene = scene;
 	}
 
 	@Override
@@ -22,11 +28,33 @@ public class CollisionManager
 		handleCollisions();
 	}
 	
+	public List<Entity> collisions(Circle2D.Double circ)
+	{
+		List<Entity> collisions = 
+				new LinkedList<Entity>();
+		
+		List<Entity> es = scene.entitiesWithComponent(
+				 RigidBodyComponent.class);
+		
+		for(Entity entity : es)
+		{
+		
+			RigidBody body = entity.get(RigidBodyComponent.class)
+								   .getRigidBody();
+			
+			//if(entity instanceof Fire)
+				//System.out.println("here" + " " + body.collidesWith(circ) != null);
+			
+			if(body.collidesWith(circ) != null)
+				collisions.add(entity);
+		}
+		
+		return collisions;
+	}
+	
 	private void handleCollisions()
 	{
-		Collection<Entity> es =
-				resources.componentMap
-						 .getEntitiesWithComponent(
+		List<Entity> es = scene.entitiesWithComponent(
 								 RigidBodyComponent.class);
 	
 		Collection<RigidBodyComponent> components =

@@ -13,15 +13,14 @@ import javax.swing.JColorChooser;
 import javax.swing.JPanel;
 
 public class ColorEditor extends JPanel
+	implements ChangeNotifier
 {
-	private Color color;
-	
 	private ColorPanel panel;
 	
 	private JButton chooserButton;
 
-	private Collection<ActionListener> listeners;
-	
+	private Collection<ChangeListener> listeners;
+
 	public ColorEditor()
 	{
 		this(Color.red);
@@ -33,7 +32,7 @@ public class ColorEditor extends JPanel
 		
 		chooserButton = new JButton();
 				
-		listeners = new LinkedList<ActionListener>();
+		listeners = new LinkedList<ChangeListener>();
 		
 		setLayout(new GridBagLayout());
 		
@@ -48,7 +47,7 @@ public class ColorEditor extends JPanel
 	
 		chooserButton.addActionListener(
 				e -> selectColor());
-		
+	
 		setColor(color);
 	}
 	
@@ -69,46 +68,26 @@ public class ColorEditor extends JPanel
 	{
 		Color newColor = 
 				JColorChooser.showDialog(
-						null,"Choose Color", color);
+						null,"Choose Color", panel.getColor());
 		
 		if(newColor != null)
-		{
-			color = newColor;
-			
+		{	
 			panel.setColor(newColor);
 			panel.repaint();
-			
-			int id = ActionEvent.ACTION_PERFORMED;
-			String command = "COLOR CHANGED";
-			
-			ActionEvent e = new ActionEvent(
-					this, id, command);
-			
-			for(ActionListener listener : listeners)
-				listener.actionPerformed(e);
+			notifyListeners();
 		}
 	}
-	
-	public void addActionListener(
-			ActionListener listener)
-	{
-		listeners.add(listener);
-	}
-	
-	public void removeActionListener(
-			ActionListener listener)
-	{
-		listeners.remove(listener);
-	}
 
-	public void setColor(Color color)
-	{
-		this.color = color;
+	public void setColor(Color color) {
 		panel.setColor(color);
 	}
 	
-	public Color getColor() 
-	{
-		return color;
+	public Color getColor() {
+		return panel.getColor();
+	}
+
+	@Override
+	public Collection<ChangeListener> getChangeListeners() {
+		return listeners;
 	}
 }

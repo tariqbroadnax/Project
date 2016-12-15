@@ -4,10 +4,10 @@ import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.PriorityQueue;
 
+import Entity.Entity;
 import EntityComponent.LifetimeComponent;
 import EntityComponent.MetaComponent;
 import EntityComponent.StatsComponent;
-import Game.Entity;
 
 public class EntityUtilities
 {	

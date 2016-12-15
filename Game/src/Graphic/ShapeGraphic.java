@@ -6,21 +6,23 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 
+import Maths.Dimension2D;
+import Maths.Dimension2D.Double;
+
+import static java.lang.Math.floor;
+import static java.lang.Math.ceil;
+
 public class ShapeGraphic extends Graphic
-{
-	private boolean filled;
+{	
+	private RectangularShape shape, screenShape;
 	
 	private Paint paint;
+	private boolean filled;
 	
-	protected RectangularShape shape;
-	
-	private transient BasicStroke stroke;
+	private BasicStroke stroke;
 	
 	public ShapeGraphic()
 	{
@@ -30,9 +32,10 @@ public class ShapeGraphic extends Graphic
 		
 		paint = Color.black;
 		
-		stroke = new BasicStroke(1.0f);
-		
+		stroke = new BasicStroke(2.0f);
+				
 		shape = new Rectangle2D.Double(0, 0, 10, 10);
+		screenShape = (RectangularShape) shape.clone();
 	}
 	
 	public ShapeGraphic(ShapeGraphic graphic)
@@ -42,52 +45,32 @@ public class ShapeGraphic extends Graphic
 		filled = graphic.filled;
 		
 		paint = graphic.paint;
-		
+	
 		stroke = graphic.stroke;
-		
+
 		shape = (RectangularShape) graphic.shape.clone();
+		screenShape = (RectangularShape) shape.clone();
 	}
 	
 	@Override
 	protected void _paint(GraphicsContext gc) 
 	{
-		// TODO Auto-generated method stub
+		double w = shape.getWidth(),
+			   h = shape.getHeight();
 		
-		Dimension viewDim = gc.camera.getViewDimension();
+		shape.setFrame(loc.x - w/2, loc.y - h/2, w, h);
 		
-		double w = viewDim.width,
-			   h = viewDim.height;
+		gc.camera.screenShape(shape, screenShape);
 		
-		RectangularShape shape = (RectangularShape) this.shape.clone();
-		
-		shape.setFrame(loc.x * w / 100, 
-					   loc.y * h / 100,
-					   this.shape.getWidth() * w / 100,
-					   this.shape.getHeight() * h / 100);
-	
 		gc.g2d.setPaint(paint);
 		
-		drawShape(gc.g2d, shape);
-	}
-
-	@Override
-	public void paint(
-			Graphics2D g2d, Point screenLoc,
-			Dimension projection) 
-	{
-		RectangularShape shape = (RectangularShape) this.shape.clone();
-
-		shape.setFrame(screenLoc.x, screenLoc.y,
-					  projection.width,
-					  projection.height);
-	
-		g2d.setPaint(paint);
-
-		drawShape(g2d, shape);
+		paintShape(gc.g2d, screenShape);
 	}
 	
-	private void drawShape(Graphics2D g2d, RectangularShape shape)
+	private void paintShape(Graphics2D g2d, RectangularShape shape)
 	{
+		g2d = (Graphics2D)g2d.create();
+		
 		g2d.setPaint(paint);
 		
 		if(stroke != null)
@@ -97,77 +80,57 @@ public class ShapeGraphic extends Graphic
 			g2d.fill(shape);
 		else
 			g2d.draw(shape);
-	}
-	
-	@Override
-	protected Graphic _clone()
-	{
-		return new ShapeGraphic(this);
-	}
-
-	public void setStroke(BasicStroke stroke)
-	{
-		this.stroke = stroke;
-
-		notifyListenerOfFieldChanged();
-	}
-	
-	public void setPaint(Paint paint)
-	{
-		this.paint = paint;
 		
-		notifyListenerOfFieldChanged();
+		g2d.dispose();
 	}
 	
-	public Paint getPaint()
-	{
-		return paint;
+	public void setStroke(BasicStroke stroke) {
+		this.stroke = stroke;
 	}
 	
+	public void setPaint(Paint paint) {
+		this.paint = paint;
+	}
+
 	public void setShape(RectangularShape shape)
 	{
-		this.shape = shape;
-		
-		setLoc(loc);
-		
-		notifyListenerOfFieldChanged();
+		this.shape = (RectangularShape)shape.clone();
+		screenShape = (RectangularShape)shape.clone();	 
 	}
 	
-	public void setLoc(Point2D.Double loc)
-	{
-		super.setLoc(loc);
-		
-		shape.setFrame(loc.x, loc.y, shape.getWidth(), shape.getHeight());
-	
-		notifyListenerOfFieldChanged();
+	public void setFilled(boolean filled) {
+		this.filled = filled;
 	}
-	
-	public boolean isFilled()
-	{
+
+	public boolean isFilled() {
 		return filled;
 	}
 	
-	public RectangularShape getShape()
-	{
+	public RectangularShape getShape() {
 		return shape;
 	}
 	
-	public BasicStroke getStroke()
-	{
+	public BasicStroke getStroke() {
 		return stroke;
 	}
 
+	public Paint getPaint() {
+		return paint;
+	}
+
 	@Override
-	public java.awt.geom.Rectangle2D.Double getBound() 
+	public Rectangle2D.Double getBound() 
 	{
-		return (java.awt.geom.Rectangle2D.Double) shape.getBounds2D();
-	}
-
-	public void setFilled(boolean filled) 
-	{
-		this.filled = filled;
+		double w = shape.getWidth(),
+			   h = shape.getHeight();
 		
-		notifyListenerOfFieldChanged();
+		return new Rectangle2D.Double(
+				loc.x - w/2,
+				loc.y - h/2, w, h);
 	}
-
+	
+	@Override
+	public Object clone() {
+		return new ShapeGraphic(this);
+	}
 }

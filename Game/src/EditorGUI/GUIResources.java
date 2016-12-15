@@ -8,11 +8,11 @@ import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Observer;
 
-import javax.swing.JOptionPane;
-
-import Game.Entity;
+import Entity.Entity;
 import Game.Scene;
+import TileSetPane.TilesetModel;
 import Utilities.ImagePool;
 
 public class GUIResources 
@@ -21,19 +21,19 @@ public class GUIResources
 		
 	private Scene scene;
 	
-	private Object selectedObj;
-
 	private Path sceneFile;
 		
 	private boolean changesMadeSinceLastSave;
-	
-	public EditorFrame frame;
-	
+		
 	private Collection<Entity> entities;
 	
 	private Collection<ResourceListener> listeners;
 	
-	private UndoManager undoManager;
+	private TilesetModel tileSetModel;
+	
+	private EntityGroupModel entityGroupModel;
+	
+	private SelectionManager selectionManager;
 	
 	public GUIResources()
 	{
@@ -44,69 +44,90 @@ public class GUIResources
 		entities = new LinkedList<Entity>();
 		
 		listeners = new LinkedList<ResourceListener>();
-	
-		undoManager = new UndoManager();
-
-		frame = new EditorFrame(this);
 				
+		tileSetModel = new TilesetModel(imgPool);
+		
+		entityGroupModel = new EntityGroupModel();
+		
 		changesMadeSinceLastSave = false;
+		
+		selectionManager = new SelectionManager();
+		
+		addObserverToScene();
 	}
 	
-	public boolean sceneShouldBeChanged()
+	private void addObserverToScene()
+	{
+		Observer o = (obs, src) -> {
+			changesMadeSinceLastSave = true;
+			notifyListenersOfChangedScene();
+		};
+		
+		scene.addObserver(o);
+	}
+	
+	/* public boolean sceneShouldBeChanged()
 	{
 		return isSceneSaved() || askAndSaveScene();
-	}
+	} */
 	
-	public void loadScene(Path file)
+	public void loadScene(Path file) 
+			throws IOException, ClassNotFoundException
 	{
-		try(ObjectInputStream inStream = 
+		ObjectInputStream inStream = 
 				new ObjectInputStream(
-				new FileInputStream(file.toFile())))
-		{
-			scene = (Scene) inStream.readObject();
-			sceneFile = file;
-			notifyListeners();
-		} catch(IOException | ClassNotFoundException e)
-		{
-			JOptionPane.showMessageDialog(
-					frame, "Invalid File");
-		}
+				new FileInputStream(file.toFile()));
+		
+		scene = (Scene) inStream.readObject();
+		sceneFile = file;
+		addObserverToScene();
+		notifyListenersOfLoadedScene();
+		
+		inStream.close();
 	}
 	
 	public void createNewScene()
 	{
-		if(sceneShouldBeChanged())
-		{
-			scene = new Scene();
-			sceneFile = null;
-			notifyListeners();
-		}
+		//if(sceneShouldBeChanged())
+		//{
+		scene = new Scene();
+		sceneFile = null;
+		addObserverToScene();
+		notifyListenersOfLoadedScene();
+		//} 
 	}
 		
-	public boolean saveSceneToPath(Path path)
+	public void saveSceneToPath(Path path)
+		throws IOException
 	{
-		try(ObjectOutputStream outStream =
+		ObjectOutputStream outStream =
 				new ObjectOutputStream(
 				new FileOutputStream(
-						path.toString())))
-		{
-			outStream.writeObject(scene);
-			changesMadeSinceLastSave = true;
-			return true;
-		} catch (IOException e) 
-		{
-			JOptionPane.showMessageDialog(
-					frame, e.getMessage());
-			return false;
-		} 
+						path.toString()));
+	
+		outStream.writeObject(scene);
+		changesMadeSinceLastSave = false;
+		outStream.close();
+		
+		notifyListenersOfSavedScene();
 	}
 	
-	public void saveScene()
+	public boolean canSave()
+	{
+		return sceneFile != null &&
+			   changesMadeSinceLastSave;
+	}
+	
+	public void saveScene() throws IOException
 	{
 		if(sceneFile == null)
+			throw new IllegalStateException(
+					"No file to save to");
+		/* 
+		if(sceneFile == null)
 			saveSceneAs();
-		else
-			saveSceneToPath(sceneFile);
+		else */
+		saveSceneToPath(sceneFile);
 	}
 	
 	public void saveSceneAs()
@@ -114,7 +135,7 @@ public class GUIResources
 		new SceneSaveDialog(this).setVisible(true);
 	}
 	
-	public boolean askAndSaveScene()
+	/*public boolean askAndSaveScene()
 	{
 		int reply = JOptionPane.showConfirmDialog(
 				null,
@@ -126,7 +147,7 @@ public class GUIResources
 			saveScene();
 		
 		return true;
-	}
+	} */
 	
 	public void notifySceneModified()
 	{
@@ -161,25 +182,29 @@ public class GUIResources
 			listener.entityRemoved(this, entity);		
 	}
 	
-	private void notifyListeners()
+	private void notifyListenersOfSavedScene()
+	{
+		for(ResourceListener listener : listeners)
+			listener.sceneSaved(this);
+	}
+	
+	private void notifyListenersOfChangedScene()
 	{
 		for(ResourceListener listener : listeners)
 			listener.sceneChanged(this);
 	}
 	
-	public void setSelectedObj(Object obj)
-	{		
-		selectedObj = obj;		
-		
-		for(ResourceListener list : listeners)
-			list.objectSelected(this);
+	private void notifyListenersOfLoadedScene()
+	{
+		for(ResourceListener listener : listeners)
+			listener.sceneLoaded(this);
 	}
 	
 	public void setSceneFile(Path sceneFile)
 	{
 		this.sceneFile = sceneFile;
 	
-		changesSinceLastSave = false;
+		changesMadeSinceLastSave = false;
 	}
 	
 	public void setScene(Scene scene)
@@ -187,33 +212,27 @@ public class GUIResources
 		this.scene = scene;
 	}
 	
-	public boolean isSceneSaved()
-	{
-		return sceneSaved && sceneFile != null;
+	public boolean isSceneSaved() {
+		return !changesMadeSinceLastSave;
 	}
 	
-	public ImagePool getImagePool()
-	{
+	public ImagePool getImagePool() {
 		return imgPool;
 	}
 	
-	public Scene getScene()
-	{
+	public Scene getScene() {
 		return scene;
 	}
 	
-	public Path getSceneFile()
-	{
+	public Path getSceneFile() {
 		return sceneFile;
 	}
 	
-	public Object getSelectedObject()
-	{
-		return selectedObj;
+	public TilesetModel getTilesetModel() {
+		return tileSetModel;
 	}
 	
-	public UndoManager getUndoManager()
-	{
-		return undoManager;
+	public SelectionManager getSelectionManager() {
+		return selectionManager;
 	}
 }

@@ -2,7 +2,7 @@ package Ability;
 
 import java.awt.geom.Point2D;
 
-import Game.Entity;
+import Entity.Entity;
 
 public class AbilityEvent
 {	

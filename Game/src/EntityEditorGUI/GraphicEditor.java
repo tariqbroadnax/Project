@@ -3,7 +3,6 @@ package EntityEditorGUI;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -11,12 +10,11 @@ import javax.swing.JRadioButton;
 import Graphic.Graphic;
 
 public abstract class GraphicEditor extends JPanel
+	implements ChangeNotifier
 {
 	private JLabel visibleLabel;
 	
 	private JRadioButton visibleButton;
-	
-	private Graphic graphic;
 	
 	public GraphicEditor()
 	{
@@ -41,15 +39,7 @@ public abstract class GraphicEditor extends JPanel
 		setGraphic(graphic);
 		
 		visibleButton.addActionListener(
-				e -> setVisibility());
-	}
-	
-	private void setVisibility()
-	{
-		boolean visible = 
-				visibleButton.isSelected();
-		
-		graphic.setVisible(visible);
+				e -> notifyListeners());
 	}
 	
 	protected void init()
@@ -66,20 +56,31 @@ public abstract class GraphicEditor extends JPanel
 		c.anchor = GridBagConstraints.LINE_START;
 		c.weightx = 0;
 		c.gridx = 1; c.gridy = 0;
+		
 		add(visibleButton, c);
 	}
 	
 	public void setGraphic(Graphic graphic)
-	{
-		this.graphic = graphic;
-		
+	{	
 		boolean visible = graphic.isVisible();
 		
-		visibleButton.setSelected(visible);		
+		visibleButton.setSelected(visible);
+		
+		_setGraphic(graphic);
 	}
 	
 	public Graphic getGraphic()
 	{
+		Graphic graphic = _getGraphic();
+		boolean visible = visibleButton.isSelected();
+		
+		graphic.setVisible(visible);
+		
 		return graphic;
 	}	
+	
+	protected abstract void _setGraphic(
+			Graphic graphic);
+	
+	protected abstract Graphic _getGraphic();
 }

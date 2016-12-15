@@ -3,24 +3,24 @@ package Graphic;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
+import java.util.Observable;
 
 import Maths.Dimension2D;
+import Maths.Maths;
+import Maths.Vector2D;
 
-public class Camera
-	extends ComponentAdapter
+public class Camera extends Observable
 {
 	private Point2D.Double focus;
-
-	// FIXME
-	public AffineTransform transform;
 	
-	private Dimension screenDim,
-					  displayDim;
+	private Dimension screenSize,
+					  displaySize;
 	
 	private double targetAspectRatio;
 	
@@ -36,138 +36,355 @@ public class Camera
 		
 		maxWidth = maxHeight = 400;
 		
-		displayDim = new Dimension(400, 400);
-		screenDim = new Dimension(400, 400);
+		displaySize = new Dimension(400, 400);
+		screenSize = new Dimension(400, 400);
 		
 		zoom = 1;
 	}
-	
-	public void setFocus(Point2D.Double focus)
-	{
-		this.focus = focus;
-	}
-	
-	public void setScreenDimension(Dimension screenDim)
-	{
-		this.screenDim = screenDim;
-	}
-	
-	public  Dimension getViewDimension()
-	{
-		double aspectRatio = screenDim.getWidth() / screenDim.getHeight();
+
+	public void transformGraphics(Graphics2D g2d)
+	{				
+		g2d.setRenderingHint(
+				RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		
-		Dimension viewDim;
+		AffineTransform transform = 
+				g2d.getTransform();
+	
+		formatTransform(transform);
+		
+		g2d.setTransform(transform);
+	}
+
+	public boolean shows(Rectangle2D.Double normalBound)
+	{
+		Rectangle2D.Double normalViewBound = 
+						   normalViewBound();
+		
+		return Maths.overlaps(normalBound, normalViewBound);
+	}
+	
+	public Dimension viewSize()
+	{
+		double aspectRatio = screenSize.getWidth() / 
+							 screenSize.getHeight();
+		
+		Dimension viewSize;
 		
 		if(aspectRatio < targetAspectRatio)
-			viewDim = 
-					createDimensionWithWidth(
+			viewSize = createDimensionWithWidth(
 							targetAspectRatio,
-							screenDim.width < maxWidth ? screenDim.width : maxWidth);
+							screenSize.width < maxWidth ? 
+							screenSize.width : maxWidth);
 		else if(aspectRatio > targetAspectRatio)
-			viewDim = 
-					createDimensionWithHeight(
+			viewSize = createDimensionWithHeight(
 							targetAspectRatio, 
-							screenDim.height < maxHeight ? screenDim.height : maxHeight);
+							screenSize.height < maxHeight ? 
+							screenSize.height : maxHeight);
 		else
-			viewDim = screenDim;
+			viewSize = screenSize;
 					
-		return viewDim;
+		return viewSize;
 	}
 	
-	private Dimension createDimensionWithWidth(double aspectRatio, int width)
+	public Dimension2D.Double normalViewSize()
+	{
+		Dimension viewSize = viewSize();
+		
+		double normalWidth = 100.0 * screenSize.width /
+								     viewSize.width,
+			   normalHeight = 100.0 * screenSize.height /
+			   						  viewSize.height;
+		
+		return new Dimension2D.Double(normalWidth,
+									  normalHeight);
+	}
+	
+	private Dimension createDimensionWithWidth(
+			double aspectRatio, int width)
 	{
 		return new Dimension(
 				width,
-				(int)(width / aspectRatio));
+				(int)Math.ceil(width / aspectRatio));
 	}
 	
-	private Dimension createDimensionWithHeight(double aspectRatio, int height)
+	private Dimension createDimensionWithHeight(
+			double aspectRatio, int height)
 	{
 		return new Dimension(
-				(int)(height * aspectRatio),
+				(int)Math.ceil(height * aspectRatio),
 				height);		
 	}
 	
-	public void transformGraphics(Graphics2D g2d)
-	{				
-		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	public double screenHeight(double height)
+	{
+		Dimension viewSize = viewSize();
 
-		Dimension viewDim = getViewDimension();
-
-		transform = new AffineTransform();
-		
-		transform.translate(
-				- (focus.x * viewDim.width * zoom / 100.0
-						- screenDim.width / 2.0),
-				- (focus.y * viewDim.height * zoom / 100.0
-						- screenDim.height / 2.0));
-		
-		transform.scale(zoom, zoom);
-
-		g2d.setTransform(transform);
+		return height * viewSize.height / 100;
 	}
 	
-	public Dimension2D.Double screenDimension(Dimension2D.Double normDim)
-	{
+	public Dimension2D.Double sizeOnScreen(
+			double width, double height)
+	{	
+		Dimension viewSize = viewSize();
+
 		return new Dimension2D.Double(
-				normDim.width * displayDim.width / 100.0,
-				normDim.height * displayDim.height / 100.0);
+				width * viewSize.width / 100.0,
+				height * viewSize.height / 100.0);
 	}
 	
-	public Point2D.Double screenLocation(Point2D.Double normLoc)
+	public RectangularShape screenShape(
+			RectangularShape in, RectangularShape out)
 	{
+		if(out == null)
+			out = (RectangularShape)in.clone();
+	
+		double x = in.getX(),
+			   y = in.getY(),
+			   w = in.getWidth(),
+			   h = in.getHeight();
+		
+		Dimension viewSize = viewSize();
+
+		x *= viewSize.width / 100.0;
+		y *= viewSize.height / 100.0;
+		w *= viewSize.width / 100.0;
+		h *= viewSize.height / 100.0;
+		
+		out.setFrame(x, y, w+1, h+1);
+		
+		return out;
+	}
+	
+	
+	public Dimension2D.Double sizeOnScreen(
+			Dimension2D.Double normDim)
+	{
+		return sizeOnScreen(normDim.width, normDim.height);
+	}
+	
+	public Rectangle onScreenBound(
+			Rectangle2D.Double normalBound)
+	{
+		Point screenLoc = screenLocation3(
+				normalBound.x, normalBound.y);
+		
+		Dimension onScreenSize = 
+				sizeOnScreen(
+						normalBound.width, normalBound.height)
+						.ceil();
+		
+		return new Rectangle(
+				screenLoc.x, screenLoc.y,
+				onScreenSize.width, onScreenSize.height);
+	}
+	
+	public Point2D.Double screenLocation(
+			Point2D.Double normLoc)
+	{
+		return screenLocation(normLoc.x, normLoc.y);
+	}
+	
+	public Point2D.Double screenLocation(
+			double x, double y)
+	{
+		Dimension viewSize = viewSize();
+
 		return new Point2D.Double(
-				normLoc.x * displayDim.width / 100.0,
-				normLoc.y * displayDim.height / 100.0);
+				x * viewSize.width / 100.0,
+				y * viewSize.height / 100.0);
+	}
+	
+	public Point2D.Double screenLocation2(
+			Point2D.Double normLoc)
+	{
+		Dimension viewSize = viewSize();
+		
+		return new Point2D.Double(
+				(normLoc.x - focus.x) * viewSize.width / 100.0 +
+				screenSize.width/2,
+				(normLoc.y - focus.y) * viewSize.height / 100.0 +
+				screenSize.height/2);
+	}
+	
+	public Point screenLocation3(double x, double y)
+	{
+		Point2D.Double normLoc = new Point2D.Double(x, y);
+		Point2D.Double screenLoc = screenLocation(normLoc);
+		
+		return new Point((int)screenLoc.x, (int)screenLoc.y);
+	}
+	
+	public Point screenLocation3(Point2D.Double normLoc)
+	{
+		Point2D.Double screenLoc = screenLocation2(normLoc);
+		
+		return new Point((int)screenLoc.x, (int)screenLoc.y);
 	}
 	
 	public Point2D.Double normalLocation(Point screenLoc)
 	{		
+		AffineTransform transform =
+				new AffineTransform();
+		
+		formatTransform(transform);
+		
 		Point2D.Double normalLoc = new Point2D.Double();
 		
-		Dimension viewDim = getViewDimension();
+		Dimension viewSize = viewSize();
 
 		try
 		{
 			transform
-				.createInverse()		
+				.createInverse()
 				.transform(screenLoc, normalLoc);
-			
 		} catch (Exception e)
 		{
 			return null;
 		}
 				
-		normalLoc.x *= 100.0 / viewDim.width;
-		normalLoc.y *= 100.0 / viewDim.height;
+		normalLoc.x *= 100.0 / viewSize.width;
+		normalLoc.y *= 100.0 / viewSize.height;
 		
 		return normalLoc;
 	}
 	
-	public Dimension getScreenDimension()
+	public Dimension2D.Double normalSize(Dimension size)
 	{
-		return screenDim;
+		Dimension viewSize = viewSize();
+
+		return new Dimension2D.Double(
+				100 * size.width / viewSize.width,
+				100 * size.height / viewSize.height);
 	}
 	
-	public Dimension getDisplayDimension()
+	public Vector2D.Double normalVector(int x, int y)
 	{
-		return displayDim;
+		Dimension viewSize = viewSize();
+
+		return new Vector2D.Double(
+				100 * x / viewSize.width,
+				100 * y / viewSize.height);
+	}
+
+	public Rectangle2D.Double normalViewBound()
+	{
+		Dimension2D.Double normalScreenSize = 
+				normalSize(screenSize);
+		
+		return new Rectangle2D.Double(
+				focus.x - normalScreenSize.width/2,
+				focus.y - normalScreenSize.height/2,
+				normalScreenSize.width,
+				normalScreenSize.height);
+	}
+	
+	public Rectangle2D.Double viewBound()
+	{
+		Point2D.Double focus = focusOnScreen();
+		
+		return new Rectangle2D.Double(
+				focus.x - screenSize.width/2,
+				focus.y - screenSize.height/2,
+				screenSize.width,
+				screenSize.height);
+	}
+	
+	private void formatTransform(
+			AffineTransform transform)
+	{
+		Point2D.Double focusOnScreen =
+				focusOnScreen();
+		
+		transform.translate(
+				-focusOnScreen.x, -focusOnScreen.y);
+	
+		transform.scale(zoom, zoom);
+
+		transform.translate(
+				screenSize.width/2, screenSize.height/2);		
+	}
+	
+	private Point2D.Double focusOnScreen()
+	{
+		Dimension viewSize = viewSize();
+		
+		return new Point2D.Double(
+				focus.x * viewSize.width / 100,
+				focus.y * viewSize.height / 100);
+	}
+
+	public void setDisplaySize(Dimension displaySize)
+	{
+		setDisplaySize(displaySize.width,
+					   displaySize.height);	
+	}
+	
+	public void setDisplaySize(int width, int height)
+	{
+		displaySize.width = width;
+		displaySize.height = height;
+		
+		setChanged();
+		notifyObservers();
+	}
+
+	public void setScreenSize(Dimension screenSize)
+	{
+		setScreenDimension(screenSize.width,
+						   screenSize.height);
+	}
+	
+	public void setScreenDimension(int width, int height)
+	{
+		screenSize.width = width;
+		screenSize.height = height;
+		
+		setChanged();
+		notifyObservers();
+	}
+	
+	public void setScreenDimension(Dimension size)
+	{
+		setScreenDimension(size.width, size.height);
+	}
+
+	public void setFocus(Point2D.Double focus)
+	{
+		// copies references to allow camera to move with focus		
+		this.focus = focus;
+		
+		setChanged();
+		notifyObservers();
+	}
+	
+	public void setFocus(double x, double y)
+	{
+		Point2D.Double focus = new Point2D.Double(x, y);
+		
+		setFocus(focus);
+	}	
+	
+	public void moveFocus(Vector2D.Double shift)
+	{
+		moveFocus(shift.x, shift.y);
+	}
+	
+	public void moveFocus(double x, double y)
+	{
+		focus = new Point2D.Double(
+				focus.x + x, focus.y + y);
 	}
 	
 	public Point2D.Double getFocus()
 	{
-		return focus;
+		return new Point2D.Double(
+				focus.x, focus.y);
 	}
 	
-	@Override
-	public void componentShown(ComponentEvent e)
+	public Dimension getScreenSize()
 	{
-		screenDim = e.getComponent().getSize();
-	}
-	
-	@Override
-	public void componentResized(ComponentEvent e)
-	{
-		screenDim = e.getComponent().getSize();
+		return new Dimension(screenSize.width,
+							 screenSize.height);
 	}
 }

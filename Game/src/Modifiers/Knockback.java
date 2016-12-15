@@ -2,61 +2,78 @@ package Modifiers;
 
 import java.time.Duration;
 
-import Movement.LooseMovement;
+import Entity.Entity;
+import EntityComponent.Lifetime;
+import Maths.Maths;
+import Movement.Movement;
 import Movement.MovementComponent;
-import Utilities.MathUtilities;
 
-public class Knockback extends Modifier
+public class Knockback extends Effect
 {
-	protected double speed;
+	private double speed;
+	private Lifetime lifetime;
 		
 	public Knockback()
 	{
-		this(100);
+		this(100, 100);
 	}
 	
-	public Knockback(double speed)
-	{
-		super();
-		
+	public Knockback(double speed, long lifetime)
+	{		
 		this.speed = speed;
-		
-		this.lifetime = Duration.ofMillis(125);
+		this.lifetime = new Lifetime(lifetime);
 	}
 	
 	public Knockback(Knockback knockback)
 	{
-		super(knockback);
-		
 		speed = knockback.speed;
+		lifetime = new Lifetime(knockback.lifetime);
 	}
 	
 	@Override
-	protected void apply()
-	{	
-		LooseMovement disablingMovement =
-				new LooseMovement();
+	public void update(Duration delta) 
+	{
+		lifetime.update(delta);
+	}
+	
+	public boolean canBeApplied(Entity target)
+	{
+		return target.contains(MovementComponent.class);
+	}
+
+	@Override
+	public void start() 
+	{
+		Movement movement = new Movement();
 		
-		disablingMovement.setDirection(findDirection());
-		disablingMovement.setSpeed(speed);
+		movement.setDirection(findDirection());
+		movement.setSpeed(speed);
+		movement.setEnabled(true);
 		
 		MovementComponent comp =
 				target.get(MovementComponent.class);
 		
+		//System.out.println(target.getClass());
+		
+		comp.setDisablingMovement(movement);			
 		comp.setEnabled(false);
-		comp.setDisablingMovement(disablingMovement);
-	}
-	
-	private double findDirection()
-	{
-		return MathUtilities.angleFrom(
-				src.getLoc(), target.getLoc());
 	}
 
-	public void revert()
-	{
+	@Override
+	public void stop() {
 		target.get(MovementComponent.class)
-			  .setEnabled(true);		
+		  	  .setEnabled(true);
+	}
+
+	@Override
+	public boolean isFinished() {
+		return lifetime.isLifeOver();
+	}
+	
+	private double findDirection() 
+	{
+		return Maths.angleFrom(src.getLoc(),
+							   target.getLoc());
 	}
 
 	public void setSpeed(double speed)
@@ -64,9 +81,15 @@ public class Knockback extends Modifier
 		this.speed = speed;
 	}
 	
+	public void setLifetime(long lifetime)
+	{
+		this.lifetime = new Lifetime(lifetime);
+	}
+	
 	@Override
-	protected Object _clone()
+	public Effect _clone()
 	{
 		return new Knockback(this);
 	}
+
 }

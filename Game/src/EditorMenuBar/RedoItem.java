@@ -2,6 +2,7 @@ package EditorMenuBar;
 
 import javax.swing.JMenuItem;
 
+import EditorActions.Redo;
 import EditorGUI.GUIResources;
 import EditorGUI.UndoListener;
 import EditorGUI.UndoManager;
@@ -9,9 +10,11 @@ import EditorGUI.UndoManager;
 public class RedoItem extends JMenuItem
 	implements UndoListener
 {
-	public RedoItem(GUIResources resources)
+	public RedoItem(GUIResources resources, Redo redo)
 	{
 		super("Redo - Ctrl+Y");
+				
+		addActionListener(redo);
 		
 		UndoManager undoManager =
 				resources.getUndoManager();
@@ -19,7 +22,6 @@ public class RedoItem extends JMenuItem
 		setEnabled(undoManager);
 		
 		undoManager.addUndoListener(this);
-
 	}
 	
 	private void setEnabled(UndoManager undoManager)

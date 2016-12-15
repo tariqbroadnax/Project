@@ -1,5 +1,6 @@
 package Maths;
 
+import java.awt.Dimension;
 import java.io.Serializable;
 
 public abstract class Dimension2D extends java.awt.geom.Dimension2D
@@ -38,6 +39,13 @@ public abstract class Dimension2D extends java.awt.geom.Dimension2D
 		public String toString()
 		{
 			return "width: " + width + " height: " + height;
+		}
+		
+		public Dimension ceil()
+		{
+			return new Dimension(
+					(int)Math.ceil(width),
+					(int)Math.ceil(height));
 		}
 		
 	}

@@ -36,32 +36,6 @@ public class GraphicsContext
 		camera.transformGraphics(g2d);
 	}
 	
-	public boolean showsNormalBound(Rectangle2D.Double bound)
-	{
-		return viewBound.intersects(bound) ||
-			   viewBound.contains(bound) ||
-			   bound.contains(viewBound);
-	}
-
-	public Rectangle2D.Double createNormalBound()
-	{
-		Dimension screenDim = camera.getScreenDimension(),
-				  displayDim = camera.getDisplayDimension();
-		
-		Point2D.Double focus = camera.getFocus();
-		
-		double widthRatio = 1.0 * 
-				screenDim.width / displayDim.width,
-								  
-			   heightRatio = 1.0 * 
-				screenDim.height / displayDim.height;
-							
-		return new Rectangle2D.Double(
-					focus.x - (widthRatio * 50),
-					focus.y - (heightRatio * 50), 
-					widthRatio * 100, heightRatio * 100);
-	}
-	
 	public void setImagePool(ImagePool imgPool)
 	{
 		this.imgPool = imgPool;

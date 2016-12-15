@@ -1,11 +1,10 @@
 package Maths;
 
+import static java.lang.Math.pow;
+
 import java.awt.geom.Point2D;
 
-import Utilities.MathUtilities;
 import Utilities.Pack;
-
-import static java.lang.Math.*;
 
 public class Segment2D
 {
@@ -36,13 +35,14 @@ public class Segment2D
 				   C = pow(x1, 2) + pow(y1, 2) - pow(circle.radius, 2);
 			
 			Pack<java.lang.Double, java.lang.Double> solutions = 
-					MathUtilities.quadraticFormula(A, B, C);
+					Maths.quadraticFormula(A, B, C);
 					
 			Range.Double range = new Range.Double(0, 1);
-						
+								
 			if(solutions == null)
 				return false;
-			else if(range.contains(solutions.head) || range.contains(solutions.tail))
+			else if(range.contains(solutions.head) || 
+					range.contains(solutions.tail))
 				return true;
 			else return false;
 		}

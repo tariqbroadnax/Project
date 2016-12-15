@@ -1,31 +1,19 @@
 package Ability;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-import Game.Entity;
+import java.time.Duration;
 
 public class PassiveAbility extends Ability
-{	
-	private boolean created = false;
-	
-	private Collection<Entity> abilityEntities;
-	
-	public PassiveAbility()
-	{
-		created = false;
+{			
+	public void start() {
 		
-		abilityEntities = new LinkedList<Entity>();
 	}
 	
+	public void stop() {
+		
+	}
+
 	@Override
-	public Collection<Entity> getAbilityEntities(Entity src)
-	{
-		return null;
-	}
-	
-	public void dispose()
-	{
+	public void update(Duration delta) {
 		
 	}
 }
