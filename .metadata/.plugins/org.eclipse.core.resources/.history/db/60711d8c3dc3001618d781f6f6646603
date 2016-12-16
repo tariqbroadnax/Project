@@ -1,0 +1,17 @@
+package Editor.comp;
+
+import javax.swing.JComponent;
+
+import Editor.EditorResources;
+import Graphic.Camera;
+import Tileset.TileMap;
+
+public class TileMapComp extends JComponent
+{
+	public TileMapComp(
+			EditorResources resources,
+			TileMap tm, Camera camera)
+	{
+		
+	}
+}

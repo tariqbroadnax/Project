@@ -1,0 +1,8 @@
+package Editor.comp;
+
+import javax.swing.JComponent;
+
+public class TileMapComp extends JComponent
+{
+
+}

@@ -41,15 +41,20 @@ public class SceneEditor extends JPanel
 		this.resources = resources;
 		
 		scene = resources.scene;
+		
 		camera = new Camera();
 		
 		STHs = new LinkedList<SelectionTransferHandler>();
 	
+		SceneCompMaintainer maintainer = new SceneCompMaintainer(
+				resources, camera, this);
+		
 		STHs.add(new TileTransferHandler(resources));
 		
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);
+		setLayout(null);
 	}
 	
 	public void paintComponent(Graphics g)
@@ -70,6 +75,7 @@ public class SceneEditor extends JPanel
 		scene.paint(gc);
 		
 		checkAndPaintSelection(gc);
+		
 	}
 	
 	private void checkAndPaintSelection(GraphicsContext gc)
@@ -97,6 +103,7 @@ public class SceneEditor extends JPanel
 				lastp.x - p.x, lastp.y - p.y);
 
 		camera.moveFocus(shift);
+		resources.notifyOfSceneChange();
 	}
 
 	@Override

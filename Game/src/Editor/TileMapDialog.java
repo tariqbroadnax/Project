@@ -131,6 +131,7 @@ public class TileMapDialog extends JDialog
 		tm.setTileSize(twidth, theight);
 		
 		resources.scene.addGraphic(tm);
+		resources.notifyOfSceneChange();
 		
 		setVisible(false);
 	}

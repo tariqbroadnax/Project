@@ -76,8 +76,8 @@ public class TileMap extends Graphic
 				
 				if(tile == null) continue;
 				
-				double x = col * tileSize.width,
-					   y = row * tileSize.height;
+				double x = loc.x + col * tileSize.width,
+					   y = loc.y + row * tileSize.height;
 				
 				sprite.setTile(tile);
 				sprite.setLoc(x + tileSize.width / 2,
