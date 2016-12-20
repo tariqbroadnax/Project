@@ -24,6 +24,15 @@ public abstract class ActiveAbility extends Ability
 		casting = false;
 		enabled = true;		
 	}
+	
+	public ActiveAbility(ActiveAbility ability)
+	{
+		cooldown = ability.cooldown;
+		castTime = ability.castTime;
+		
+		casting = false;
+		enabled = true;
+	}
 		
 	public void update(Duration delta)
 	{

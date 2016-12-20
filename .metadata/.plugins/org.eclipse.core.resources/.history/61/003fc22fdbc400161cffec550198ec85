@@ -1,0 +1,45 @@
+package Editor;
+
+import java.awt.geom.Point2D.Double;
+
+import Entity.Entity;
+import Graphic.GraphicsContext;
+
+public class EntityTransferHandler 
+	extends SelectionTransferHandler
+{
+	private EditorResources resources;
+	
+	public EntityTransferHandler(EditorResources resources) 
+	{
+		super(resources);
+		
+		this.resources = resources;
+	}
+
+	@Override
+	public boolean canImport(Object obj) 
+	{
+		return (obj instanceof Entity &&
+				!resources.sceneSelection);
+	}
+
+	@Override
+	public void setSelection(Object obj) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void importSelection(Double normLoc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void paintSelection(GraphicsContext gc, Double normLoc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,20 @@
+package Tileset;
+
+import java.util.Map;
+
+public class LazyMultiArray<E>
+{
+	private Map<Index, E[][]> map;
+	
+	public void set(int row, int col)
+	{
+		
+	}
+	
+	private class Index
+	{
+		public int startRow, startCol;
+		
+		
+	}
+}

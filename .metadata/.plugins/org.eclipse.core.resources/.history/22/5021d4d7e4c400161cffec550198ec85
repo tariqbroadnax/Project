@@ -1,0 +1,73 @@
+package Editor;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JComponent;
+
+import EditorGUI.MouseListener;
+import Entity.Entity;
+import EntityComponent.GraphicsComponent;
+import Graphic.Camera;
+import Maths.Dimension2D;
+
+public class SceneEntityComponent extends JComponent
+	implements MouseListener
+{
+	private EditorResources resources;
+	
+	private Entity ent;
+	
+	public SceneEntityComponent(
+			EditorResources resources, Entity ent)
+	{
+		this.resources = resources;
+		this.ent = ent;
+	
+		updateSize();
+		addMouseListener(this);
+	}
+	
+	private void updateSize()
+	{
+		Camera camera = new Camera();
+
+		Dimension2D.Double graphSize = 
+			ent.get(GraphicsComponent.class)
+			   .getGraphic()
+			   .getSize();
+		
+		Dimension scrSize = camera.sizeOnScreen2(graphSize);
+				
+		setSize(scrSize);
+	}
+
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		if(resources.selection == ent)
+		{
+			Color selectionColor = new Color(0,0,0,120);
+			Dimension size = getSize();
+			
+			g.setColor(selectionColor);
+			g.fillRect(0, 0, size.width, size.height);
+		}
+	}
+	
+	public void mousePressed(MouseEvent e)
+	{
+		System.out.println(resources.selection);
+		
+		if(resources.selection == null ||
+		   resources.sceneSelection)
+		{
+			resources.selection = ent;
+			resources.sceneSelection = true;
+			repaint();
+		}
+	}
+}

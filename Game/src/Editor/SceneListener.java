@@ -2,5 +2,7 @@ package Editor;
 
 public interface SceneListener 
 {
-	public void sceneChanged();
+	public default void sceneChanged(){};
+	
+	public default void sceneLoaded(){};
 }

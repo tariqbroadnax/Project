@@ -25,4 +25,9 @@ public class ApplyEffects implements CollisionResponse
 		for(Effect effect : effects)
 			comp.add((Effect)effect.clone());
 	}
+	
+	public Object clone()
+	{
+		return new ApplyEffects(this.effects);
+	}
 }

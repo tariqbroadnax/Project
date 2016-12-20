@@ -2,10 +2,26 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.awt.List"/>
 <fullyQualifiedTypeName name="Editor.SceneListener"/>
-<fullyQualifiedTypeName name="java.util.List"/>
-<fullyQualifiedTypeName name="Entity.Entity"/>
-<fullyQualifiedTypeName name="EntityComponent.GraphicsComponent"/>
 <fullyQualifiedTypeName name="java.awt.geom.Point2D"/>
-<fullyQualifiedTypeName name="java.awt.geom.Rectangle2D"/>
+<fullyQualifiedTypeName name="java.awt.BasicStroke"/>
 <fullyQualifiedTypeName name="java.awt.Color"/>
+<fullyQualifiedTypeName name="java.util.ConcurrentModificationException"/>
+<fullyQualifiedTypeName name="EditorGUI.MouseMotionListener"/>
+<fullyQualifiedTypeName name="java.awt.Cursor"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="Tileset.TileMap"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="javax.swing.SwingUtilities"/>
+<fullyQualifiedTypeName name="Maths.Dimension2D"/>
+<fullyQualifiedTypeName name="Entity.Player"/>
+<fullyQualifiedTypeName name="java.awt.geom.Rectangle2D"/>
+<fullyQualifiedTypeName name="javax.swing.TransferHandler"/>
+<fullyQualifiedTypeName name="EntityComponent.GraphicsComponent"/>
+<fullyQualifiedTypeName name="Maths.Circle2D.Double"/>
+<fullyQualifiedTypeName name="Entity.Entity"/>
+<fullyQualifiedTypeName name="EditorGUI.MouseListener"/>
+<fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
+<fullyQualifiedTypeName name="java.awt.geom.Point2D.Double"/>
+<fullyQualifiedTypeName name="Maths.Dimension2D.Double"/>
+<fullyQualifiedTypeName name="java.awt.geom.Rectangle2D.Double"/>
 </qualifiedTypeNameHistroy>

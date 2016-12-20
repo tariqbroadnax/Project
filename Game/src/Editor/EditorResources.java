@@ -1,5 +1,6 @@
 package Editor;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,6 +8,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import Game.Scene;
 import Tileset.Tileset;
@@ -17,8 +21,13 @@ public class EditorResources
 	private static String STATE_FILE_NAME = "editor_state.obj";
 	
 	public Object selection;
+	public boolean sceneSelection;
 	
 	public ImagePool pool;
+	
+	public File file;
+	
+	private boolean saved;
 	
 	public Scene scene;
 	
@@ -29,13 +38,15 @@ public class EditorResources
 	public EditorResources()
 	{
 		scene = new Scene();
-		
+	
 		pool = new ImagePool();
 
 		listeners = new ArrayList<SceneListener>();
+
+		saved = true;
 		
 		try {
-			pool.importTileset(new Tileset("gts.png", 1, 2));
+			pool.importTileset(new Tileset("GrassTileSet.png", 1, 2), 320, 160);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -44,13 +55,92 @@ public class EditorResources
 			state = new EditorState();
 	}
 	
+	public void _new()
+	{
+		if(!saved)
+		{
+			int returnVal = JOptionPane.showConfirmDialog(
+					null, "Do you want save changes?");
+			
+			if(returnVal == JOptionPane.YES_OPTION)
+			{
+				save();
+				
+				file = null;
+				scene = new Scene();
+				
+				for(SceneListener list : listeners)
+				{
+					list.sceneLoaded();
+					list.sceneChanged();
+				}
+			}
+			
+		}
+		else
+		{
+			file = null;
+			scene = new Scene();
+		
+			for(SceneListener list : listeners)
+			{
+				list.sceneLoaded();
+				list.sceneChanged();
+			}
+		}
+	}
+	
+	public void save()
+	{
+		if(file == null)
+			saveAs();
+		else
+			writeScene();
+	}
+	
+	public void saveAs()
+	{
+		JFileChooser fc = new JFileChooser();
+		
+		int returnVal = fc.showSaveDialog(null);
+		
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			file = fc.getSelectedFile();
+			writeScene();
+			
+			for(SceneListener list : listeners)
+				list.sceneLoaded();
+		}
+	}
+	
+	private void writeScene()
+	{
+		try(ObjectOutputStream out = 
+				new ObjectOutputStream(
+				new FileOutputStream(file)))
+		{
+			out.writeObject(scene);
+			out.close();
+			saved = true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void addSceneListener(SceneListener listener)
 	{
 		listeners.add(listener);
 	}
 	
 	public void notifyOfSceneChange()
-	{
+	{	
+		saved = false;
+
+		// avoid concurrent modification
+		ArrayList<SceneListener> listeners =
+				new ArrayList<SceneListener>(this.listeners);
+				
 		for(SceneListener listener : listeners)
 			listener.sceneChanged();
 	}
@@ -68,6 +158,20 @@ public class EditorResources
 		} 
 	}
 	
+	public void open()
+	{
+		JFileChooser fc = new JFileChooser();
+		
+		int returnVal = fc.showOpenDialog(null);
+		
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			file = fc.getSelectedFile();
+			
+			for(SceneListener list : listeners)
+				list.sceneLoaded();
+		}
+	}
 	
 	private boolean restoreState()
 	{
@@ -86,5 +190,9 @@ public class EditorResources
 	
 	public EditorState getState() {
 		return state;
+	}
+	
+	public File getFile() {
+		return file;
 	}
 }

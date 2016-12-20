@@ -52,6 +52,6 @@ public class EffectComponent extends EntityComponent
 	
 	@Override
 	protected EntityComponent _clone() {
-		return null;
+		return new EffectComponent();
 	}
 }

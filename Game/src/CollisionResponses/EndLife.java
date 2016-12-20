@@ -26,4 +26,9 @@ public class EndLife
 		e.get(RigidBodyComponent.class)
 		 .setEnabled(false);			
 	}
+	
+	public Object clone()
+	{
+		return new EndLife();
+	}
 }

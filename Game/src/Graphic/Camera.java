@@ -1,5 +1,8 @@
 package Graphic;
 
+import static java.lang.Math.ceil;
+import static java.lang.Math.round;
+
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -37,22 +40,21 @@ public class Camera extends Observable
 		maxWidth = maxHeight = 400;
 		
 		displaySize = new Dimension(400, 400);
-		screenSize = new Dimension(400, 400);
+		screenSize = new Dimension(800, 600);
 		
 		zoom = 1;
 	}
 
 	public void transformGraphics(Graphics2D g2d)
 	{				
+		// FIXME
 		g2d.setRenderingHint(
 				RenderingHints.KEY_INTERPOLATION,
 				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		
-		AffineTransform transform = 
-				g2d.getTransform();
+		AffineTransform transform = g2d.getTransform();
 	
 		formatTransform(transform);
-		
 		g2d.setTransform(transform);
 	}
 
@@ -91,29 +93,24 @@ public class Camera extends Observable
 	{
 		Dimension viewSize = viewSize();
 		
-		double normalWidth = 100.0 * screenSize.width /
-								     viewSize.width,
-			   normalHeight = 100.0 * screenSize.height /
-			   						  viewSize.height;
+		double normW = 100.0 * screenSize.width / viewSize.width,
+			   normH = 100.0 * screenSize.height / viewSize.height;
 		
-		return new Dimension2D.Double(normalWidth,
-									  normalHeight);
+		return new Dimension2D.Double(normW, normH);
 	}
 	
 	private Dimension createDimensionWithWidth(
 			double aspectRatio, int width)
 	{
 		return new Dimension(
-				width,
-				(int)Math.ceil(width / aspectRatio));
+				width, (int)ceil(width / aspectRatio));
 	}
 	
 	private Dimension createDimensionWithHeight(
 			double aspectRatio, int height)
 	{
 		return new Dimension(
-				(int)Math.ceil(height * aspectRatio),
-				height);		
+				(int)ceil(height * aspectRatio), height);		
 	}
 	
 	public double screenHeight(double height)
@@ -123,7 +120,7 @@ public class Camera extends Observable
 		return height * viewSize.height / 100;
 	}
 	
-	public Dimension2D.Double sizeOnScreen(
+	public Dimension2D.Double sizeOnScreen2D(
 			double width, double height)
 	{	
 		Dimension viewSize = viewSize();
@@ -131,6 +128,29 @@ public class Camera extends Observable
 		return new Dimension2D.Double(
 				width * viewSize.width / 100.0,
 				height * viewSize.height / 100.0);
+	}
+	
+	public Dimension sizeOnScreen(
+			double width, double height)
+	{	
+		Dimension2D.Double scrSize2D = 
+				sizeOnScreen2D(width, height);
+		
+		return new Dimension(
+				(int)ceil(scrSize2D.width),
+				(int)ceil(scrSize2D.height));
+	}
+	
+	public Dimension sizeOnScreen(
+			Dimension2D.Double normDim)
+	{
+		return sizeOnScreen(normDim.width, normDim.height);
+	}
+		
+	public Dimension2D.Double sizeOnScreen2D(
+			Dimension2D.Double normDim)
+	{
+		return sizeOnScreen2D(normDim.width, normDim.height);
 	}
 	
 	public RectangularShape screenShape(
@@ -156,36 +176,65 @@ public class Camera extends Observable
 		return out;
 	}
 	
-	
-	public Dimension2D.Double sizeOnScreen(
-			Dimension2D.Double normDim)
+	public Rectangle boundOnScreen(
+			double normX, double normY,
+			double normWidth, double normHeight)
 	{
-		return sizeOnScreen(normDim.width, normDim.height);
+		Point scrLoc = screenLocation(normX, normY);
+		
+		Dimension scrSize = sizeOnScreen(normWidth, normHeight);
+		
+		return new Rectangle(scrLoc.x, scrLoc.y,
+							 scrSize.width, scrSize.height);
 	}
 	
-	public Rectangle onScreenBound(
-			Rectangle2D.Double normalBound)
+	public Rectangle2D.Double boundOnScreen2D(
+			double normX, double normY,
+			double normWidth, double normHeight)
 	{
-		Point screenLoc = screenLocation3(
-				normalBound.x, normalBound.y);
+		Point2D.Double scrLoc = screenLocation2D(normX, normY);
 		
-		Dimension onScreenSize = 
-				sizeOnScreen(
-						normalBound.width, normalBound.height)
-						.ceil();
+		Dimension2D.Double scrSize = sizeOnScreen2D(normWidth, normHeight);
 		
-		return new Rectangle(
-				screenLoc.x, screenLoc.y,
-				onScreenSize.width, onScreenSize.height);
+		return new Rectangle2D.Double(scrLoc.x, scrLoc.y,
+									  scrSize.width, scrSize.height);
 	}
 	
-	public Point2D.Double screenLocation(
+	public Rectangle boundOnScreen(
+			Rectangle2D.Double normBound)
+	{
+		return boundOnScreen(normBound.x, normBound.y,
+							 normBound.width, normBound.height);
+	}
+	
+	public Rectangle shiftedBoundOnScreen(
+			double normX, double normY, double normW, double normH)
+	{
+		Point shiftScrLoc = shiftedScreenLocation(
+				normX, normY);
+		
+		Dimension scrSize = sizeOnScreen(
+				normW, normH);
+		
+		return new Rectangle(shiftScrLoc.x, shiftScrLoc.y,
+							 scrSize.width, scrSize.height);
+	}
+	
+	
+	public Rectangle shiftedBoundOnScreen(
+			Rectangle2D.Double normBound)
+	{
+		return shiftedBoundOnScreen(normBound.x, normBound.y,
+									normBound.width, normBound.height);
+	}
+	
+	public Point2D.Double screenLocation2D(
 			Point2D.Double normLoc)
 	{
-		return screenLocation(normLoc.x, normLoc.y);
+		return screenLocation2D(normLoc.x, normLoc.y);
 	}
 	
-	public Point2D.Double screenLocation(
+	public Point2D.Double screenLocation2D(
 			double x, double y)
 	{
 		Dimension viewSize = viewSize();
@@ -195,31 +244,45 @@ public class Camera extends Observable
 				y * viewSize.height / 100.0);
 	}
 	
-	public Point2D.Double screenLocation2(
-			Point2D.Double normLoc)
+	public Point2D.Double shiftedScreenLocation2D(
+			double x, double y)
 	{
 		Dimension viewSize = viewSize();
 		
 		return new Point2D.Double(
-				(normLoc.x - focus.x) * viewSize.width / 100.0 +
+				(x - focus.x) * viewSize.width / 100.0 +
 				screenSize.width/2,
-				(normLoc.y - focus.y) * viewSize.height / 100.0 +
+				(y - focus.y) * viewSize.height / 100.0 +
 				screenSize.height/2);
 	}
 	
-	public Point screenLocation3(double x, double y)
+	
+	public Point2D.Double shiftedScreenLocation2D(
+			Point2D.Double normLoc)
 	{
-		Point2D.Double normLoc = new Point2D.Double(x, y);
-		Point2D.Double screenLoc = screenLocation(normLoc);
-		
-		return new Point((int)screenLoc.x, (int)screenLoc.y);
+		return shiftedScreenLocation2D(normLoc.x, normLoc.y);
 	}
 	
-	public Point screenLocation3(Point2D.Double normLoc)
+	public Point screenLocation(double x, double y)
 	{
-		Point2D.Double screenLoc = screenLocation2(normLoc);
+		Dimension viewSize = viewSize();
+
+		return new Point((int)round(x * viewSize.width / 100.0),
+						 (int)round(y * viewSize.height / 100.0));
+	}
+	
+	public Point shiftedScreenLocation(double normX, double normY)
+	{
+		Point2D.Double shiftScreenLoc2D = 
+				screenLocation2D(normX, normY);
 		
-		return new Point((int)screenLoc.x, (int)screenLoc.y);
+		return new Point((int)round(shiftScreenLoc2D.x),
+						 (int)round(shiftScreenLoc2D.y));
+	}
+	
+	public Point shiftedScreenLocation(Point2D.Double normLoc)
+	{
+		return shiftedScreenLocation(normLoc.x, normLoc.y);
 	}
 	
 	public Point2D.Double normalLocation(Point screenLoc)
@@ -233,13 +296,11 @@ public class Camera extends Observable
 		
 		Dimension viewSize = viewSize();
 
-		try
-		{
+		try {
 			transform
 				.createInverse()
 				.transform(screenLoc, normalLoc);
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			return null;
 		}
 				
@@ -286,8 +347,7 @@ public class Camera extends Observable
 		return new Rectangle2D.Double(
 				focus.x - screenSize.width/2,
 				focus.y - screenSize.height/2,
-				screenSize.width,
-				screenSize.height);
+				screenSize.width, screenSize.height);
 	}
 	
 	private void formatTransform(
@@ -363,7 +423,15 @@ public class Camera extends Observable
 		Point2D.Double focus = new Point2D.Double(x, y);
 		
 		setFocus(focus);
-	}	
+	}
+	
+	public void setFocusTL(double x, double y)
+	{
+		Dimension2D.Double normViewSize = normalViewSize();
+		
+		setFocus(x + normViewSize.width/2,
+				 y + normViewSize.height/2);
+	}
 	
 	public void moveFocus(Vector2D.Double shift)
 	{

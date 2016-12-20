@@ -90,4 +90,9 @@ public class Repel implements CollisionResponse
 				colliderComp.getMaxX() -
 				collidedComp.getMinX(), 0);
 	}
+	
+	public Object clone()
+	{
+		return new Repel();
+	}
 }

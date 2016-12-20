@@ -91,7 +91,14 @@ public class ImagePool
 		Graphics2D g2d = (Graphics2D)
 				scaledImage.getGraphics();
 		
-		g2d.setRenderingHints(renderingHints);
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+							 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+							 RenderingHints.VALUE_RENDER_QUALITY);
+
+		
+		//g2d.setRenderingHints(renderingHints);
 		
 		g2d.drawImage(img, 0, 0, width, height, null);
 		
@@ -171,7 +178,7 @@ public class ImagePool
 		
 		File file = ts.getFile();
 		BufferedImage img = ImageIO.read(file);
-				
+		
 		importTileset(ts, img);
 	}
 	

@@ -7,6 +7,8 @@ import Graphic.GraphicsContext;
 import Graphic.Sprite;
 import Maths.Dimension2D;
 
+import static java.lang.Math.min;
+
 public class TileMap extends Graphic
 {
 	private Dimension2D.Double tileSize;
@@ -17,18 +19,21 @@ public class TileMap extends Graphic
 
 	public TileMap()
 	{
-		this(20, 20);
+		this(40, 40);
 	}
 	
 	public TileMap(int rows, int cols)
 	{
 		tileSize = new Dimension2D.Double(10, 10);
 		
+		loc.x = -200;
+		loc.y = -200;
+		
 		this.rows = rows; this.cols = cols;
 		
 		map = new Tile[cols][rows];
 		
-		Tile tile = new Tile("gts.png", 0, 0);
+		Tile tile = new Tile("GrassTileSet.png", 0, 0);
 		
 		for(int row = 0; row < rows; row++)
 			for(int col = 0; col < cols; col++)
@@ -39,6 +44,7 @@ public class TileMap extends Graphic
 	{
 		tileSize = new Dimension2D.Double(
 				tm.tileSize.width, tm.tileSize.height);
+		
 		rows = tm.rows; cols = tm.cols;
 		
 		map = new Tile[cols][rows];
@@ -64,6 +70,7 @@ public class TileMap extends Graphic
 		endRow = endRow > rows ? rows : endRow;
 		endCol = endCol > cols ? cols : endCol;
 		
+	//	System.out.println(x(startCol) + " " + y(startRow));
 		Sprite sprite = new Sprite();
 		
 		sprite.setSize(tileSize.width, tileSize.height);
@@ -78,10 +85,11 @@ public class TileMap extends Graphic
 				
 				double x = loc.x + col * tileSize.width,
 					   y = loc.y + row * tileSize.height;
-				
+		
 				sprite.setTile(tile);
 				sprite.setLoc(x + tileSize.width / 2,
 							  y + tileSize.height / 2);
+				
 				sprite.paint(gc);
 			}
 		}
@@ -89,6 +97,17 @@ public class TileMap extends Graphic
 	
 	public void set(int row, int col, Tile tile) {
 		map[col][row] = tile;
+	}
+	
+	public void setFrame(int rows, int cols)
+	{
+		Tile[][] map = new Tile[cols][rows];
+		
+		for(int row = 0; row < min(rows,this.rows); row++)
+			for(int col = 0; col < min(col, this.cols); col++)
+				map[col][row] = this.map[col][row];
+		
+		this.map = map;
 	}
 	
 	public void setTileSize(double twidth, double theight)
@@ -112,15 +131,14 @@ public class TileMap extends Graphic
 		
 		if(x < 0) return -1;
 		else
-			return (int) Math.floor(x/tileSize.width);
-		
+			return (int) Math.floor(x/tileSize.width);	
 	}
 	
-	public double y(double row) {
+	public double y(int row) {
 		return loc.y + row * tileSize.height;
 	}
 	
-	public double x(double col) {
+	public double x(int col) {
 		return loc.x + col * tileSize.width;
 	}
 	

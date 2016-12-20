@@ -8,7 +8,7 @@ import Tileset.Tileset;
 
 public class EditorMenuBar extends JMenuBar
 {
-	private JMenu fileMenu,
+	private JMenu fileMenu, editMenu, playMenu,
 				  newMenu;
 	
 	private JMenuItem tsMI;
@@ -22,6 +22,9 @@ public class EditorMenuBar extends JMenuBar
 		this.selector = selector;
 		
 		fileMenu = new JMenu("File");
+		editMenu = new JMenu("Edit");
+		playMenu = new JMenu("Play");
+		
 		newMenu = new JMenu("New");
 		
 		tsMI = new JMenuItem("Tileset");
@@ -29,6 +32,8 @@ public class EditorMenuBar extends JMenuBar
 		tsChooser = new TilesetChooser();
 		
 		add(fileMenu);
+		add(editMenu);
+		add(playMenu);
 		
 		fileMenu.add(newMenu);
 		

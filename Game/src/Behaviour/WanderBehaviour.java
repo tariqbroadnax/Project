@@ -25,6 +25,17 @@ public class WanderBehaviour extends Behaviour
 		waiting = true;
 	}
 	
+	public WanderBehaviour(WanderBehaviour beh)
+	{
+		pathing = (PathingBehaviour)beh.pathing.clone();
+		
+		zone = (Circle2D.Double)beh.zone.clone();
+		
+		waitDelay = elapsed = beh.waitDelay;
+		
+		waiting = true;
+	}
+	
 	@Override
 	public void update(Duration delta) 
 	{
@@ -52,5 +63,10 @@ public class WanderBehaviour extends Behaviour
 	{
 		super.setSrc(src);
 		pathing.setSrc(src);
+	}
+
+	@Override
+	public Object clone() {
+		return new WanderBehaviour(this);
 	}
 }

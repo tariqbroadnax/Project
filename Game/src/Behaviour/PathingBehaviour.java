@@ -100,4 +100,9 @@ public class PathingBehaviour extends Behaviour
 	public void clearTargets() {
 		targetLocs.clear();
 	}
+
+	@Override
+	public Object clone() {
+		return new PathingBehaviour();
+	}
 }

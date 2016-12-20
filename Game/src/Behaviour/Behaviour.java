@@ -1,12 +1,10 @@
 package Behaviour;
 
-import java.time.Duration;
-
 import Entity.Entity;
 import Game.Updatable;
 
 public abstract class Behaviour 
-	implements Updatable
+	implements Updatable, Cloneable
 {
 	protected Entity src;
 		
@@ -19,5 +17,7 @@ public abstract class Behaviour
 	public void setSrc(Entity src) {
 		this.src = src;
 	}
+	
+	public abstract Object clone();
 	
 }

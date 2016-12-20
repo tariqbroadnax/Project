@@ -10,7 +10,6 @@ import Ability.ActiveAbility;
 import Ability.CastingIndicator;
 import Ability.FreeProjectileAbility;
 import Ability.HomingProjectileAbility;
-import Ability.TargetSourceAbility;
 import Entity.Entity;
 import Modifiers.Root;
 
@@ -45,6 +44,16 @@ public class AbilityComponent extends EntityComponent
 		addActiveAbility(new FreeProjectileAbility());
 
 		castRoot.setLifetime(Lifetime.FOREVER);
+	}
+	
+	public AbilityComponent(AbilityComponent comp)
+	{
+		this();
+		
+		actives.clear();
+		
+		for(ActiveAbility active : comp.actives)
+			actives.add((ActiveAbility)active.clone());
 	}
 	
 	public void addActiveAbility(ActiveAbility active)
@@ -182,7 +191,7 @@ public class AbilityComponent extends EntityComponent
 	@Override
 	protected EntityComponent _clone()
 	{
-		return null;
+		return new AbilityComponent(this);
 	}
 		
 	public String toString()

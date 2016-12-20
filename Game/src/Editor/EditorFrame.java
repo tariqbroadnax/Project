@@ -2,17 +2,18 @@ package Editor;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 
 import javax.swing.JFrame;
 
 public class EditorFrame extends JFrame
-	implements WindowListener
+	implements WindowListener, SceneListener
 {
 	private EditorResources resources;
 	
 	public EditorFrame(EditorResources resources)
 	{
-		super("Scene Editor");
+		super("Untitled - Scene Editor");
 	
 		this.resources = resources;
 		
@@ -21,9 +22,20 @@ public class EditorFrame extends JFrame
 		setJMenuBar(menuBar);
 		
 		addWindowListener(this);
+		resources.addSceneListener(this);
 		
 		setSize(800, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	public void sceneLoaded()
+	{
+		File file = resources.getFile();
+		
+		String fileName = file == null ? "Untitled" :
+								   file.getAbsolutePath();
+		
+		setTitle(fileName + "- Scene Editor");
 	}
 
 	@Override

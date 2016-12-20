@@ -1,7 +1,6 @@
 package Graphic;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -59,34 +58,33 @@ public class Sprite extends Graphic
 	@Override
 	protected void _paint(GraphicsContext gc) 
 	{		
+		Graphics2D g2d = (Graphics2D)gc.g2d.create();
+		
 		BufferedImage img;
 				
 		if(row == -1)
-			img = gc.getImagePool()
-					.getImage(fileName);
+			img = gc.imgPool.getImage(fileName);
 		else
-			img = gc.getImagePool()
-			 		.getImage(fileName, row, col);
+			img = gc.imgPool.getImage(fileName, row, col);
 				
-		Point2D.Double screenLoc =
-				gc.camera.screenLocation(loc);
-		
-		Dimension2D.Double screenSize =
-				gc.camera.sizeOnScreen(size);
-		
-		AffineTransform origTrans = gc.g2d.getTransform();
-		
+		Rectangle2D.Double scrBound = 
+				gc.camera.boundOnScreen2D(loc.x, loc.y, 
+										  size.width, size.height);	
+				
 		int imgW = img.getWidth(), imgH = img.getHeight();
 		
-		gc.g2d.translate(screenLoc.x - screenSize.width/2,
-						 screenLoc.y - screenSize.height/2);
+		//System.out.println(loc + " " + scrBound);
+	
+		// 
+		g2d.translate(scrBound.getX() - scrBound.width/2,
+					  scrBound.getY() - scrBound.height/2);
 		
-		gc.g2d.scale(screenSize.width / imgW,
-					 screenSize.height / imgH);
+		g2d.scale(scrBound.width / imgW,
+				  scrBound.height / imgH);
 
-		gc.g2d.drawImage(img, 0, 0, null);
+		g2d.drawImage(img, 0, 0, null);
 		
-		gc.g2d.setTransform(origTrans);
+		g2d.dispose();
 	}
 
 	public static Animation animation(

@@ -46,6 +46,20 @@ public class FreeProjectileAbility
 
 	}
 	
+	public FreeProjectileAbility(FreeProjectileAbility ability)
+	{
+		speed = ability.speed;
+		offset = ability.offset;
+		angleOffset = ability.angleOffset;
+		lifetime = ability.lifetime;
+		projCount = ability.projCount;
+		
+		effects = new LinkedList<Effect>();
+		
+		for(Effect eff : ability.effects)
+			effects.add((Effect)eff.clone());
+	}
+	
 	protected void activate()
 	{
 		super.activate();	
@@ -135,7 +149,7 @@ public class FreeProjectileAbility
 		EndLife end = new EndLife();
 		ApplyEffects applyfx = new ApplyEffects(effects);
 		
-		CollisionFilter filter = e -> 
+		CollisionFilter filter = e ->
 			!(e == src || e instanceof AbilityEntity);
 		
 		comp.add(end, filter);

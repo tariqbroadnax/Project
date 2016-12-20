@@ -22,6 +22,15 @@ public class FollowBehaviour extends Behaviour
 		target = null;
 	}
 	
+	public FollowBehaviour(FollowBehaviour beh)
+	{
+		maxDist = beh.maxDist;
+		
+		pathing = new PathingBehaviour();
+		
+		target = null;
+	}
+	
 	@Override
 	public void update(Duration delta) 
 	{
@@ -56,5 +65,10 @@ public class FollowBehaviour extends Behaviour
 
 	public void setMaxDist(double maxDist) {
 		this.maxDist = maxDist;
+	}
+
+	@Override
+	public Object clone() {
+		return new FollowBehaviour(this);
 	}
 }

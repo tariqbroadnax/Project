@@ -98,4 +98,9 @@ public class BasicAttackBehaviour extends Behaviour
 	public Entity getTarget() {
 		return target;
 	}
+
+	@Override
+	public Object clone() {
+		return new BasicAttackBehaviour();
+	}
 }

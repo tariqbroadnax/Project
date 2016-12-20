@@ -34,13 +34,16 @@ public class ScenePainter implements Comparator<Graphic>
 		
 		for(Entity e : scene.getEntities(GraphicsComponent.class))
 		{
-			Graphic graph = e.get(GraphicsComponent.class)
-							 .getGraphic();
+			GraphicsComponent comp = e.get(GraphicsComponent.class);
+			Graphic graph = comp.getGraphic();
 			
 			Rectangle2D.Double bound = graph.getBound();
 			
 			if(gc.camera.shows(bound))
+			{
+				comp.updateGraphicLocation();
 				visibleGraphics.add(graph);
+			}
 		}
 	
 		while(!visibleGraphics.isEmpty())

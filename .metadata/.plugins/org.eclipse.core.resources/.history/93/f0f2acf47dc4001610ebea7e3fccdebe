@@ -1,0 +1,16 @@
+package Editor;
+
+import java.util.List;
+
+import javax.swing.JPanel;
+
+import Entity.Entity;
+
+public class EntitySelector extends JPanel
+{
+	
+	public EntitySelector(EditorResources resources)
+	{
+		
+	}
+}

@@ -13,6 +13,11 @@ public class TargetUnitAbility extends TargetAbility
 		super();
 	}
 	
+	public TargetUnitAbility(TargetUnitAbility ability)
+	{
+		super(ability);
+	}
+	
 	public boolean canBeCast()
 	{
 		return super.canBeCast() && 
@@ -29,5 +34,10 @@ public class TargetUnitAbility extends TargetAbility
 	
 	public void setTarget(Entity target) {
 		this.target = target;
+	}
+	
+	public Object clone()
+	{
+		return new TargetUnitAbility(this);
 	}
 }

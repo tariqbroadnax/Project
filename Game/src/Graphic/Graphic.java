@@ -68,8 +68,6 @@ public abstract class Graphic
 				
 		GraphicsContext gc = new GraphicsContext(g2d, camera);
 		
-		camera.transformGraphics(g2d);
-
 		paint(gc);
 		
 		return img;

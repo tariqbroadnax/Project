@@ -11,8 +11,17 @@ public class BehaviourComponent extends EntityComponent
 {
 	private Collection<Behaviour> behaviours;
 	
-	public BehaviourComponent() {
+	public BehaviourComponent() 
+	{
 		behaviours = new ArrayList<Behaviour>();
+	}
+	
+	public BehaviourComponent(BehaviourComponent comp)
+	{
+		this();
+		
+		for(Behaviour beh : comp.behaviours)
+			behaviours.add((Behaviour)beh.clone());
 	}
 	
 	@Override
@@ -52,8 +61,7 @@ public class BehaviourComponent extends EntityComponent
 
 	@Override
 	protected EntityComponent _clone() {
-		// TODO Auto-generated method stub
-		return null;
+		return new BehaviourComponent(this);
 	}
 
 }

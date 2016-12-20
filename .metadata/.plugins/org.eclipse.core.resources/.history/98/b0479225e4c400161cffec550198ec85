@@ -1,0 +1,32 @@
+package Editor;
+
+import java.awt.event.MouseEvent;
+
+import javax.swing.JComponent;
+
+import EditorGUI.MouseListener;
+import Entity.Entity;
+
+public class SceneEntityComponent extends JComponent
+	implements MouseListener
+{
+	private EditorResources resources;
+	
+	private Entity ent;
+	
+	public SceneEntityComponent(
+			EditorResources resources, Entity ent)
+	{
+		this.resources = resources;
+		this.ent = ent;
+	}
+	
+	public void mousePressed(MouseEvent e)
+	{
+		if(resources.sceneSelection == null ||
+		   resources.sceneSelection)
+		{
+			
+		}
+	}
+}

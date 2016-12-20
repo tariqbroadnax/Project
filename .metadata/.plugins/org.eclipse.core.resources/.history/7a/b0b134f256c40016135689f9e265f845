@@ -1,0 +1,50 @@
+package Tileset;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class LazyMultiArray<E>
+{
+	private Map<Head, E[][]> map;
+	
+	public LazyMultiArray(int blockWidth, int blockHeight)
+	{
+		map = new HashMap<Index, E[][]>();
+		
+		List<E> list;		
+	}
+	
+	public void set(int row, int col, E e)
+	{
+		Index index = new Index();
+		
+		index startRow 
+	}
+}
+
+class Head
+{
+	public int startRow, startCol;
+	
+	public boolean equals(Object o) 
+	{
+		if(o instanceof Head) 
+		{
+			Head index = (Head)o;
+			return startRow == index.startRow &&
+				   startCol == index.startCol;
+		}
+		
+		return false;
+	}
+	
+	public int hashCode() {
+		return startRow + startCol;
+	}
+}
+
+class Node
+{
+	
+}

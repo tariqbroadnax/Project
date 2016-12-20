@@ -9,7 +9,7 @@ import Game.Updatable;
 import Modifiers.Effect;
 
 public abstract class Ability
-implements Serializable, Updatable
+implements Serializable, Updatable, Cloneable
 {	
 	protected Entity src;
 	
@@ -31,4 +31,6 @@ implements Serializable, Updatable
 	public void removeEffect(Effect effect) {
 		effects.remove(effect);
 	}
+	
+	public abstract Object clone();
 }

@@ -1,0 +1,81 @@
+package Editor.comp;
+
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
+
+import javax.swing.JComponent;
+
+import Editor.EditorResources;
+import Editor.SceneListener;
+import EditorGUI.MouseMotionListener;
+import Graphic.Camera;
+import Tileset.TileMap;
+
+public class TileMapComp extends JComponent
+	implements SceneListener, MouseMotionListener
+{
+	private EditorResources resources;
+	private TileMap tm;
+	private Camera camera;
+	
+	private boolean changedMouseCursor;
+	
+	private int N = 1, S = 2, E = 4, W = 8,
+				NW = N&W, NE = N&E, SW = S&W, SE = S&E;
+	
+	public TileMapComp(
+			EditorResources resources,
+			TileMap tm, Camera camera)
+	{
+		this.resources = resources;
+		this.tm = tm;
+		this.camera = camera;
+		
+		updateLocAndSize();
+		
+		resources.addSceneListener(this);
+	}
+	
+	private void updateLocAndSize()
+	{
+		Rectangle2D.Double bound = tm.getBound();
+		Rectangle scrBound = camera.onScreenBound2(bound);
+		
+		setBounds(scrBound);
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+	}
+
+	@Override
+	public void sceneChanged() 
+	{
+		updateLocAndSize();
+	}
+	
+	private Boundary boundary(Point p)
+	{
+		
+	}
+	
+	private void changeToSizeCursor()
+	{
+		
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e)
+	{
+		Point p = e.getPoint();
+		
+		if(onBoundary(p))
+		{
+			
+		}
+	}
+}

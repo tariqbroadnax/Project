@@ -14,7 +14,7 @@ import Maths.Circle2D;
 import Maths.Vector2D;
 import Utilities.Pack;
 
-public class RigidBody
+public class RigidBody implements Cloneable
 {
 	private Point2D.Double loc;
 	
@@ -164,6 +164,11 @@ public class RigidBody
 	public Collection<RectangularShape> getComponents()
 	{
 		return comps;
+	}
+	
+	public Object clone()
+	{
+		return new RigidBody(this);
 	}
 	
 	public String toString()

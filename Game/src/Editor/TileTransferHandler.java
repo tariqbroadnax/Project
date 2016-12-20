@@ -41,62 +41,48 @@ public class TileTransferHandler
 	@Override
 	public void importSelection(Point2D.Double normLoc) 
 	{
-		List<Graphic> graphics = 
-				resources.scene.graphicsAtLocation(normLoc);
+		TileMap tm = resources.scene.getTileMap();
+
+		int row = tm.row(normLoc.y),
+			col = tm.col(normLoc.x);
 		
-		TileMap tm = (TileMap) Collections2.findFirst(
-				graphics, g -> g instanceof TileMap);
-		
-		if(tm != null)
-		{
-			int row = tm.row(normLoc.y),
-				col = tm.col(normLoc.x);
-			
-			if(0 <= row && row < tm.rows && 
-			   0 <= col && col < tm.cols)
-				tm.set(row, col, tile);
-		}
+		if(0 <= row && row < tm.rows && 
+		   0 <= col && col < tm.cols)
+			tm.set(row, col, tile);
 	}
 
 	@Override
 	public void paintSelection(GraphicsContext gc,
 							   Point2D.Double normLoc) 
 	{		
-		List<Graphic> graphics = 
-				resources.scene.graphicsAtLocation(normLoc);
+		TileMap tm = resources.scene.getTileMap();
 		
-		TileMap tm = (TileMap) Collections2.findFirst(
-				graphics, g -> g instanceof TileMap);
-		
-		if(tm != null)
-		{
-			int row = tm.row(normLoc.y),
-					col = tm.col(normLoc.x);
-				
-				if(!(0 <= row && row < tm.rows && 
-				     0 <= col && col < tm.cols))
-					return;
-				
-				double x = tm.x(col), y = tm.y(row);
+		int row = tm.row(normLoc.y),
+			col = tm.col(normLoc.x);
+			
+			if(!(0 <= row && row < tm.rows && 
+			     0 <= col && col < tm.cols))
+				return;
+			
+			double x = tm.x(col), y = tm.y(row);
 
-				Dimension2D.Double tileSize = tm.tileSize();
+			Dimension2D.Double tileSize = tm.tileSize();
+		
+			Rectangle2D.Double tileBound =
+					new Rectangle2D.Double(
+							0, 0, tileSize.width, 
+								  tileSize.height);
+		
+			ShapeGraphic shape = new ShapeGraphic();
 			
-				Rectangle2D.Double tileBound =
-						new Rectangle2D.Double(
-								0, 0, tileSize.width, 
-									  tileSize.height);
+			shape.setLoc(x + tileSize.width/2, 
+						 y + tileSize.height/2);
 			
-				ShapeGraphic shape = new ShapeGraphic();
-				
-				shape.setLoc(x + tileSize.width/2, 
-							 y + tileSize.height/2);
-				
-				shape.setShape(tileBound);
-				
-				Color selectionColor = new Color(0, 0, 255, 120);
-				shape.setPaint(selectionColor);
-				
-				shape.paint(gc);
-		}
+			shape.setShape(tileBound);
+			
+			Color selectionColor = new Color(0, 0, 255, 120);
+			shape.setPaint(selectionColor);
+			
+			shape.paint(gc);
 	}
 }

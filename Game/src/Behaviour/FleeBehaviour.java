@@ -22,6 +22,11 @@ public class FleeBehaviour extends Behaviour
 		
 		target = null;
 	}
+	
+	public FleeBehaviour(FleeBehaviour beh)
+	{
+		minDist = beh.minDist;
+	}
 
 	@Override
 	public void update(Duration delta) 
@@ -65,5 +70,9 @@ public class FleeBehaviour extends Behaviour
 	public void setMinDist(double minDist) {
 		this.minDist = minDist;
 	}
-	
+
+	@Override
+	public Object clone() {
+		return new FleeBehaviour(this);
+	}
 }

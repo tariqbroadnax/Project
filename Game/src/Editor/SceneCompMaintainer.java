@@ -187,6 +187,6 @@ public class SceneCompMaintainer implements SceneListener
 	
 	private JComponent entComp(Entity ent)
 	{
-		return null;
+		return new SceneEntityComponent(resources, ent, camera);
 	}
 }

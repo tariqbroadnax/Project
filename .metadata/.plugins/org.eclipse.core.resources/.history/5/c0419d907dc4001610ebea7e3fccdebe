@@ -1,0 +1,6 @@
+package Editor;
+
+public class EntitySelector 
+{
+	private List<Entity> entities;
+}

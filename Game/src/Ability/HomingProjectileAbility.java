@@ -33,6 +33,15 @@ public class HomingProjectileAbility
 		body = new RigidBody();
 	}
 	
+	public HomingProjectileAbility(HomingProjectileAbility ability)
+	{
+		speed = ability.speed;
+		offset = ability.offset;
+		
+		body = (RigidBody)ability.body.clone();
+	}
+	
+	
 	protected void activate()
 	{
 		super.activate();
@@ -139,5 +148,9 @@ public class HomingProjectileAbility
 	
 	public void setRigidBody(RigidBody body) {
 		this.body = body;
+	}
+	
+	public Object clone() {
+		return new HomingProjectileAbility(this);
 	}
 }

@@ -27,11 +27,35 @@ public class RigidBodyComponent extends EntityComponent
 		
 		body = new RigidBody();
 		
+		// FIXME remove this
 		body.addComponent(new Rectangle2D.Double(0, 0, 10, 10));
 	
 		map = new HashMap<CollisionResponse,
 						  List<CollisionFilter>>();
 	
+		indicator = new RigidBodyIndicator();
+		
+		indicator.setRigidBody(body);
+	}
+	
+	public RigidBodyComponent(RigidBodyComponent comp)
+	{
+		super();
+		
+		body = (RigidBody)comp.body.clone();
+		
+		map = new HashMap<CollisionResponse,
+				  List<CollisionFilter>>();
+
+		for(CollisionResponse response : comp.map.keySet())
+		{
+			List<CollisionFilter> filters = comp.map.get(response),
+								  clones = new LinkedList<CollisionFilter>();
+			
+			for(CollisionFilter filter : filters)
+				clones.add((CollisionFilter)filter.clone());
+		}
+		
 		indicator = new RigidBodyIndicator();
 		
 		indicator.setRigidBody(body);
@@ -144,6 +168,6 @@ public class RigidBodyComponent extends EntityComponent
 	
 	@Override
 	protected EntityComponent _clone() {
-		return null;
+		return new RigidBodyComponent(this);
 	}
 }

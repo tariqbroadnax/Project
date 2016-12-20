@@ -1,11 +1,8 @@
 package Graphic;
 
-import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
-import Maths.Dimension2D;
 import Utilities.ImagePool;
 
 public class GraphicsContext
@@ -14,35 +11,27 @@ public class GraphicsContext
 	
 	public final Camera camera;
 	
-	private ImagePool imgPool;
+	public final ImagePool imgPool;
 	
-	public GraphicsContext(
-			Graphics2D g2d,
-			Camera camera)
+	public GraphicsContext(Graphics g)
 	{
-		this.g2d = g2d;
-		this.camera = camera;	
+		this(g, new Camera());
 	}
 	
 	public GraphicsContext(
-			Graphics2D g2d,
-			Camera camera,
+			Graphics g, Camera camera)
+	{
+		this(g, camera, new ImagePool());
+	}
+	
+	public GraphicsContext(
+			Graphics g, Camera camera,
 			ImagePool imgPool)
 	{
-		this.g2d = g2d;
+		this.g2d = (Graphics2D) g.create();
 		this.camera = camera;
 		this.imgPool = imgPool;
 		
 		camera.transformGraphics(g2d);
-	}
-	
-	public void setImagePool(ImagePool imgPool)
-	{
-		this.imgPool = imgPool;
-	}
-	
-	public ImagePool getImagePool()
-	{
-		return imgPool;
 	}
 }

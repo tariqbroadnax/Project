@@ -1,0 +1,62 @@
+package Editor.comp;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
+
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+
+import Editor.EditorResources;
+import Editor.SceneListener;
+import EditorGUI.MouseListener;
+import Graphic.Camera;
+import Tileset.TileMap;
+
+public class TileMapComp extends JComponent
+	implements SceneListener
+{
+	private EditorResources resources;
+	private TileMap tm;
+	private Camera camera;
+	
+	public TileMapComp(
+			EditorResources resources,
+			TileMap tm, Camera camera)
+	{
+		this.resources = resources;
+		this.tm = tm;
+		this.camera = camera;
+		
+		updateLocAndSize();
+		
+		resources.addSceneListener(this);
+	}
+	
+	private void updateLocAndSize()
+	{
+		Rectangle2D.Double bound = tm.getBound();
+		Rectangle scrBound = camera.onScreenBound2(bound);
+		
+		setBounds(scrBound);
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		
+	}
+
+
+	@Override
+	public void sceneChanged() 
+	{
+		updateLocAndSize();
+	}
+}

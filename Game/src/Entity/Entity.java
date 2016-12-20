@@ -56,8 +56,10 @@ public class Entity extends Observable
 	public void copy(Entity model)
 	{
 		for(EntityComponent comp : model.comps.values()) 
+		{
+			//System.out.println(comp.getClass()); // FIXME DELETEME
 			add((EntityComponent)comp.clone());
-		
+		}
 		setLoc(model.loc);
 	}
 

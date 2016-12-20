@@ -1,0 +1,157 @@
+package Ability;
+
+import java.awt.geom.Point2D;
+import java.util.Collection;
+
+import Behaviour.FollowBehaviour;
+import Entity.AbilityEntity;
+import Entity.Entity;
+import EntityComponent.BehaviourComponent;
+import EntityComponent.GraphicsComponent;
+import EntityComponent.RigidBody;
+import EntityComponent.RigidBodyComponent;
+import Graphic.ShapeGraphic;
+import Maths.Circle2D;
+import Maths.Maths;
+import Modifiers.Effect;
+import Movement.MovementComponent;
+
+public class HomingProjectileAbility 
+	extends TargetUnitAbility
+{	
+	private double speed, offset;
+	
+	private Collection<Effect> effects;
+	
+	private RigidBody body;
+	
+	public HomingProjectileAbility()
+	{
+		speed = 50;
+		offset = 15;
+		
+		body = new RigidBody();
+	}
+	
+	public HomingProjectileAbility(HomingProjectileAbility ability)
+	{
+		speed = ability.speed;
+		offset = ability.offset;
+		
+		body = (RigidBody)ability.body.clone();
+	}
+	
+	
+	protected void activate()
+	{
+		super.activate();
+		createProjectile();
+	}
+	
+	private void createProjectile()
+	{
+		Entity projectile = new AbilityEntity();
+		
+		Point2D.Double projectLoc =
+				findProjectileLoc();
+		
+		projectile.setLoc(projectLoc);
+		
+		projectile.add(createMovementComponent(),
+				   	   createGraphicsComponent(),
+					   createRigidBodyComponent(),
+					   createBehaviourComponent());	
+		
+		src.getSceneLoc()
+		   .addEntity(projectile);
+	}
+	
+	private MovementComponent createMovementComponent()
+	{
+		MovementComponent moveComp = 
+				new MovementComponent();
+
+		moveComp.getNormalMovement()
+				.setSpeed(speed);
+		
+		return moveComp;
+	}
+	
+	private RigidBodyComponent createRigidBodyComponent()
+	{
+		RigidBodyComponent bodyComp =
+				new RigidBodyComponent();
+		
+		bodyComp.setRigidBody(body);
+		// add collision response : apply effects
+		
+		return bodyComp;
+	}
+
+	private BehaviourComponent createBehaviourComponent()
+	{
+		BehaviourComponent comp =
+				new BehaviourComponent();
+		
+		FollowBehaviour follow = 
+				new FollowBehaviour();
+		
+		follow.setMaxDist(0);
+		follow.setTarget(target);
+		
+		comp.addBehaviour(follow);
+		
+		return comp;
+	}
+	
+	private GraphicsComponent createGraphicsComponent()
+	{
+		GraphicsComponent graphComp = 
+				new GraphicsComponent();
+	
+		ShapeGraphic graphic = new ShapeGraphic();
+		
+		Circle2D.Double circle = new Circle2D.Double();
+		circle.setRadius(5);
+		
+		graphic.setShape(circle);
+		graphComp.setGraphic(graphic);
+		
+		return graphComp;
+	}
+	
+	private Point2D.Double findProjectileLoc()
+	{
+		Point2D.Double srcLoc = src.getLoc(),
+					   targetLoc = target.getLoc();
+		
+		double angle = Maths.angleFrom(srcLoc, targetLoc);
+		
+		double xOffset = offset * Math.cos(angle),
+			   yOffset = offset * Math.sin(angle);
+		
+		return new Point2D.Double(srcLoc.x + xOffset,
+								  srcLoc.y + yOffset);
+	}
+	
+	public void setProjectileSpeed(double speed) {
+		this.speed = speed;
+	}
+	
+	public void setProjectileOffset(double offset) {
+		this.offset = offset;
+	}
+	
+	public void addEffect(Effect effect) {
+		effects.add(effect);
+	}
+	
+	public void setRigidBody(RigidBody body) {
+		this.body = body;
+	}
+	
+	public Object clone()
+	{
+		return new HomingProjectileAbility(this);
+	}
+}
