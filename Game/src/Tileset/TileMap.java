@@ -1,15 +1,19 @@
 package Tileset;
 
+import static java.lang.Math.min;
+
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import Graphic.Graphic;
 import Graphic.GraphicsContext;
 import Graphic.Sprite;
 import Maths.Dimension2D;
 
-import static java.lang.Math.min;
-
 public class TileMap extends Graphic
+	implements Serializable
 {
 	private Dimension2D.Double tileSize;
 	
@@ -99,6 +103,10 @@ public class TileMap extends Graphic
 		map[col][row] = tile;
 	}
 	
+	public Tile get(int row, int col) {
+		return map[col][row];
+	}
+	
 	public void setFrame(int rows, int cols)
 	{
 		Tile[][] map = new Tile[cols][rows];
@@ -154,8 +162,56 @@ public class TileMap extends Graphic
 		double width = tileSize.width * cols,
 			   height = tileSize.height * rows;
 		
-		return new Rectangle2D.Double(loc.x, loc.y, 
-									  width, height);
+		return new Rectangle2D.Double(loc.x, loc.y, 								  width, height);
+	}
+	
+	public List<TMCell> getRowCells(int row)
+	{
+		List<TMCell> cells = new ArrayList<TMCell>();
+		
+		for(int col = 0; col < cols; col++)
+		{
+			TMCell cell = getCell(row, col);
+			
+			cells.add(cell);
+		}
+		
+		return cells;
+	}
+	
+	public List<TMCell> getColCells(int col)
+	{
+		List<TMCell> cells = new ArrayList<TMCell>();
+		
+		for(int row = 0; row < rows; row++)
+		{
+			TMCell cell = getCell(row, col);
+			
+			cells.add(cell);
+		}
+		
+		return cells;
+	}
+	
+	public List<TMCell> getCells()
+	{
+		List<TMCell> cells = new ArrayList<TMCell>();
+		
+		for(int row = 0; row < rows; row++)
+		{
+			for(int col = 0; col < cols; col++)
+			{
+				TMCell cell = getCell(row, col);
+				
+				cells.add(cell);
+			}
+		}
+		
+		return cells;
+	}
+	
+	public TMCell getCell(int row, int col) {
+		return new TMCell(this, row, col);
 	}
 
 	@Override

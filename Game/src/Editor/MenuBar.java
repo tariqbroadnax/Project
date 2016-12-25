@@ -23,12 +23,14 @@ public class MenuBar extends JMenuBar
 		JMenu fileMenu = new JMenu("File"),
 			  editMenu = new JMenu("Edit"),
 			  playMenu = new JMenu("Play"),
+			  viewMenu = new JMenu("View"),
 			  insertMenu = new JMenu("Insert");
 
 		JMenuItem importMenu = new JMenu("Import");
 		
 		add(fileMenu);
 		add(editMenu);
+		add(viewMenu);
 		add(playMenu);
 		
 		//add(insertMenu);
@@ -41,8 +43,8 @@ public class MenuBar extends JMenuBar
 		fileMenu.add(new SaveAs(resources));
 		fileMenu.add(new Import());
 		
-		editMenu.add(new Undo());
-		editMenu.add(new Redo());
+		editMenu.add(resources.getUndoAction());
+		editMenu.add(resources.getRedoAction());
 		editMenu.add(new Cut());
 		editMenu.add(new Copy());
 		editMenu.add(new Paste());

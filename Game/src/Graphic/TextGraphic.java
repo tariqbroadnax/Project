@@ -15,7 +15,7 @@ public class TextGraphic extends Graphic
 
 	private Font font;
 	
-	private int normHeight;
+	private double normHeight;
 		
 	private Paint paint;
 	
@@ -52,11 +52,11 @@ public class TextGraphic extends Graphic
 				this.font, (int) screenHeight, gc.g2d);
 		
 		Point2D.Double screenLoc = 
-				gc.camera.screenLocation(loc);
+				gc.camera.screenLocation2D(loc);
 		
 		gc.g2d.setPaint(paint);
 		gc.g2d.setFont(font);
-		gc.g2d.drawString(text, (float)screenLoc.x, (float)screenLoc.y);		
+		gc.g2d.drawString(text, (float)screenLoc.x, (float)screenLoc.y);	
 	}
 
 	public void setText(String text) {
@@ -69,6 +69,10 @@ public class TextGraphic extends Graphic
 	
 	public void setPaint(Paint paint) {
 		this.paint = paint;
+	}
+	
+	public void setHeight(double normHeight) {
+		this.normHeight = normHeight;
 	}
 	
 	@Override

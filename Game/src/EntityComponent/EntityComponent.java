@@ -1,15 +1,12 @@
 package EntityComponent;
 
 import java.io.Serializable;
-import java.util.Observable;
-import java.util.Observer;
 
 import Entity.Entity;
 import Game.Updatable;
 
-public abstract class EntityComponent extends Observable
-	implements Updatable, Cloneable, Serializable,
-			   Observer
+public abstract class EntityComponent
+	implements Updatable, Cloneable, Serializable
 {
 	protected Entity parent;
 	
@@ -28,9 +25,6 @@ public abstract class EntityComponent extends Observable
 			throw new NullPointerException();
 		
 		this.parent = parent;
-		
-		setChanged();
-		notifyObservers();
 	}
 	
 	public boolean containsParent()
@@ -41,9 +35,6 @@ public abstract class EntityComponent extends Observable
 	public void setEnabled(boolean enabled)
 	{
 		this.enabled = enabled;
-		
-		setChanged();
-		notifyObservers();
 	}
 
 	public boolean isEnabled()
@@ -64,12 +55,4 @@ public abstract class EntityComponent extends Observable
 	public void dispose(){}
 	
 	protected abstract EntityComponent _clone();
-	
-	@Override
-	public void update(Observable o, Object src) 
-	{
-		setChanged();
-		notifyObservers();		
-	}
-	
 }

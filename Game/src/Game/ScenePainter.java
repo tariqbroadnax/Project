@@ -1,6 +1,7 @@
 package Game;
 
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -9,7 +10,8 @@ import EntityComponent.GraphicsComponent;
 import Graphic.Graphic;
 import Graphic.GraphicsContext;
 
-public class ScenePainter implements Comparator<Graphic>
+public class ScenePainter 
+	implements Comparator<Graphic>, Serializable
 {
 	private PriorityQueue<Graphic> visibleGraphics;
 	

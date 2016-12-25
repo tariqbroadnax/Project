@@ -1,0 +1,86 @@
+package Editor.layer_selector;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
+
+import Tileset.Tile;
+import Tileset.TileMap;
+
+public class SetTile implements UndoableEdit
+{	
+	private TileMap tm;
+	
+	private Tile tile, prevTile;
+	
+	private int row, col;
+	
+	public SetTile(TileMap tm, Tile tile, int row, int col)
+	{
+		this.tm = tm;
+		this.tile = tile;
+		this.row = row;
+		this.col = col;
+	}
+	
+	@Override // not used
+	public boolean addEdit(UndoableEdit e) {
+		return false;
+	}
+
+	@Override
+	public boolean canRedo() {
+		return true;
+	}
+
+	@Override
+	public boolean canUndo() {
+		return true;
+	}
+
+	@Override // not used
+	public void die() {}
+
+	@Override // not used
+	public String getPresentationName() {
+		return "";
+	}
+
+	@Override // not used
+	public String getRedoPresentationName() {
+		return "";
+	}
+
+	@Override // not used
+	public String getUndoPresentationName() {
+		return "";
+	}
+
+	@Override
+	public boolean isSignificant() {
+		return true;
+	}
+
+	public void invoke()
+	{
+		prevTile = tm.get(row, col);
+		tm.set(row, col, tile);
+	}
+	
+	@Override
+	public void redo() throws CannotRedoException 
+	{
+		invoke();
+	}
+
+	@Override // not used
+	public boolean replaceEdit(UndoableEdit e) {
+		return false;
+	}
+
+	@Override
+	public void undo() throws CannotUndoException {
+		System.out.println(tile + " " + prevTile);
+		tm.set(row, col, prevTile);
+	}
+}

@@ -1,6 +1,8 @@
 package EntityComponent;
 
-public interface CollisionResponse extends Cloneable
+import java.io.Serializable;
+
+public interface CollisionResponse extends Cloneable, Serializable
 {
 	public void collisionOccurred(CollisionEvent e);
 	

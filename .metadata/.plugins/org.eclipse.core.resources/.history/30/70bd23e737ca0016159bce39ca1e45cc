@@ -1,0 +1,5 @@
+package Editor.selection;
+
+public class SelectionListener {
+
+}

@@ -1,6 +1,7 @@
 package EntityComponent;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;

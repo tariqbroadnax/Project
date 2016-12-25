@@ -1,0 +1,31 @@
+package Editor.selection;
+import java.util.ArrayList;
+import java.util.List;
+
+public class SelectionHandler 
+{
+	private List<Object> selected;
+	
+	private List<SelectionListener> listeners;
+	
+	public SelectionHandler()
+	{
+		selected = null;
+		
+		listeners = new ArrayList<SelectionListener>();
+	}
+	
+	public void addSelectionListener(
+			SelectionListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	private void notifyListeners()
+	{
+		for(SelectionListener listener : listeners)
+		{
+			
+		}
+	}
+}

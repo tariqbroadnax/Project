@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -15,52 +16,43 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 import Entity.Entity;
 import EntityComponent.EntityComponent;
 import EntityComponent.GraphicsComponent;
-import EntityComponent.LightComponent;
 import EntityManager.CollisionManager;
 import Graphic.Camera;
 import Graphic.Graphic;
 import Graphic.GraphicsContext;
-import Graphic.LayeredGraphic;
 import Graphic.Paintable;
 import Maths.Dimension2D;
 import Tileset.TileMap;
-import Weather.RainManager;
 
-public class Scene extends Observable
-		implements Updatable, Paintable, Serializable,
-				   Observer
+public class Scene 
+	implements Updatable, Paintable, Serializable
 {	
 	private Map<Class<? extends EntityComponent>, List<Entity>> compMap;
-		
+	
 	private Set<Entity> addQ, removeQ;
 	private Set<Entity> entities;
-		
-	private LightMap lightMap;
-	private TerrainMap terrMap;
-	
-	private GClock clock;
-	
-	private boolean gridVisible;
-	
-	private RainManager rain;
 
-	private LayeredGraphic background;
-	
 	private CollisionManager collManager;
+		
+	private ScenePainter painter;	
 	
 	private TileMap tileMap;
-	
-	private ScenePainter painter;
-	
+
 	private List<Graphic> graphics;
+
+	private boolean gridVisible;
 	
+	// private LightMap lightMap;
+	// private TerrainMap terrMap;
+	// private GClock clock;	
+	// private RainManager rain;
+	// private LayeredGraphic background;
+
 	public Scene()
 	{			
 		compMap = new HashMap<Class<? extends EntityComponent>,
@@ -70,18 +62,18 @@ public class Scene extends Observable
 		removeQ = new HashSet<Entity>();
 		entities = new HashSet<Entity>();
 		
-		lightMap = new LightMap();
+		// lightMap = new LightMap();
 	
-		clock = new GClock();
+		// clock = new GClock();
 		
-		background = new LayeredGraphic();
+		// background = new LayeredGraphic();
 		
 		tileMap = new TileMap();
-		terrMap = new TerrainMap(this);
+		// terrMap = new TerrainMap(this);
 		
 		gridVisible = true;
 	
-		rain = new RainManager();
+		// rain = new RainManager();
 		
 		collManager = new CollisionManager(this);
 		
@@ -89,8 +81,8 @@ public class Scene extends Observable
 		
 		graphics = new ArrayList<Graphic>();
 		
-		background.add(tileMap);
-		background.add(new TileMap());
+		//background.add(tileMap);
+		// background.add(new TileMap());
 		
 		addManagers();
 	}
@@ -104,7 +96,7 @@ public class Scene extends Observable
 		
 		clearAddQueue();
 		clearRemoveQueue();
-		clock.update(delta);
+		// clock.update(delta);
 		//rain.update(delta);
 		updateEntities(delta);	
 		
@@ -250,13 +242,7 @@ public class Scene extends Observable
 		if(entity == null)
 			throw new NullPointerException();
 		
-		entity.setSceneLoc(this);
-		entity.addObserver(this);
-		
 		addQ.add(entity);
-
-		setChanged();
-		notifyObservers();
 	}
 	
 	public void addEntityNow(Entity entity)
@@ -269,9 +255,6 @@ public class Scene extends Observable
 	{
 		for(Entity e : addQ)
 		{
-			if(e.contains(LightComponent.class))
-				lightMap.add(e.get(LightComponent.class)
-							  .getLight());	
 			entities.add(e);
 			
 			for(Class<? extends EntityComponent> c :
@@ -291,9 +274,6 @@ public class Scene extends Observable
 	{
 		for(Entity e : removeQ)
 		{
-			if(e.contains(LightComponent.class))
-				lightMap.remove(e.get(LightComponent.class)
-							  .getLight());	
 			entities.remove(e);
 			
 			for(Class<? extends EntityComponent> c :
@@ -307,13 +287,7 @@ public class Scene extends Observable
 	public void removeEntity(Entity entity)
 	{
 		if(removeQ.add(entity))
-		{
-			entity.deleteObserver(this);
 			entity.setSceneLoc(null);
-		}
-		
-		setChanged();
-		notifyObservers();
 	}
 	
 	public boolean contains(Entity entity)
@@ -350,25 +324,6 @@ public class Scene extends Observable
 		this.gridVisible = gridVisible;
 	}
 	
-	public void addToBackground(TileMap map)
-	{
-		background.add(map);
-	}
-	
-	public Graphic getBackgroundLayer(int layer) 
-	{
-		return background.getLayer(layer);
-	}
-	
-	public int getBackgroundLayerCount() 
-	{
-		return background.size();
-	}
-	
-	public LightMap getLightMap() {
-		return lightMap;
-	}
-	
 	public TileMap getTileMap() {
 		return tileMap;
 	}
@@ -379,18 +334,5 @@ public class Scene extends Observable
 	
 	public CollisionManager getCollisionManager() {
 		return collManager;
-	}
-	
-	private void readObject(ObjectInputStream in)
-		throws IOException, ClassNotFoundException
-	{
-		in.defaultReadObject();
-	}
-
-	@Override
-	public void update(Observable o, Object src) 
-	{
-		setChanged();
-		notifyObservers();
 	}
 }

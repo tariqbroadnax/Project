@@ -42,12 +42,12 @@ public class UndoManager extends javax.swing.undo.UndoManager
 
 	public boolean addEdit(UndoableEdit anEdit)
 	{
-		boolean b = super.addEdit(anEdit);
+		boolean added = super.addEdit(anEdit);
 		
-		if(b)
+		if(added)
 			for(UndoListener listener : listeners)
 				listener.editAdded(this);
 		
-		return b;
+		return added;
 	}
 }

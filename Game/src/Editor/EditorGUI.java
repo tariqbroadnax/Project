@@ -26,7 +26,6 @@ public class EditorGUI
 	
 	private EditorFrame frame;
 	private EditorMenuBar menuBar;
-	private SceneEditor sceneEditor;
 	private Selector selector;
 	
 	public EditorGUI()	
@@ -36,7 +35,8 @@ public class EditorGUI
 		frame = new EditorFrame(resources);
 		selector = new Selector(resources);
 		menuBar = new EditorMenuBar(selector);
-		sceneEditor = new SceneEditor(resources);
+
+		ScenePanel scenePnl = new ScenePanel(resources);
 		
 		MultiSplitPane pane = new MultiSplitPane();
 		
@@ -46,7 +46,7 @@ public class EditorGUI
 		right.add(new EntitySelector(resources), BorderLayout.NORTH);
 		
 		
-		pane.setCenterComponent(sceneEditor);
+		pane.setCenterComponent(scenePnl);
 		pane.setRightComponent(right);
 		
 		frame.add(pane);

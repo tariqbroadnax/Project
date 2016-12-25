@@ -6,6 +6,7 @@ import static Utilities.ShapeUtilities.moveShape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,7 +15,8 @@ import Maths.Circle2D;
 import Maths.Vector2D;
 import Utilities.Pack;
 
-public class RigidBody implements Cloneable
+public class RigidBody 
+	implements Cloneable, Serializable
 {
 	private Point2D.Double loc;
 	

@@ -1,17 +1,22 @@
 package Editor;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.List;
 
-import Graphic.Graphic;
+import javax.swing.SwingUtilities;
+
+import Editor.layer_selector.RemoveTile;
+import Editor.layer_selector.SetTile;
+import EditorGUI.UndoManager;
+import Graphic.Camera;
 import Graphic.GraphicsContext;
 import Graphic.ShapeGraphic;
 import Maths.Dimension2D;
 import Tileset.Tile;
 import Tileset.TileMap;
-import Utilities.Collections2;
 
 public class TileTransferHandler 
 	extends SelectionTransferHandler
@@ -20,27 +25,38 @@ public class TileTransferHandler
 	
 	private EditorResources resources;
 			
-	public TileTransferHandler(EditorResources resources) 
-	{
-		super(resources);
+	private Camera camera;
 	
+	private UndoManager undoManager;
+	
+	private Point mouseLoc;
+	
+	public TileTransferHandler(
+			EditorResources resources,
+			Camera camera,
+			UndoManager undoManager) 
+	{	
 		this.resources = resources;
+		this.undoManager = undoManager;
+		this.camera = camera;
 	}
 
 	@Override
-	public boolean canImport(Object obj) 
+	public boolean setSelection(Object obj) 
 	{
-		return obj instanceof Tile;
+		if(obj instanceof Tile)
+		{
+			tile = (Tile) obj;
+			return true;
+		}
+		else
+			return false;
 	}
 
-	@Override
-	public void setSelection(Object obj) {
-		tile = (Tile) obj;
-	}
-
-	@Override
-	public void importSelection(Point2D.Double normLoc) 
+	private void importSelection() 
 	{
+		Point2D.Double normLoc = camera.normalLocation(mouseLoc);
+
 		TileMap tm = resources.scene.getTileMap();
 
 		int row = tm.row(normLoc.y),
@@ -48,13 +64,38 @@ public class TileTransferHandler
 		
 		if(0 <= row && row < tm.rows && 
 		   0 <= col && col < tm.cols)
-			tm.set(row, col, tile);
+		{
+			SetTile edit = new SetTile(resources, tm, tile, row,  col);
+			
+			edit.invoke();
+			undoManager.addEdit(edit);
+		}
+	}
+	
+	private void removeTile()
+	{
+		Point2D.Double normLoc = camera.normalLocation(mouseLoc);
+
+		TileMap tm = resources.scene.getTileMap();
+
+		int row = tm.row(normLoc.y),
+			col = tm.col(normLoc.x);
+		
+		if(0 <= row && row < tm.rows && 
+		   0 <= col && col < tm.cols)
+		{
+			RemoveTile edit = new RemoveTile(resources, tm, row,  col);
+			
+			edit.invoke();
+			undoManager.addEdit(edit);
+		}
 	}
 
 	@Override
-	public void paintSelection(GraphicsContext gc,
-							   Point2D.Double normLoc) 
-	{		
+	public void paintSelection(GraphicsContext gc) 
+	{				
+		Point2D.Double normLoc = camera.normalLocation(mouseLoc);
+		
 		TileMap tm = resources.scene.getTileMap();
 		
 		int row = tm.row(normLoc.y),
@@ -84,5 +125,32 @@ public class TileTransferHandler
 			shape.setPaint(selectionColor);
 			
 			shape.paint(gc);
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		mouseLoc = e.getPoint();
+
+		if(SwingUtilities.isLeftMouseButton(e))
+			importSelection();
+		else if(SwingUtilities.isRightMouseButton(e))
+			removeTile();
+	}
+	
+	public void mouseMoved(MouseEvent e)
+	{
+		mouseLoc = e.getPoint();
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent e)
+	{
+		mouseLoc = e.getPoint();
+
+		if(SwingUtilities.isLeftMouseButton(e))
+			importSelection();
+		else if(SwingUtilities.isRightMouseButton(e))
+			removeTile();
 	}
 }

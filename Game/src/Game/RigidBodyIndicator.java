@@ -3,6 +3,7 @@ package Game;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D.Double;
 import java.awt.geom.RectangularShape;
+import java.io.Serializable;
 
 import EntityComponent.RigidBody;
 import Graphic.Graphic;
@@ -10,6 +11,7 @@ import Graphic.GraphicsContext;
 import Graphic.ShapeGraphic;
 
 public class RigidBodyIndicator extends Graphic
+	implements Serializable
 {
 	private RigidBody body;
 	private ShapeGraphic graph;

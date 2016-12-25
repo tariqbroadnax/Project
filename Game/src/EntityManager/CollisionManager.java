@@ -1,19 +1,20 @@
 package EntityManager;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import Entity.Entity;
-import Entity.Fire;
 import EntityComponent.RigidBody;
 import EntityComponent.RigidBodyComponent;
 import Game.Scene;
 import Game.Updatable;
 import Maths.Circle2D;
 
-public class CollisionManager implements Updatable
+public class CollisionManager 
+	implements Updatable, Serializable
 {	
 	private Scene scene;
 	

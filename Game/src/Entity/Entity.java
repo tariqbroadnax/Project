@@ -2,19 +2,15 @@ package Entity;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import EntityComponent.EntityComponent;
-import Game.EntityListener;
 import Game.Scene;
 
-public class Entity extends Observable 
-	implements Serializable, Cloneable, Observer
+public class Entity
+	implements Serializable, Cloneable
 {		
 	private Scene sceneLoc;
 	
@@ -22,8 +18,6 @@ public class Entity extends Observable
 
 	private Map<Class<? extends EntityComponent>,
 				EntityComponent> comps;
-				
-	private Collection<EntityListener> listeners;
 	
 	public Entity()
 	{		
@@ -31,8 +25,6 @@ public class Entity extends Observable
 							EntityComponent>();
 				
 		loc = new Point2D.Double();
-	
-		listeners = new ArrayList<EntityListener>();
 	}
 	
 	public Entity(Entity e)
@@ -86,19 +78,6 @@ public class Entity extends Observable
 	
 			// !!! IMPORTANT !!!
 			comp.setParent(this);
-			comp.addObserver(this);
-			
-			setChanged();
-			notifyObservers();
-			
-			if(oldComp == null)
-				notifyListenersOfAddedComponent(comp);
-			else
-			{
-				oldComp.deleteObserver(this);
-				notifyListenersOfReplacedComponent(
-						oldComp, comp);
-			}
 		}
 	}
 	
@@ -118,41 +97,7 @@ public class Entity extends Observable
 	public <E extends EntityComponent> void remove(
 			Class<E> compClass)
 	{
-		if(comps.containsKey(compClass))
-		{
-			EntityComponent comp = 
-					comps.remove(compClass);
-			
-			comp.deleteObserver(this);
-	
-			setChanged();
-			notifyObservers();
-			
-			notifyListenersOfRemovedComponent(comp);
-		}
-	}
-	
-	private void notifyListenersOfAddedComponent(
-			EntityComponent comp)
-	{
-		for(EntityListener listener : listeners)
-			listener.componentAdded(this, comp);
-	}
-	
-	private void notifyListenersOfRemovedComponent(
-			EntityComponent comp)
-	{
-		for(EntityListener listener : listeners)
-			listener.componentRemoved(this, comp);
-	}
-	
-	private void notifyListenersOfReplacedComponent(
-			EntityComponent oldComp,
-			EntityComponent newComp)
-	{
-		for(EntityListener listener : listeners)
-			listener.componentReplaced(
-					this, oldComp, newComp);
+		comps.containsKey(compClass);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -171,16 +116,6 @@ public class Entity extends Observable
 			Class<E> compClass)
 	{
 		return comps.containsKey(compClass);
-	}
-	
-	public void addEntityListener(EntityListener listener)
-	{
-		listeners.add(listener);
-	}
-	
-	public void removeEntityListener(EntityListener listener)
-	{
-		listeners.remove(listener);
 	}
 	
 	public void setLoc(Point2D.Double loc)
@@ -203,9 +138,6 @@ public class Entity extends Observable
 	{
 		loc.x = x;
 		loc.y = y;
-		
-		setChanged();
-		notifyObservers();		
 	}
 	
 	public void move(double xOff, double yOff)
@@ -238,12 +170,5 @@ public class Entity extends Observable
 	public String toString2()
 	{
 		return super.toString();
-	}
-
-	@Override
-	public void update(Observable o, Object src) 
-	{
-		setChanged();
-		notifyObservers();
 	}
 }

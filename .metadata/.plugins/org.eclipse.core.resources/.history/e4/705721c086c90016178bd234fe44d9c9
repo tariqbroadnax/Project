@@ -1,0 +1,39 @@
+package Editor;
+
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.JPanel;
+
+import Editor.headings.ColumnHeading;
+import Editor.headings.RowHeading;
+import Graphic.Camera;
+
+public class ScenePanel extends JPanel 
+{
+	public ScenePanel(EditorResources resources)
+	{
+		setLayout(new GridBagLayout());
+		
+		Camera camera = new Camera();
+		
+		ColumnHeading colHeading = new ColumnHeading(resources, camera);
+		RowHeading rowHeading = new RowHeading(resources, camera);
+		SceneEditor editor = new SceneEditor(resources, camera);
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+		
+		gbc.fill = GridBagConstraints.BOTH;
+		
+		gbc.gridx = 1; gbc.gridy = 1;
+		add(editor, gbc);
+
+		gbc.gridx = 1; gbc.gridy = 0;
+		add(colHeading, gbc);
+		
+		gbc.weightx = 1; gbc.weighty = 1; 
+		gbc.gridx = 0; gbc.gridy = 1;
+		add(rowHeading, gbc);
+	}
+}

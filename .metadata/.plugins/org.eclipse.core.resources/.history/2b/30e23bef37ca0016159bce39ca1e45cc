@@ -1,0 +1,7 @@
+package Editor.selection;
+import java.util.List;
+
+public class SelectionHandler 
+{
+	private List<Object> selected;
+}

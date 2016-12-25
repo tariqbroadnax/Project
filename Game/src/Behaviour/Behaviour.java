@@ -1,10 +1,12 @@
 package Behaviour;
 
+import java.io.Serializable;
+
 import Entity.Entity;
 import Game.Updatable;
 
 public abstract class Behaviour 
-	implements Updatable, Cloneable
+	implements Updatable, Cloneable, Serializable
 {
 	protected Entity src;
 		

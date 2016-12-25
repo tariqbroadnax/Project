@@ -35,7 +35,7 @@ public class EditorFrame extends JFrame
 		String fileName = file == null ? "Untitled" :
 								   file.getAbsolutePath();
 		
-		setTitle(fileName + "- Scene Editor");
+		setTitle(fileName + " - Scene Editor");
 	}
 
 	@Override

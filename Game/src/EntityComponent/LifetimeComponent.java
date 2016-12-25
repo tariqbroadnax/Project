@@ -1,11 +1,10 @@
 package EntityComponent;
 
-import java.io.IOException;
 import java.time.Duration;
 
 public class LifetimeComponent extends EntityComponent
 {
-	private transient Lifetime lifetime;
+	private Lifetime lifetime;
 		
 	public LifetimeComponent()
 	{
@@ -35,13 +34,6 @@ public class LifetimeComponent extends EntityComponent
 	
 	public Lifetime getLifetime() {
 		return lifetime;
-	}
-	
-	private void readObject(java.io.ObjectInputStream in)
-			throws IOException, ClassNotFoundException
-	{
-		in.defaultReadObject();
-		lifetime = new Lifetime();
 	}
 	
 	@Override

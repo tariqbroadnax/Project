@@ -1,10 +1,12 @@
 package Modifiers;
 
+import java.io.Serializable;
+
 import Entity.Entity;
 import Game.Updatable;
 
 public abstract class Effect 
-	implements Updatable
+	implements Updatable, Serializable
 {
 	protected Entity src, target;
 			

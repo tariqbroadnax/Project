@@ -1,8 +1,10 @@
 package Tileset;
 
 import java.io.File;
+import java.io.Serializable;
 
 public class Tile 
+	implements Serializable
 {
 	public final File file;
 

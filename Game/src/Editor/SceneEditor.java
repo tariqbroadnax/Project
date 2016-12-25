@@ -1,20 +1,22 @@
 package Editor;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Point2D;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JPanel;
 
+import EditorGUI.UndoManager;
 import Game.Scene;
 import Graphic.Camera;
 import Graphic.GraphicsContext;
@@ -22,7 +24,8 @@ import Maths.Vector2D;
 
 public class SceneEditor extends JPanel
 	implements MouseListener, MouseMotionListener,
-			   KeyListener, SceneListener
+			   KeyListener, SceneListener,
+			   FocusListener
 {
 	private EditorResources resources;
 	
@@ -36,27 +39,34 @@ public class SceneEditor extends JPanel
 	
 	private Point lastp, p;
 	
-	public SceneEditor(EditorResources resources)
+	private UndoManager undoManager;
+	
+	public SceneEditor(EditorResources resources, Camera camera)
 	{
 		this.resources = resources;
 		
 		scene = resources.scene;
 		
-		camera = new Camera();
+		this.camera = camera;
 		
 		STHs = new LinkedList<SelectionTransferHandler>();
 	
+		undoManager = new UndoManager();
+		
 		SceneCompMaintainer maintainer = new SceneCompMaintainer(
 				resources, camera, this);
 		
-		STHs.add(new TileTransferHandler(resources));
-		STHs.add(new EntityTransferHandler(resources));
+		STHs.add(new TileTransferHandler(resources, camera, undoManager));
+	//	STHs.add(new EntityTransferHandler(resources, undoManager));
 		
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);
+		addFocusListener(this);
+		
 		setLayout(null);
 		resources.addSceneListener(this);
+		setPreferredSize(new Dimension(800, 600));
 	}
 	
 	public void paintComponent(Graphics g)
@@ -68,30 +78,14 @@ public class SceneEditor extends JPanel
 		camera.setScreenDimension(size);
 		
 		GraphicsContext gc = new GraphicsContext(
-				g, camera, resources.pool);
+				g.create(), camera, resources.pool);
 	
 		scene.paint(gc);
 		
-		checkAndPaintSelection(gc);		
-	}
-	
-	private void checkAndPaintSelection(GraphicsContext gc)
-	{
 		if(currSTH != null)
-		{
-			Point2D.Double normLoc = 
-					camera.normalLocation(p);
+			currSTH.paintSelection(gc);
 		
-			currSTH.paintSelection(gc, normLoc);
-		}
-	}
-	
-	private void importSelection()
-	{
-		Point2D.Double normLoc =
-				camera.normalLocation(p);
-		
-		currSTH.importSelection(normLoc);
+		gc.g2d.dispose();
 	}
 	
 	private void slide()
@@ -100,7 +94,15 @@ public class SceneEditor extends JPanel
 				lastp.x - p.x, lastp.y - p.y);
 
 		camera.moveFocus(shift);
-		resources.notifyOfSceneChange();
+		resources.notifyOfSceneChange();		
+	}
+	
+	protected void addImpl(
+			Component comp, Object constraints,
+			int index)
+	{
+		super.addImpl(comp, constraints, index);
+		comp.addFocusListener(this);
 	}
 
 	@Override
@@ -113,10 +115,11 @@ public class SceneEditor extends JPanel
 			return;
 		
 		for(SelectionTransferHandler sth : STHs)
-			if(sth.canImport(resources.selection))
+			if(sth.setSelection(resources.selection))
 			{	
 				currSTH = sth;
-				currSTH.setSelection(resources.selection);
+				addMouseListener(currSTH);
+				addMouseMotionListener(currSTH);
 				break;
 			}
 	}
@@ -124,7 +127,13 @@ public class SceneEditor extends JPanel
 	@Override
 	public void mouseExited(MouseEvent e) 
 	{
-		currSTH = null;
+		if(currSTH != null)
+		{
+			removeMouseListener(currSTH);
+			removeMouseMotionListener(currSTH);
+			currSTH = null;
+		}
+		
 		repaint();
 	}
 
@@ -136,15 +145,9 @@ public class SceneEditor extends JPanel
 
 		if(resources.selection != null &&
 		   resources.sceneSelection)
-		{
 			resources.selection = null;
-			repaint();
-		}
-		else if(currSTH != null)
-		{	
-			importSelection();
-			repaint();	
-		}
+
+		repaint();
 	}
 
 	@Override
@@ -161,8 +164,6 @@ public class SceneEditor extends JPanel
 		
 		if(currSTH == null)
 			slide();
-		else
-			importSelection();
 		
 		repaint();
 	}
@@ -198,7 +199,7 @@ public class SceneEditor extends JPanel
 				break;
 		}
 		
-		repaint();
+		resources.notifyOfSceneChange();
 	}
 
 	@Override
@@ -217,4 +218,17 @@ public class SceneEditor extends JPanel
 	public void sceneChanged() {
 		repaint();
 	}
+
+	@Override
+	public void focusGained(FocusEvent e) 
+	{
+		resources.getUndoAction()
+				 .setUndoManager(undoManager);
+		
+		resources.getRedoAction()
+				 .setUndoManager(undoManager);		
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {}
 }

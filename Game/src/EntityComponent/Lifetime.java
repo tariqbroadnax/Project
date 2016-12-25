@@ -6,7 +6,7 @@ import java.time.Duration;
 import Game.Updatable;
 
 public class Lifetime 
-implements Updatable
+implements Updatable, Serializable
 {
 	public static final long FOREVER = -1;
 	

@@ -1,0 +1,9 @@
+package Tileset;
+
+public class TMCell 
+{
+	public final TileMap src;
+	
+	public final int row, col;
+	
+}

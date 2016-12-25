@@ -285,6 +285,20 @@ public class Camera extends Observable
 		return shiftedScreenLocation(normLoc.x, normLoc.y);
 	}
 	
+	public double normalY(int y)
+	{
+		Point p = new Point(0, y);
+		
+		return normalLocation(p).y;
+	}
+	
+	public double normalX(int x)
+	{
+		Point p = new Point(x, 0);
+		
+		return normalLocation(p).x;
+	}
+	
 	public Point2D.Double normalLocation(Point screenLoc)
 	{		
 		AffineTransform transform =
@@ -317,6 +331,20 @@ public class Camera extends Observable
 		return new Dimension2D.Double(
 				100 * size.width / viewSize.width,
 				100 * size.height / viewSize.height);
+	}
+	
+	public double normalWidth(double width)
+	{
+		Dimension viewSize = viewSize();
+		
+		return 100 * width / viewSize.width;
+	}
+	
+	public double normalHeight(double height)
+	{
+		Dimension viewSize = viewSize();
+		
+		return 100 * height / viewSize.height;
 	}
 	
 	public Vector2D.Double normalVector(int x, int y)

@@ -76,9 +76,6 @@ public class GraphicsComponent extends EntityComponent
 			throw new NullPointerException();
 		
 		this.graphic = graphic;
-		
-		setChanged();
-		notifyObservers();
 	}
 	
 	public LayeredGraphic getDecorations()

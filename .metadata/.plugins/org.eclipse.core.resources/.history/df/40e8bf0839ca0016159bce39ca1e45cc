@@ -1,0 +1,46 @@
+package Editor.selection;
+import java.util.ArrayList;
+import java.util.List;
+
+public class SelectionHandler 
+{
+	private List<Object> selected;
+	
+	private List<SelectionListener> listeners;
+	
+	public SelectionHandler()
+	{
+		selected = null;
+		
+		listeners = new ArrayList<SelectionListener>();
+	}
+	
+	public void setSelected(Object obj)
+	{
+		selected.clear();
+		selected.add(obj);
+	}
+	
+	public void setSelection(List<Object> objs)
+	{
+		selected.clear();
+		selected.addAll(objs);
+	}
+	
+	public boolean onlySelected(Object obj)
+	{
+		
+	}
+	
+	public void addSelectionListener(
+			SelectionListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	private void notifyListeners()
+	{
+		for(SelectionListener listener : listeners)
+			listener.selectionChanged();
+	}
+}

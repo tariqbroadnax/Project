@@ -6,11 +6,13 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
-import javax.swing.undo.UndoManager;
 
+import EditorGUI.UndoListener;
+import EditorGUI.UndoManager;
 import Utilities.GUIUtils;
 
 public class Redo extends AbstractAction
+	implements UndoListener
 {	
 	public static final String PATH =
 			"jlfgr-1.0\\toolbarButtonGraphics\\general\\";
@@ -44,13 +46,28 @@ public class Redo extends AbstractAction
 				"control Y");
 		putValue(ACCELERATOR_KEY, keyStroke);
 		putValue(SMALL_ICON, smallIcon);
-		putValue(LARGE_ICON_KEY, largeIcon);	
+		putValue(LARGE_ICON_KEY, largeIcon);
+		
+		setEnabled(false);
 	}
 	
 	public void setUndoManager(
 			UndoManager undoManager)
 	{
 		this.undoManager = undoManager;
+		
+		if(undoManager == null)
+			setEnabled(false);
+		else
+			checkAndEnable();	
+	}
+	
+	private void checkAndEnable()
+	{
+		if(undoManager.canRedo())
+			setEnabled(true);
+		else
+			setEnabled(false);
 	}
 
 	@Override
@@ -59,7 +76,19 @@ public class Redo extends AbstractAction
 		if(undoManager.canRedo())
 			undoManager.redo();
 	}
-	
-	
 
+	@Override
+	public void undoOccurred(UndoManager src) {
+		checkAndEnable();
+	}
+
+	@Override
+	public void redoOccurred(UndoManager src) {
+		checkAndEnable();
+	}
+
+	@Override
+	public void editAdded(UndoManager src) {
+		checkAndEnable();
+	}
 }

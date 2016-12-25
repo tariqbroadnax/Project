@@ -12,6 +12,9 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import Editor.actions.Redo;
+import Editor.actions.Undo;
+import Editor.selection.SelectionHandler;
 import Game.Scene;
 import Tileset.Tileset;
 import Utilities.ImagePool;
@@ -30,20 +33,31 @@ public class EditorResources
 	private boolean saved;
 	
 	public Scene scene;
-	
+		
 	private EditorState state;
 	
 	private List<SceneListener> listeners;
+	
+	// these actions are shared between components
+	private Undo undo;
+	private Redo redo;
+	
+	private SelectionHandler selectionHandler;
 	
 	public EditorResources()
 	{
 		scene = new Scene();
 	
 		pool = new ImagePool();
-
+		
 		listeners = new ArrayList<SceneListener>();
 
 		saved = true;
+		
+		undo = new Undo();
+		redo = new Redo();
+
+		selectionHandler = new SelectionHandler();
 		
 		try {
 			pool.importTileset(new Tileset("GrassTileSet.png", 1, 2), 320, 160);
@@ -194,5 +208,17 @@ public class EditorResources
 	
 	public File getFile() {
 		return file;
+	}
+	
+	public Undo getUndoAction() {
+		return undo;
+	}
+	
+	public Redo getRedoAction() {
+		return redo;
+	}	
+	
+	public SelectionHandler getSelectionHandler() {
+		return selectionHandler;
 	}
 }

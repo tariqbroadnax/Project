@@ -2,6 +2,7 @@ package Editor;
 
 import java.awt.geom.Point2D.Double;
 
+import EditorGUI.UndoManager;
 import Entity.Entity;
 import EntityComponent.GraphicsComponent;
 import Graphic.Graphic;
@@ -15,11 +16,16 @@ public class EntityTransferHandler
 	
 	private Entity ent;
 	
-	public EntityTransferHandler(EditorResources resources) 
+	private UndoManager undoManager;
+	
+	public EntityTransferHandler(
+			EditorResources resources,
+			UndoManager undoManager) 
 	{
-		super(resources);
+		super(resources, undoManager);
 		
 		this.resources = resources;
+		this.undoManager = undoManager;
 	}
 
 	@Override
