@@ -3,5 +3,5 @@ will eventually begin using SWT and libgdx.
 
 Currently working on the editor.
 
-![alt tag](http://imgur.com/WFoob6Y)
+![image](http://imgur.com/WFoob6Y)
 
