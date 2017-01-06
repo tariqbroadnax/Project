@@ -1,0 +1,18 @@
+package Editor.tools;
+
+import java.awt.Graphics;
+import java.awt.geom.Point2D;
+import java.util.List;
+
+import EditorGUI.MouseListener;
+import EditorGUI.MouseMotionListener;
+import Entity.Entity;
+import Game.Scene;
+import Tileset.TileMap;
+
+public interface Tool 
+	extends MouseListener, MouseMotionListener 
+{
+	public default void paint(Graphics g){}
+	
+}

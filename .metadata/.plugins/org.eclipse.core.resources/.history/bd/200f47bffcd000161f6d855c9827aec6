@@ -1,0 +1,73 @@
+package Editor.comp;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+public class Bellow extends JPanel
+{
+	private JComponent comp;
+	
+	public Bellow(JComponent comp)
+	{
+		this.comp = comp;
+		
+		setLayout(new BorderLayout());
+		
+		JButton visibilityBtn = new JButton() {
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				paintTriangle(g);
+			}
+		};
+		
+		visibilityBtn.setPreferredSize(new Dimension(10, 10));
+		visibilityBtn.setBorderPainted(false);
+		visibilityBtn.setOpaque(false);
+		
+		visibilityBtn.addActionListener(e -> toggleContentVisibility());
+		
+		JPanel head = new JPanel();
+		
+		head.setLayout(new BorderLayout());
+		head.add(visibilityBtn, BorderLayout.WEST);
+		
+		add(head, BorderLayout.NORTH);
+		add(comp, BorderLayout.CENTER);
+	}
+	
+	private void paintTriangle(Graphics g)
+	{
+		boolean visible = comp.isVisible();
+		int[] xs, ys;
+		
+		if(visible)
+		{
+			xs = new int[]{0, 5, 9};
+			ys = new int[]{0, 9, 0};
+		}
+		else
+		{
+			xs = new int[]{0, 0, 9};
+			ys = new int[]{0, 9, 5};
+		}
+		
+		g.setColor(Color.black);
+		g.fillPolygon(xs, ys, 3);
+	}
+
+	private void toggleContentVisibility()
+	{		
+		boolean visible = comp.isVisible();
+		
+		comp.setVisible(!visible);
+		
+		comp.revalidate();
+		comp.repaint();
+	}
+}

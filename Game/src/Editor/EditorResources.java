@@ -15,7 +15,13 @@ import javax.swing.JOptionPane;
 import Editor.actions.Redo;
 import Editor.actions.Undo;
 import Editor.selection.SelectionHandler;
+import Editor.tools.EraseTool;
+import Editor.tools.SelectTool;
+import Editor.tools.Stamp;
+import Editor.tools.Tool;
+import EditorGUI.UndoManager;
 import Game.Scene;
+import Graphic.Camera;
 import Tileset.Tileset;
 import Utilities.ImagePool;
 
@@ -33,31 +39,54 @@ public class EditorResources
 	private boolean saved;
 	
 	public Scene scene;
-		
+	private Camera camera;	
+	
 	private EditorState state;
 	
 	private List<SceneListener> listeners;
+	private List<ResourceListener> rlisteners;
 	
 	// these actions are shared between components
 	private Undo undo;
 	private Redo redo;
 	
+	private UndoManager undoManager;
+	
 	private SelectionHandler selectionHandler;
+	
+	private Mode mode;
+	
+	public final Stamp STAMP;
+	public final SelectTool SELECT_TOOL;
+	public final EraseTool ERASE_TOOL;
+	
+	private Tool tool;
 	
 	public EditorResources()
 	{
 		scene = new Scene();
 	
+		camera = new Camera();
+		
 		pool = new ImagePool();
 		
 		listeners = new ArrayList<SceneListener>();
-
+		rlisteners = new ArrayList<ResourceListener>();
+		
 		saved = true;
 		
 		undo = new Undo();
 		redo = new Redo();
 
+		undoManager = new UndoManager();
+		
 		selectionHandler = new SelectionHandler();
+	
+		STAMP = new Stamp(this);
+		SELECT_TOOL = new SelectTool(this);
+		ERASE_TOOL = new EraseTool(this);
+		
+		tool = SELECT_TOOL;
 		
 		try {
 			pool.importTileset(new Tileset("GrassTileSet.png", 1, 2), 320, 160);
@@ -66,7 +95,7 @@ public class EditorResources
 		}
 		
 		if(!restoreState())
-			state = new EditorState();
+			state = new EditorState();	
 	}
 	
 	public void _new()
@@ -97,10 +126,7 @@ public class EditorResources
 			scene = new Scene();
 		
 			for(SceneListener list : listeners)
-			{
 				list.sceneLoaded();
-				list.sceneChanged();
-			}
 		}
 	}
 	
@@ -124,7 +150,7 @@ public class EditorResources
 			writeScene();
 			
 			for(SceneListener list : listeners)
-				list.sceneLoaded();
+				list.sceneSaved();
 		}
 	}
 	
@@ -137,6 +163,10 @@ public class EditorResources
 			out.writeObject(scene);
 			out.close();
 			saved = true;
+			
+			for(SceneListener list : listeners)
+				list.sceneSaved();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -145,6 +175,11 @@ public class EditorResources
 	public void addSceneListener(SceneListener listener)
 	{
 		listeners.add(listener);
+	}
+	
+	public void addResourceListener(ResourceListener listener)
+	{
+		rlisteners.add(listener);
 	}
 	
 	public void notifyOfSceneChange()
@@ -206,6 +241,10 @@ public class EditorResources
 		return state;
 	}
 	
+	public UndoManager getUndoManager() {
+		return undoManager;
+	}
+	
 	public File getFile() {
 		return file;
 	}
@@ -220,5 +259,23 @@ public class EditorResources
 	
 	public SelectionHandler getSelectionHandler() {
 		return selectionHandler;
+	}
+	
+	public void setTool(Tool tool) 
+	{
+		Tool prevTool = this.tool;
+		
+		this.tool = tool;
+	
+		for(ResourceListener list : rlisteners)
+			list.toolChanged(prevTool, tool);
+	}
+	
+	public Tool getTool() {
+		return tool;
+	}
+	
+	public Camera getCamera() {
+		return camera;
 	}
 }

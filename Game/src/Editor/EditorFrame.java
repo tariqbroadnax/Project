@@ -24,7 +24,7 @@ public class EditorFrame extends JFrame
 		addWindowListener(this);
 		resources.addSceneListener(this);
 		
-		setSize(800, 600);
+		setSize(1024, 768);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	

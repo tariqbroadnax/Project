@@ -1,0 +1,44 @@
+package Editor.comp;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+import javax.swing.JComponent;
+
+import Graphic.Camera;
+import Graphic.GraphicsContext;
+import Graphic.ShapeGraphic;
+import Maths.Circle2D;
+
+public class Guage extends JComponent
+{
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		g.setColor(Color.pink);
+		g.fillRect(0, 0, getWidth(), getHeight());
+		
+		Dimension size = getSize();
+		
+		Camera camera = new Camera();
+		
+		camera.setTargetAspectRatio(size.width * 1.0 / size.height);
+		camera.setScreenDimension(size);
+		
+		GraphicsContext gc = new GraphicsContext(g, camera);
+
+		Circle2D.Double circ = new Circle2D.Double(0, 0, 50);
+		
+		ShapeGraphic shapeGraph = new ShapeGraphic();
+		
+		shapeGraph.setShape(circ);
+		shapeGraph.setPaint(Color.black);
+		shapeGraph.setFilled(true);
+		
+		shapeGraph.paint(gc);
+		
+		for(double angle = 0; angle < 2*Math.PI;)
+	}
+}

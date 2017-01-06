@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import Editor.headings.ColumnHeading;
 import Editor.headings.RowHeading;
+import Editor.headings.SelectAllButton;
 import Graphic.Camera;
 
 public class ScenePanel extends JPanel 
@@ -20,14 +21,12 @@ public class ScenePanel extends JPanel
 	{
 		setLayout(new BorderLayout());
 		
-		Camera camera = new Camera();
-		
-		ColumnHeading colHeading = new ColumnHeading(resources, camera);
-		rowHeading = new RowHeading(resources, camera);
-		SceneEditor editor = new SceneEditor(resources, camera);
+		ColumnHeading colHeading = new ColumnHeading(resources);
+		rowHeading = new RowHeading(resources);
+		SceneEditor editor = new SceneEditor(resources);
 		
 		northPanel = new JPanel();
-		JButton button = new JButton();
+		JButton button = new SelectAllButton(resources);
 		
 		northPanel.setPreferredSize(new Dimension(800, 25));
 		button.setPreferredSize(new Dimension(25, 25));

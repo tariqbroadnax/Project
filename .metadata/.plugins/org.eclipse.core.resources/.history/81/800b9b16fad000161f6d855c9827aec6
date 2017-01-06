@@ -1,0 +1,20 @@
+package Editor.comp;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+public class Bellow extends JPanel
+{
+	public Bellow(JComponent comp)
+	{
+		setLayout(new BorderLayout());
+		
+		JPanel head = new JPanel();
+		
+		head.setLayout(new BorderLayout());
+		
+		add(comp, BorderLayout.CENTER);
+	}
+}

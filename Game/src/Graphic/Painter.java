@@ -72,45 +72,28 @@ public class Painter
 
 		GraphicsContext gc = 
 				new GraphicsContext(
-						g2d, camera);
+						g2d, camera, imgPool);
 	
 		camera.transformGraphics(gc.g2d);
-
-		gc.setImagePool(imgPool);
-	
-		//for(Paintable p : paintables)
-			//p.paint(gc);
-		
 		
 		for(Paintable p : paintables)
 			p.paint(gc);	
 		
 		gc.g2d.setTransform(new AffineTransform());
-	
-		
-		//for(Component comp : frame.getComponents())
-			//System.out.println(comp);
-		//System.exit(1);
-		
-		frame.paintComponents(gc.g2d);
-		
-		gc.g2d.dispose();
+		frame.paintComponents(gc.g2d);		
 		strategy.show();
+		gc.g2d.dispose();
 	}
 	
-	public Camera getCamera()
-	{
+	public Camera getCamera() {
 		return camera;
 	}
 	
-	public void addPaintable(Paintable p)
-	{
+	public void addPaintable(Paintable p) {
 		paintables.add(p);
 	}
 	
-	public void removePaintable(Paintable p)
-	{
+	public void removePaintable(Paintable p) {
 		paintables.remove(p);
 	}
-
 }

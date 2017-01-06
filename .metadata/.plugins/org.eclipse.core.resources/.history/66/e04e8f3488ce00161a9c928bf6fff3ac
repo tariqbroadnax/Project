@@ -1,0 +1,8 @@
+package Editor;
+
+import Editor.tools.Tool;
+
+public class SelectTool implements Tool
+{
+
+}

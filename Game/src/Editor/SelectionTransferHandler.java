@@ -9,7 +9,7 @@ public abstract class SelectionTransferHandler
 {
 	public SelectionTransferHandler(){}
 	
-	public abstract boolean setSelection(Object obj);
+	public abstract boolean setSelection();
 
 	public abstract void paintSelection(GraphicsContext gc);
 }

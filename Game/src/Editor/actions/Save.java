@@ -2,18 +2,17 @@ package Editor.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import Editor.EditorResources;
-import EditorGUI.GUIResources;
+import Editor.SceneListener;
 import Utilities.GUIUtils;
 
 public class Save extends AbstractAction 
+	implements SceneListener
 {
 	public static final String PATH =
 			"jlfgr-1.0\\toolbarButtonGraphics\\general\\";
@@ -49,7 +48,26 @@ public class Save extends AbstractAction
 				"control S");
 		putValue(ACCELERATOR_KEY, keyStroke);
 		putValue(SMALL_ICON, smallIcon);
-		putValue(LARGE_ICON_KEY, largeIcon);	
+		putValue(LARGE_ICON_KEY, smallIcon);	
+		
+		setEnabled(false);
+		
+		resources.addSceneListener(this);
+	}
+	
+	@Override
+	public void sceneChanged() {
+		setEnabled(true);
+	}
+	
+	@Override
+	public void sceneLoaded() {
+		setEnabled(false);
+	}
+	
+	@Override
+	public void sceneSaved() {
+		setEnabled(false);
 	}
 	
 	@Override

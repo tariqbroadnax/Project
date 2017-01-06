@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import Editor.tile.TileSelectorPanel;
 import Tileset.Tileset;
 
 public class SelectorTabComponent extends ButtonTabComponent

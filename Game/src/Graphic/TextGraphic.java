@@ -2,32 +2,37 @@ package Graphic;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 
-import Utilities.Fonts;
-
 public class TextGraphic extends Graphic
 {
 	protected String text;
 
-	private Font font;
-	
-	private double normHeight;
+	private double charHeight, charWidth;
 		
 	private Paint paint;
+
+	private String fontName;
+
+	private int style;
 	
 	public TextGraphic()
 	{
 		text = "EMPTY";
 		
-		font = new Font("Consolas", Font.PLAIN, 12);
+		fontName = "COURIER";
+		
+		style = Font.PLAIN;
 		
 		paint = Color.RED;
 		
-		normHeight = 10;
+		charHeight = 8;
+		charWidth = 4;
 	}
 	
 	public TextGraphic(TextGraphic graphic)
@@ -36,52 +41,86 @@ public class TextGraphic extends Graphic
 		
 		text = graphic.text;
 	
-		font = graphic.font;
+		fontName = graphic.fontName;
+		
+		style = graphic.style;
 		
 		paint = graphic.paint;
 		
-		normHeight = graphic.normHeight;
+		charHeight = graphic.charHeight;
+		charWidth = graphic.charWidth;
 	}
 			
 	protected void _paint(GraphicsContext gc)
 	{
-		double screenHeight = 
-				gc.camera.screenHeight(normHeight);
+		Font font = new Font(fontName, style, 25);		
 		
-		Font font = Fonts.fontWithHeight(
-				this.font, (int) screenHeight, gc.g2d);
+		FontMetrics metrics = gc.g2d.getFontMetrics(font);
 		
-		Point2D.Double screenLoc = 
-				gc.camera.screenLocation2D(loc);
+		double scrCharW = gc.camera.screenWidth(charWidth),
+			   scrCharH = gc.camera.screenHeight(charHeight);
 		
-		gc.g2d.setPaint(paint);
-		gc.g2d.setFont(font);
-		gc.g2d.drawString(text, (float)screenLoc.x, (float)screenLoc.y);	
+		int w = metrics.stringWidth(" "),
+			h = metrics.getHeight();
+		
+		Graphics2D g2d = (Graphics2D)gc.g2d.create();
+		
+		double scaleX = scrCharW / w,
+			   scaleY = scrCharH / h;
+		
+		g2d.scale(scaleX, scaleY);
+
+		Point2D.Double screenLoc = gc.camera.screenLocation2D(loc);
+		
+		screenLoc.x /= scaleX;
+		screenLoc.y /= scaleY;
+
+		g2d.setPaint(paint);
+		g2d.setFont(font);
+		g2d.drawString(text, (float)screenLoc.x, (float)screenLoc.y);	
+
+		g2d.dispose();
 	}
 
 	public void setText(String text) {
 		this.text = text;
 	}
 	
-	public void setFont(Font font) {
-		this.font = font;
-	}
-	
 	public void setPaint(Paint paint) {
 		this.paint = paint;
 	}
 	
-	public void setHeight(double normHeight) {
-		this.normHeight = normHeight;
+	public void setCharHeight(double charHeight) {
+		this.charHeight = charHeight;
 	}
 	
+	public void setCharWidth(double charWidth) {
+		this.charWidth = charWidth;
+	}
+	
+	public String getText() {
+		return text;
+	}
+	
+	public Paint getPaint() {
+		return paint;
+	}
+	
+	public double getCharHeight() {
+		return charHeight;
+	}
+	
+	public double getCharWidth() {
+		return charWidth;
+	}
+
 	@Override
 	public Double getBound() 
 	{
 		return new Rectangle2D.Double(
-				loc.x , loc.y - normHeight,
-				normHeight * text.length(),
-				normHeight);
+				loc.x , loc.y - charHeight,
+				charWidth * text.length(),
+				charHeight);
 	}
 
 	@Override

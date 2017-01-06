@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import Editor.tile.TileSelectorPanel;
 import Tileset.Tileset;
 
 public class Selector extends JPanel

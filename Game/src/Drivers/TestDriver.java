@@ -1,7 +1,8 @@
 package Drivers;
 
-import Editor.TileMapDialog;
-import Tileset.TileMap;
+import javax.swing.JFrame;
+
+import Editor.comp.MovementEditor;
 
 public class TestDriver
 {
@@ -11,8 +12,13 @@ public class TestDriver
 	
 		//new Game().start();
 	
-		TileMapDialog d = new TileMapDialog();
-		d.setVisible(true);
+		JFrame frame = new JFrame();
+		MovementEditor e = new MovementEditor();
+		
+		frame.add(e);
+		frame.setSize(400, 400);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }
 

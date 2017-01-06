@@ -1,0 +1,48 @@
+package Editor.comp;
+
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+public class Bellow extends JPanel
+{
+	private JComponent comp;
+	
+	public Bellow(JComponent comp)
+	{
+		this.comp = comp;
+		
+		setLayout(new BorderLayout());
+		
+		JButton visibilityBtn = new JButton("");
+		
+		visibilityBtn.addActionListener(e -> toggleContentVisibility());
+		
+		JPanel head = new JPanel();
+		
+		head.setLayout(new BorderLayout());
+		head.add(visibilityBtn, BorderLayout.WEST);
+		
+		add(head, BorderLayout.NORTH);
+		add(comp, BorderLayout.CENTER);
+	}
+	
+	private void paintTriangle(Graphics g)
+	{
+		boolean visible = comp.isVisible();
+
+	}
+
+	private void toggleContentVisibility()
+	{		
+		boolean visible = comp.isVisible();
+		
+		comp.setVisible(!visible);
+		
+		comp.revalidate();
+		comp.repaint();
+	}
+}

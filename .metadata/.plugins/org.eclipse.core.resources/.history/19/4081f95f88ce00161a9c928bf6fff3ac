@@ -1,0 +1,13 @@
+package Editor;
+
+import Editor.tools.Tool;
+
+public class SelectTool implements Tool
+{
+	private boolean ignoreTiles = true;
+	
+	public SelectTool(EditorResources resources)
+	{
+		
+	}
+}

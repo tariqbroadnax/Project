@@ -11,10 +11,11 @@ import Editor.actions.InsertTileMap;
 import Editor.actions.New;
 import Editor.actions.Open;
 import Editor.actions.Paste;
-import Editor.actions.Redo;
 import Editor.actions.Save;
 import Editor.actions.SaveAs;
-import Editor.actions.Undo;
+import Editor.actions.SetEraseTool;
+import Editor.actions.SetSelectTool;
+import Editor.actions.SetStampTool;
 
 public class MenuBar extends JMenuBar
 {
@@ -24,13 +25,15 @@ public class MenuBar extends JMenuBar
 			  editMenu = new JMenu("Edit"),
 			  playMenu = new JMenu("Play"),
 			  viewMenu = new JMenu("View"),
+			  toolMenu = new JMenu("Tool"),
 			  insertMenu = new JMenu("Insert");
 
 		JMenuItem importMenu = new JMenu("Import");
-		
+				
 		add(fileMenu);
 		add(editMenu);
 		add(viewMenu);
+		add(toolMenu);
 		add(playMenu);
 		
 		//add(insertMenu);
@@ -50,5 +53,10 @@ public class MenuBar extends JMenuBar
 		editMenu.add(new Paste());
 		
 		insertMenu.add(new InsertTileMap(resources));
+	
+		toolMenu.add(new SetSelectTool(resources));
+		toolMenu.add(new SetStampTool(resources));
+		toolMenu.add(new SetEraseTool(resources));
+
 	}
 }

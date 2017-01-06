@@ -1,0 +1,31 @@
+package Editor;
+
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+
+import Editor.tools.Tool;
+import Game.Scene;
+
+public class SelectTool implements Tool
+{
+	private boolean ignoreTiles = true;
+	
+	private EditorResources resources;
+	
+	public SelectTool(EditorResources resources)
+	{
+		this.resources = resources;
+	}
+	
+	private void tryAndSelectEntity(Point2D.Double normLoc)
+	{
+		Scene scene = resources.scene;
+		
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		
+	}
+}

@@ -1,0 +1,21 @@
+package Editor;
+
+import Editor.tools.Tool;
+
+public class SelectTool implements Tool
+{
+	private boolean ignoreTiles = true;
+	
+	private EditorResources resources;
+	
+	public SelectTool(EditorResources resources)
+	{
+		this.resources = resources;
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		
+	}
+}

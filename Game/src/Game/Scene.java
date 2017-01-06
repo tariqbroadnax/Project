@@ -184,6 +184,17 @@ public class Scene
 		return visibleEntities;
 	}
 	
+	public Entity entityAtLoc(Point2D.Double normLoc)
+	{		
+		List<Entity> entities = entitiesVisibleAtLocation(normLoc);
+		
+		if(entities.isEmpty())
+			return null;
+		else 
+			return entities.get(0);
+	}
+	
+	
 	public List<Graphic> graphicsAtLocation(Point2D.Double loc)
 	{
 		List<Graphic> visibleGraphics = new ArrayList<Graphic>();
@@ -288,6 +299,15 @@ public class Scene
 	{
 		if(removeQ.add(entity))
 			entity.setSceneLoc(null);
+	}
+	
+	public void removeEntityNow(Entity entity)
+	{
+		entities.remove(entity);
+		
+		for(Class<? extends EntityComponent> c :
+			entity.getComponentClasses())
+			compMap.get(c).remove(entity);
 	}
 	
 	public boolean contains(Entity entity)

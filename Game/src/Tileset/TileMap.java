@@ -2,6 +2,7 @@ package Tileset;
 
 import static java.lang.Math.min;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -123,6 +124,19 @@ public class TileMap extends Graphic
 		tileSize.width = twidth;
 		tileSize.height = theight;
 	}
+	
+	public TMCell cellAtLoc(Point2D.Double normLoc)
+	{
+		int row = row(normLoc.y),
+			col = col(normLoc.x);
+		
+		if (0 <= row && row < rows && 
+		    0 <= col && col < cols)
+			return getCell(row, col);
+		else
+			return null;
+	}
+	
 	
 	public int row(double y)
 	{

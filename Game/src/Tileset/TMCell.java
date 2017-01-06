@@ -20,4 +20,19 @@ public class TMCell
 	public Tile get() {
 		return src.get(row, col);
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof TMCell)
+		{
+			TMCell cell = (TMCell)obj;
+			
+			return src == cell.src &&
+				   row == cell.row &&
+				   col == cell.col;
+		}
+		
+		return false;
+	}
 }

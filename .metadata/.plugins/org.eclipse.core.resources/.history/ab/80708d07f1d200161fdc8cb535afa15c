@@ -1,0 +1,27 @@
+package Editor.comp;
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import javax.swing.JComponent;
+
+import Maths.Circle2D;
+
+public class Guage extends JComponent
+{
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		Graphics2D g2d = (Graphics2D)g.create();
+		
+		int width = getWidth(),
+			height = getHeight();
+		
+		g2d.scale(1, height * 1.0 / width);
+		
+		Circle2D.Double circ = new Circle2D.Double(0, 0, width);
+				
+		g2d.fill(circ);
+	}
+}

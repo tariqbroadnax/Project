@@ -33,7 +33,7 @@ public class ZoomOut extends AbstractAction
 				KeyEvent.VK_O);
 		
 		putValue(SMALL_ICON, smallIcon);
-		putValue(LARGE_ICON_KEY, largeIcon);
+		putValue(LARGE_ICON_KEY, smallIcon);
 	}
 
 	@Override

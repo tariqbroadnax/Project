@@ -33,14 +33,20 @@ public class Camera extends Observable
 	
 	public Camera()
 	{
-		focus = new Point2D.Double();
+		this(800, 600);
+	}
+	
+	public Camera(int screenW, int screenH)
+	{
+		screenSize = new Dimension(screenW, screenH);
+		
+		focus = new Point2D.Double(0, 0);
 		
 		targetAspectRatio = 1.0/1.0;
 		
 		maxWidth = maxHeight = 400;
 		
 		displaySize = new Dimension(400, 400);
-		screenSize = new Dimension(800, 600);
 		
 		zoom = 1;
 	}
@@ -111,6 +117,13 @@ public class Camera extends Observable
 	{
 		return new Dimension(
 				(int)ceil(height * aspectRatio), height);		
+	}
+	
+	public double screenWidth(double width)
+	{
+		Dimension viewSize = viewSize();
+
+		return width * viewSize.width / 100;
 	}
 	
 	public double screenHeight(double height)
@@ -470,6 +483,11 @@ public class Camera extends Observable
 	{
 		focus = new Point2D.Double(
 				focus.x + x, focus.y + y);
+	}
+	
+	public void setTargetAspectRatio(double targetAspectRatio)
+	{
+		this.targetAspectRatio = targetAspectRatio;
 	}
 	
 	public Point2D.Double getFocus()

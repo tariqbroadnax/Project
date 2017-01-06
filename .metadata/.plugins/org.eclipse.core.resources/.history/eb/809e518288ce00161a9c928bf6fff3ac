@@ -1,0 +1,28 @@
+package Editor;
+
+import java.awt.event.MouseEvent;
+
+import Editor.tools.Tool;
+
+public class SelectTool implements Tool
+{
+	private boolean ignoreTiles = true;
+	
+	private EditorResources resources;
+	
+	public SelectTool(EditorResources resources)
+	{
+		this.resources = resources;
+	}
+	
+	private void tryAndSelectEntity()
+	{
+		
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		
+	}
+}

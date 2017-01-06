@@ -1,0 +1,11 @@
+package Editor.comp;
+
+import javax.swing.JPanel;
+
+public class Accordion extends JPanel
+{
+	public void add(JComponent comp)
+	{
+		
+	}
+}

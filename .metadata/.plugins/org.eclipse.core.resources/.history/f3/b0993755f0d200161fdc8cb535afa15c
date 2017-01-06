@@ -1,0 +1,13 @@
+package Editor.comp;
+
+import java.awt.Graphics;
+
+import javax.swing.JComponent;
+
+public class Dial extends JComponent
+{
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+	}
+}

@@ -1,5 +1,6 @@
 package Editor.selection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SelectionHandler 
@@ -8,26 +9,32 @@ public class SelectionHandler
 	
 	private List<SelectionListener> listeners;
 	
+	private boolean sceneSelection;
+	
 	public SelectionHandler()
 	{
-		selection = null;
+		selection = new ArrayList<Object>();
 		
 		listeners = new ArrayList<SelectionListener>();
 	}
 	
-	public void setSelected(Object obj)
+	public void setSelection(Object obj, boolean sceneSelection)
 	{
 		selection.clear();
 		selection.add(obj);
 		
+		this.sceneSelection = sceneSelection;
+		
 		notifyListeners();
 	}
 	
-	public void setSelection(List<Object> objs)
+	public void setSelections(List<? extends Object> objs, boolean sceneSelection)
 	{
 		selection.clear();
 		selection.addAll(objs);
 		
+		this.sceneSelection = sceneSelection;
+
 		notifyListeners();
 	}
 	
@@ -38,24 +45,24 @@ public class SelectionHandler
 		notifyListeners();
 	}
 	
-	public boolean onlySelected(Object obj)
+	public boolean onlySelection(Object obj)
 	{
 		return selection.size() == 1 &&
 			   selection.contains(obj);
 	}
 	
-	public boolean onlySelected(List<Object> objs)
+	public boolean onlySelections(List<? extends Object> objs)
 	{
 		return selection.containsAll(objs) &&
 			   selection.size() == objs.size();
 	}
 	
-	public boolean isSelected(Object obj)
+	public boolean isSelection(Object obj)
 	{
 		return selection.contains(obj);
 	}
 	
-	public boolean isSelected(List<Object> objs)
+	public boolean isSelections(List<? extends Object> objs)
 	{
 		return selection.containsAll(objs);
 	}
@@ -68,16 +75,30 @@ public class SelectionHandler
 	public boolean instanceSelection(Class<? extends Object> c)
 	{
 		for(Object obj : selection)
-			if(!c.isInstance(obj))
+		{
+			if(!obj.getClass().equals(c))
 				return false;
+		}
 		
-		return true;
+		return selection.size() > 0;
 	}
 	
 	public void addSelectionListener(
 			SelectionListener listener)
 	{
 		listeners.add(listener);
+	}
+	
+	public boolean sceneSelection() {
+		return sceneSelection;
+	}
+	
+	public List<Object> getSelection() {
+		return Collections.unmodifiableList(selection);
+	}
+	
+	public int selectionCount() {
+		return selection.size();
 	}
 	
 	private void notifyListeners()

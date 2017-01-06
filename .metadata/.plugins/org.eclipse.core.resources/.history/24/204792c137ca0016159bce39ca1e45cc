@@ -1,5 +1,0 @@
-
-public class SelectionHandler 
-{
-	private List<Object> selected;
-}

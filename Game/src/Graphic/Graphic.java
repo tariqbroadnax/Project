@@ -58,7 +58,8 @@ public abstract class Graphic
 		camera.setScreenDimension(screenSize);
 		
 		Dimension2D.Double normSize = getSize(),
-						   imgSize = camera.sizeOnScreen(normSize);
+						   imgSize = camera.sizeOnScreen2D(screenSize.width,
+								   						   screenSize.height);
 		
 		BufferedImage img = new BufferedImage(
 				(int)imgSize.width, (int)imgSize.height,

@@ -1,0 +1,17 @@
+package Editor;
+
+import javax.swing.JToolBar;
+
+import Editor.actions.New;
+import Editor.actions.Open;
+import Editor.actions.Save;
+
+public class ToolBar extends JToolBar
+{
+	public ToolBar(EditorResources resources)
+	{
+		add(new New(resources));
+		add(new Open(resources));
+		add(new Save(resources));
+	}
+}

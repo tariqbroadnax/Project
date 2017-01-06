@@ -9,11 +9,15 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
 import Editor.EditorResources;
 import Editor.SceneListener;
+import Editor.selection.SelectionHandler;
+import Editor.selection.SelectionListener;
 import EditorGUI.MouseListener;
 import EditorGUI.MouseMotionListener;
 import Graphic.Camera;
@@ -21,23 +25,31 @@ import Graphic.GraphicsContext;
 import Graphic.ShapeGraphic;
 import Graphic.TextGraphic;
 import Maths.Dimension2D;
+import Tileset.TMCell;
 import Tileset.TileMap;
 
 public class RowHeading extends JPanel
-	implements SceneListener, MouseListener, MouseMotionListener
+	implements SceneListener, MouseListener,
+			   MouseMotionListener, SelectionListener
 {
-	private Camera camera;
-	
+	private static int NO_ROW = Integer.MIN_VALUE;
+		
 	private EditorResources resources;
 	
-	private int hoveredRow = -1;
+	private int hoveredRow = NO_ROW;
 	
-	public RowHeading(EditorResources resources, Camera camera)
+	private List<Integer> selectedRows;
+	
+	public RowHeading(EditorResources resources)
 	{
 		this.resources = resources;
-		this.camera = camera;
+		
+		selectedRows = new ArrayList<Integer>();
 		
 		resources.addSceneListener(this);
+		
+		resources.getSelectionHandler()
+				 .addSelectionListener(this);
 		
 		setPreferredSize(new Dimension(25, 600));
 		
@@ -50,6 +62,8 @@ public class RowHeading extends JPanel
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
+	
+		Camera camera = resources.getCamera();
 		
 		TileMap map = resources.scene.getTileMap();
 		
@@ -76,7 +90,7 @@ public class RowHeading extends JPanel
 		ShapeGraphic graph = new ShapeGraphic();
 		TextGraphic txt = new TextGraphic();
 				
-		txt.setHeight(5);
+		txt.setCharHeight(5);
 		txt.setPaint(Color.black);
 		
 		graph.setShape(shape);
@@ -91,7 +105,7 @@ public class RowHeading extends JPanel
 			txt.setLoc(x, y + shape.getHeight());
 			txt.setText("" + row);
 			
-			if(row == hoveredRow)
+			if(row == hoveredRow || selectedRows.contains(row))
 			{
 				graph.setFilled(true);
 				graph.setPaint(new Color(0,0,255,120));
@@ -101,7 +115,6 @@ public class RowHeading extends JPanel
 				graph.setFilled(false);
 				graph.setPaint(Color.black);
 			}
-
 
 			graph.paint(gc);
 			txt.paint(gc);
@@ -117,22 +130,73 @@ public class RowHeading extends JPanel
 	}
 	
 	@Override
+	public void selectionChanged()
+	{
+		updateSelectedRows();
+		repaint();
+	}
+	
+	private void updateSelectedRows()
+	{
+		TileMap tm = resources.scene.getTileMap();
+		
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		selectedRows.clear();
+		
+		for(int row = 0; row < tm.rows; row++)
+		{
+			List<TMCell> cells = tm.getRowCells(row);
+			
+			if(handler.isSelections(cells))
+				selectedRows.add(row);
+		}
+	}
+	
+	@Override
 	public void mouseExited(MouseEvent e)
 	{
-		hoveredRow = -1;
+		hoveredRow = NO_ROW;
 		
 		repaint();
 	}
 	
 	@Override
-	public void mouseMoved(MouseEvent e)
-	{
-		TileMap tm = resources.scene.getTileMap();
-		
-		Point mouseLoc = e.getPoint();
-		Point2D.Double normLoc = camera.normalLocation(mouseLoc);
-		hoveredRow = tm.row(normLoc.y);
+	public void mousePressed(MouseEvent e)
+	{		
+		checkAndSelect();
 		
 		repaint();
+	}
+	
+	private void checkAndSelect()
+	{
+		TileMap tm = resources.scene.getTileMap();
+		List<TMCell> cells = tm.getRowCells(hoveredRow);
+	
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		if(handler.onlySelections(cells))
+			handler.removeSelection();
+		else			
+			handler.setSelections(cells, false);
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e)
+	{
+		Point mouseLoc = e.getPoint();
+		
+		updateHoveredRow(mouseLoc);
+		repaint();
+	}
+	
+	private void updateHoveredRow(Point mouseLoc)
+	{
+		TileMap tm = resources.scene.getTileMap();
+		Camera camera = resources.getCamera();
+		
+		Point2D.Double normLoc = camera.normalLocation(mouseLoc);
+		hoveredRow = tm.row(normLoc.y);
 	}
 }

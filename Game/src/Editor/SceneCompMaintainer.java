@@ -25,15 +25,13 @@ public class SceneCompMaintainer implements SceneListener
 	private Map<Entity, JComponent> entMap;
 	
 	private EditorResources resources;
-	private Camera camera;
 	private SceneEditor editor;
 
 	public SceneCompMaintainer(
 			EditorResources resources,
-			Camera camera, SceneEditor editor)
+			SceneEditor editor)
 	{
 		this.resources = resources;
-		this.camera = camera;
 		this.editor = editor;
 		
 		graphMap = new HashMap<Graphic, JComponent>();
@@ -79,6 +77,8 @@ public class SceneCompMaintainer implements SceneListener
 			List<Graphic> sceneGraphs,
 			List<Graphic> visGraphs, List<Graphic> nonvisGraphs)
 	{
+		Camera camera = resources.getCamera();
+		
 		for(Graphic graph : sceneGraphs)
 		{
 			Rectangle2D.Double bound = graph.getBound();
@@ -94,6 +94,8 @@ public class SceneCompMaintainer implements SceneListener
 			List<Entity> ents, 
 			List<Entity> visEnts, List<Entity> nonvisEnts)
 	{
+		Camera camera = resources.getCamera();
+		
 		for(Entity ent : ents)
 		{
 			Rectangle2D.Double bound = ent.get(GraphicsComponent.class)
@@ -178,7 +180,7 @@ public class SceneCompMaintainer implements SceneListener
 	{
 		if(graph instanceof TileMap)
 		{
-			TileMapComp comp = new TileMapComp(resources, (TileMap)graph, camera);
+			TileMapComp comp = new TileMapComp(resources, (TileMap)graph);
 			return comp;
 		}
 		
@@ -187,6 +189,6 @@ public class SceneCompMaintainer implements SceneListener
 	
 	private JComponent entComp(Entity ent)
 	{
-		return new SceneEntityComponent(resources, ent, camera);
+		return new SceneEntityComponent(resources, ent);
 	}
 }

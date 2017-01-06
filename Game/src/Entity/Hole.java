@@ -206,11 +206,11 @@ public class Hole extends Entity
 			super._paint(gc);
 			
 			Point2D.Double loc = 
-					gc.camera.screenLocation(
+					gc.camera.screenLocation2D(
 							ellipse.x, ellipse.y);
 			
 			Dimension2D.Double size =
-					gc.camera.sizeOnScreen(
+					gc.camera.sizeOnScreen2D(
 							ellipse.width, ellipse.height);
 			
 			Ellipse2D.Double ellipse =

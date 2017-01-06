@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import Editor.EditorResources;
-import Editor.TileMapDialog;
+import Editor.tile.TileMapDialog;
 
 public class InsertTileMap extends AbstractAction
 {	

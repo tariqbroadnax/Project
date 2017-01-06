@@ -1,0 +1,6 @@
+package Editor.tools;
+
+public class MoveTool implements Tool
+{
+
+}

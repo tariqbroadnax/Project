@@ -1,5 +1,6 @@
 package Graphic;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -18,6 +19,11 @@ public class GraphicsContext
 		this(g, new Camera());
 	}
 	
+	public GraphicsContext(Graphics g, Dimension screenSize)
+	{
+		this(g, new Camera(screenSize.width, screenSize.height));
+	}
+		
 	public GraphicsContext(
 			Graphics g, Camera camera)
 	{

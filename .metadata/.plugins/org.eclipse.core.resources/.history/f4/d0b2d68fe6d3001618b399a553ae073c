@@ -1,0 +1,79 @@
+package Editor.comp;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+
+public class MovementEditor extends JPanel
+{
+	private JLabel speedLbl, dirLbl,
+				   enabledLbl;
+	
+	private JTextField speedFld, dirFld;
+	
+	private JToggleButton enabledBtn;
+	
+	public MovementEditor()
+	{
+		speedLbl = new JLabel("Speed");
+		dirLbl = new JLabel("Direction");
+		enabledLbl = new JLabel("Enabled");
+		
+		speedFld = new JTextField();
+		dirFld = new JTextField();
+		
+		enabledBtn = new JToggleButton();
+		
+		setLayout(new GridBagLayout());
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+		
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		add(speedLbl, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.fill = GridBagConstraints.BOTH;
+		add(speedFld, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		add(dirLbl, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.fill = GridBagConstraints.BOTH;
+		add(dirFld, gbc);
+
+		
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		add(enabledLbl, gbc);
+
+		
+		
+		// gbc.fill = GridBagConstraints.BOTH;
+	}
+
+}

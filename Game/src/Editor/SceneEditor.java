@@ -11,54 +11,45 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.JPanel;
 
+import Editor.tile.TMComponent;
+import Editor.tools.Tool;
 import EditorGUI.UndoManager;
 import Game.Scene;
 import Graphic.Camera;
 import Graphic.GraphicsContext;
-import Maths.Vector2D;
 
 public class SceneEditor extends JPanel
 	implements MouseListener, MouseMotionListener,
 			   KeyListener, SceneListener,
-			   FocusListener
+			   FocusListener, ResourceListener
 {
 	private EditorResources resources;
 	
 	private Scene scene;
 	
-	private Camera camera;
-	
-	private List<SelectionTransferHandler> STHs;
-
-	private SelectionTransferHandler currSTH;
+	private Tool currTool;
 	
 	private Point lastp, p;
-	
-	private UndoManager undoManager;
-	
-	public SceneEditor(EditorResources resources, Camera camera)
+
+	public SceneEditor(EditorResources resources)
 	{
 		this.resources = resources;
 		
 		scene = resources.scene;
+				
+		currTool = resources.getTool();
 		
-		this.camera = camera;
-		
-		STHs = new LinkedList<SelectionTransferHandler>();
-	
-		undoManager = new UndoManager();
+		addMouseListener(currTool);
+		addMouseMotionListener(currTool);
 		
 		SceneCompMaintainer maintainer = new SceneCompMaintainer(
-				resources, camera, this);
+				resources, this);
 		
-		STHs.add(new TileTransferHandler(resources, camera, undoManager));
-	//	STHs.add(new EntityTransferHandler(resources, undoManager));
-		
+		TMComponent tmComp = new TMComponent(resources, this);
+				
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);
@@ -66,7 +57,10 @@ public class SceneEditor extends JPanel
 		
 		setLayout(null);
 		resources.addSceneListener(this);
+		resources.addResourceListener(this);
 		setPreferredSize(new Dimension(800, 600));
+	
+		add(tmComp);
 	}
 	
 	public void paintComponent(Graphics g)
@@ -75,6 +69,8 @@ public class SceneEditor extends JPanel
 		
 		Dimension size = getSize();
 		
+		Camera camera = resources.getCamera();
+		
 		camera.setScreenDimension(size);
 		
 		GraphicsContext gc = new GraphicsContext(
@@ -82,19 +78,21 @@ public class SceneEditor extends JPanel
 	
 		scene.paint(gc);
 		
-		if(currSTH != null)
-			currSTH.paintSelection(gc);
+		if(currTool != null)
+			currTool.paint(g);
 		
 		gc.g2d.dispose();
 	}
 	
-	private void slide()
+	@Override
+	public void toolChanged(
+			Tool prevTool, Tool newTool)
 	{
-		Vector2D.Double shift = camera.normalVector(
-				lastp.x - p.x, lastp.y - p.y);
-
-		camera.moveFocus(shift);
-		resources.notifyOfSceneChange();		
+		removeMouseListener(prevTool);
+		removeMouseMotionListener(prevTool);
+		
+		addMouseListener(newTool);
+		addMouseMotionListener(newTool);
 	}
 	
 	protected void addImpl(
@@ -111,30 +109,12 @@ public class SceneEditor extends JPanel
 	@Override
 	public void mouseEntered(MouseEvent e) 
 	{
-		if(resources.selection == null)
-			return;
-		
-		for(SelectionTransferHandler sth : STHs)
-			if(sth.setSelection(resources.selection))
-			{	
-				currSTH = sth;
-				addMouseListener(currSTH);
-				addMouseMotionListener(currSTH);
-				break;
-			}
+	
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) 
-	{
-		if(currSTH != null)
-		{
-			removeMouseListener(currSTH);
-			removeMouseMotionListener(currSTH);
-			currSTH = null;
-		}
-		
-		repaint();
+	{		
 	}
 
 	@Override
@@ -142,10 +122,6 @@ public class SceneEditor extends JPanel
 	{
 		requestFocusInWindow();
 		p = e.getPoint();
-
-		if(resources.selection != null &&
-		   resources.sceneSelection)
-			resources.selection = null;
 
 		repaint();
 	}
@@ -162,8 +138,8 @@ public class SceneEditor extends JPanel
 		lastp = p;
 		p = e.getPoint();
 		
-		if(currSTH == null)
-			slide();
+		//if(currSTH == null)
+		//	slide();
 		
 		repaint();
 	}
@@ -171,8 +147,8 @@ public class SceneEditor extends JPanel
 	@Override
 	public void mouseMoved(MouseEvent e) 
 	{
-		if(currSTH == null)
-			return;
+		//if(currSTH == null)
+			//return;
 		
 		p = e.getPoint();
 		repaint();
@@ -181,6 +157,8 @@ public class SceneEditor extends JPanel
 	@Override
 	public void keyPressed(KeyEvent e) 
 	{
+		Camera camera = resources.getCamera();
+		
 		int kc = e.getKeyCode();
 		
 		switch(kc)
@@ -222,6 +200,8 @@ public class SceneEditor extends JPanel
 	@Override
 	public void focusGained(FocusEvent e) 
 	{
+		UndoManager undoManager = resources.getUndoManager();
+		
 		resources.getUndoAction()
 				 .setUndoManager(undoManager);
 		

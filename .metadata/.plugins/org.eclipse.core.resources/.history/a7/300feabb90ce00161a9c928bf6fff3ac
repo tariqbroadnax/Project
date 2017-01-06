@@ -1,0 +1,36 @@
+package Editor.actions;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
+import Editor.EditorResources;
+import Editor.ResourceListener;
+import Editor.tools.Tool;
+
+public class SetSelectTool extends AbstractAction
+	implements ResourceListener
+{
+	public SetSelectTool(EditorResources resources)
+	{
+		resources.addResourceListener(this);
+		
+		Tool tool = resources.getTool();
+		
+		if(tool == resources.SELECT_TOOL)
+			setEnabled(false);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+	
+		
+	}
+	
+	public void toolChanged(Tool prevTool, Tool newTool)
+	{
+		
+	}
+
+}

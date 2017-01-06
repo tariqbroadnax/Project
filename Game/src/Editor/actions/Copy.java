@@ -41,7 +41,7 @@ public class Copy extends AbstractAction
 				KeyStroke.getKeyStroke("control C");
 		putValue(ACCELERATOR_KEY, keyStroke);
 		putValue(SMALL_ICON, smallIcon);
-		putValue(LARGE_ICON_KEY, largeIcon);
+		putValue(LARGE_ICON_KEY, smallIcon);
 	}
 
 	@Override

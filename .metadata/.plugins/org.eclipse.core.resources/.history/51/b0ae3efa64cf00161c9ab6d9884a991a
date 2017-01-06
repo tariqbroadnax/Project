@@ -1,0 +1,39 @@
+package Editor.tools;
+
+import java.awt.Graphics;
+import java.awt.geom.Point2D;
+import java.util.List;
+
+import EditorGUI.MouseListener;
+import EditorGUI.MouseMotionListener;
+import Entity.Entity;
+import Game.Scene;
+import Tileset.TileMap;
+
+public interface Tool 
+	extends MouseListener, MouseMotionListener 
+{
+	public default void paint(Graphics g){}
+	
+	public static Entity entityAtLoc(Scene scene, Point2D.Double normLoc)
+	{		
+		List<Entity> entities = 
+				scene.entitiesVisibleAtLocation(normLoc);
+		
+		if(entities.isEmpty())
+			return null;
+		else 
+			return entities.get(0);
+	}
+	
+	private boolean cellAtLoc(Point2D.Double normLoc)
+	{
+		TileMap tm = resources.scene.getTileMap();
+		
+		int row = tm.row(normLoc.y),
+			col = tm.col(normLoc.x);
+		
+		return (0 <= row && row < tm.rows && 
+				0 <= col && col < tm.cols);
+	}
+}

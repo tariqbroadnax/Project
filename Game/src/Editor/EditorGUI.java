@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
+import Editor.comp.Accordion;
+import Editor.comp.Guage;
 import Editor.entity_selector.EntitySelector;
 
 public class EditorGUI 
@@ -39,17 +41,31 @@ public class EditorGUI
 		ScenePanel scenePnl = new ScenePanel(resources);
 		
 		MultiSplitPane pane = new MultiSplitPane();
+
+		Guage guage = new Guage();
+		guage.setSize(400, 400);
+		
+		Accordion acc = new Accordion();
+		acc.add(selector);
+		//acc.add(guage);
 		
 		JPanel right = new JPanel();
 		right.setLayout(new BorderLayout());
-		right.add(selector, BorderLayout.CENTER);
+		right.add(acc, BorderLayout.CENTER);
 		right.add(new EntitySelector(resources), BorderLayout.NORTH);
-		
-		
+			
 		pane.setCenterComponent(scenePnl);
 		pane.setRightComponent(right);
+	
+		JPanel pnl = new JPanel();
+		ToolBar toolbar = new ToolBar(resources);
 		
-		frame.add(pane);
+		pnl.setLayout(new BorderLayout());
+		
+		pnl.add(toolbar, BorderLayout.NORTH);
+		pnl.add(pane, BorderLayout.CENTER);
+		
+		frame.add(pnl);
 		frame.setVisible(true);
 
 		/*resources = new GUIResources();

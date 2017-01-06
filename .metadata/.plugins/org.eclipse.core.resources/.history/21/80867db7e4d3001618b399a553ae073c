@@ -1,0 +1,10 @@
+package Editor.comp;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class MovementEditor extends JPanel
+{
+	private JLabel speedLbl, dirLbl,
+				   enabledLvl;
+}
