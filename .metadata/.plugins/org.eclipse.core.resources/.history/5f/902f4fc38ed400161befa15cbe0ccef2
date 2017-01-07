@@ -1,0 +1,14 @@
+package Editor.comp;
+
+import javax.swing.JLabel;
+
+public class CellForm extends Form
+{
+	public CellForm()
+	{
+		JLabel rowLbl = new JLabel("Row"),
+			   colLbl = new JLabel("Column");
+
+		NumberSpinnerModel rowModel = new NumberSpinnerModel(1, 0, 39, 1);
+	}
+}

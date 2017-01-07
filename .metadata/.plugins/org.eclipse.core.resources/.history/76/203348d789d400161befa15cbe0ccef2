@@ -1,0 +1,17 @@
+package Editor.comp;
+
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+
+public class GForm extends Form
+{
+	public GForm()
+	{
+		JLabel visibleLbl = new JLabel("Visible"),
+			   hiddenLbl = new JLabel("Hidden");
+		
+		JRadioButton visibleBtn = new JRadioButton("hello");
+		
+		addComponent(visibleBtn, 0, 0);
+	}
+}

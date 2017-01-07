@@ -11,8 +11,12 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import Editor.tile.TMComponent;
 import Editor.tools.Tool;
@@ -20,9 +24,12 @@ import EditorGUI.UndoManager;
 import Game.Scene;
 import Graphic.Camera;
 import Graphic.GraphicsContext;
+import Maths.Vector2D;
+import Maths.Vector2D.Double;
 
 public class SceneEditor extends JPanel
 	implements MouseListener, MouseMotionListener,
+			   MouseWheelListener,
 			   KeyListener, SceneListener,
 			   FocusListener, ResourceListener
 {
@@ -32,7 +39,9 @@ public class SceneEditor extends JPanel
 	
 	private Tool currTool;
 	
-	private Point lastp, p;
+	private Point2D.Double focus;
+	
+	private Point startp, currp;
 
 	public SceneEditor(EditorResources resources)
 	{
@@ -41,6 +50,8 @@ public class SceneEditor extends JPanel
 		scene = resources.scene;
 				
 		currTool = resources.getTool();
+	
+		focus = new Point2D.Double();
 		
 		addMouseListener(currTool);
 		addMouseMotionListener(currTool);
@@ -52,6 +63,7 @@ public class SceneEditor extends JPanel
 				
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addMouseWheelListener(this);
 		addKeyListener(this);
 		addFocusListener(this);
 		
@@ -120,9 +132,16 @@ public class SceneEditor extends JPanel
 	@Override
 	public void mousePressed(MouseEvent e) 
 	{
+		startp = e.getPoint();
+		
+		Point2D.Double focus = resources.getCamera()
+									    .getFocus();
+		
+		this.focus.x = focus.x;
+		this.focus.y = focus.y;
+		
 		requestFocusInWindow();
-		p = e.getPoint();
-
+		
 		repaint();
 	}
 
@@ -132,14 +151,25 @@ public class SceneEditor extends JPanel
 		
 	}
 
+	private void slide()
+	{
+		Camera camera = resources.getCamera();
+		
+		Vector2D.Double shift = 
+				camera.normalVector(startp.x - currp.x, startp.y - currp.y);
+		
+		camera.setFocus(focus.x + shift.x, focus.y + shift.y);
+	
+		resources.notifyOfSceneChange();
+	}
+	
 	@Override
 	public void mouseDragged(MouseEvent e) 
 	{
-		lastp = p;
-		p = e.getPoint();
+		currp = e.getPoint();
 		
-		//if(currSTH == null)
-		//	slide();
+		if(SwingUtilities.isMiddleMouseButton(e))
+			slide();
 		
 		repaint();
 	}
@@ -150,7 +180,6 @@ public class SceneEditor extends JPanel
 		//if(currSTH == null)
 			//return;
 		
-		p = e.getPoint();
 		repaint();
 	}
 
@@ -211,4 +240,16 @@ public class SceneEditor extends JPanel
 
 	@Override
 	public void focusLost(FocusEvent e) {}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) 
+	{
+		int rotation = e.getWheelRotation();
+		
+		Camera camera = resources.getCamera();
+		
+		camera.moveFocus(0, rotation * 5);
+		
+		resources.notifyOfSceneChange();
+	}
 }

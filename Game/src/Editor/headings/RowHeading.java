@@ -25,6 +25,7 @@ import Graphic.GraphicsContext;
 import Graphic.ShapeGraphic;
 import Graphic.TextGraphic;
 import Maths.Dimension2D;
+import Maths.Maths;
 import Tileset.TMCell;
 import Tileset.TileMap;
 
@@ -62,7 +63,7 @@ public class RowHeading extends JPanel
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-	
+		
 		Camera camera = resources.getCamera();
 		
 		TileMap map = resources.scene.getTileMap();
@@ -89,8 +90,8 @@ public class RowHeading extends JPanel
 		
 		ShapeGraphic graph = new ShapeGraphic();
 		TextGraphic txt = new TextGraphic();
-				
-		txt.setCharHeight(5);
+			
+		txt.setCharHeight(6);
 		txt.setPaint(Color.black);
 		
 		graph.setShape(shape);
@@ -101,7 +102,14 @@ public class RowHeading extends JPanel
 		for(int row = startRow; row < endRow; row++)
 		{
 			double y = map.y(row);
+			
 			graph.setLoc(x + shape.width/2, y + shape.height/2);
+			
+			if(Maths.len(row) <= 2)
+				txt.setCharWidth(3);
+			else
+				txt.setCharWidth(2);
+			
 			txt.setLoc(x, y + shape.getHeight());
 			txt.setText("" + row);
 			

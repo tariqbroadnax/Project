@@ -1,0 +1,20 @@
+package Editor.comp;
+
+import javax.swing.JLabel;
+
+public class ShapeGraphicForm extends Form
+{
+	public ShapeGraphicForm()
+	{
+		ShapeForm shapeForm = new ShapeForm();
+		
+		JLabel colorLbl = new JLabel("Color"),
+			   filledLbl = new JLabel("Filled");
+		
+		ColorField colorField = new ColorField();
+	
+		addField(shapeForm, 0, 0, 2);
+		addComponent(colorLbl, 0, 1, 1);
+		addComponent(colorField, 1, 1, 1);
+	}
+}

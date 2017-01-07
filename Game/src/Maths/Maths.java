@@ -10,6 +10,11 @@ import static java.lang.Math.*;
 
 public class Maths 
 {
+	public static int len(int num)
+	{
+		return ("" + num).length();
+	}
+	
 	public static Point2D.Double[] points(Rectangle2D.Double rect)
 	{
 		Point2D.Double[] points = new Point2D.Double[]

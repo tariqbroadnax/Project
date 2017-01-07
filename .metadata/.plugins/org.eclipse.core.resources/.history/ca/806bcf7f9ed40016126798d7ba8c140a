@@ -1,0 +1,11 @@
+package Graphic;
+
+import Editor.comp.Form;
+
+public class TextGraphicForm extends Form
+{
+	public TextGraphicForm()
+	{
+		
+	}
+}

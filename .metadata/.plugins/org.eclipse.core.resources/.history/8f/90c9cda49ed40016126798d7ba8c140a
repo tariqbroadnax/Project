@@ -1,0 +1,16 @@
+package Graphic;
+
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+import Editor.comp.Form;
+
+public class TextGraphicForm extends Form
+{
+	public TextGraphicForm()
+	{
+		JLabel txtLvl = new JLabel("Text");
+		
+		JTextField txtFld = new JTextField();
+	}
+}

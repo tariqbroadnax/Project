@@ -1,0 +1,23 @@
+package Editor.comp;
+
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
+public class ShapeForm extends Form
+{
+	public ShapeForm()
+	{
+		String[] shapeStrs = {"Rectangle", "Oval"};
+		
+		JComboBox<String> shapeBox = new JComboBox<String>(shapeStrs);
+		
+		DimForm dimForm = new DimForm();
+		
+		JPanel fill = new JPanel();
+		
+		addComponent(shapeBox, 0, 0, 1);
+		addField(fill, 1, 0, 1);
+		addComponent(dimForm, 0, 1, 2);
+
+	}
+}

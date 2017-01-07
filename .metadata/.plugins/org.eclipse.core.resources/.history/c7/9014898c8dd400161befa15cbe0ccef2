@@ -1,0 +1,23 @@
+package Editor.comp;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
+
+public class SpriteForm extends Form
+{
+	public SpriteForm()
+	{
+		JLabel filenameLbl = new JLabel("Filename");
+		
+		JTextField filenameFld = new JTextField();
+	
+		DimForm sizeForm = new DimForm();
+		TitledBorder sizeBorder = BorderFactory.createTitledBorder("Size");
+		
+		addComponent(filenameLbl, 0, 0, 1);
+		addComponent(filenameFld, 1, 0, 1);
+	}
+	
+}

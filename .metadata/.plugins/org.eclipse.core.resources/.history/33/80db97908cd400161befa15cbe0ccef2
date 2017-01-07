@@ -1,0 +1,9 @@
+package Editor.comp;
+
+public class DimForm extends Form
+{
+	public DimForm()
+	{
+		
+	}
+}

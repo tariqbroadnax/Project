@@ -1,0 +1,25 @@
+package Editor.comp;
+
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+
+public class GForm extends Form
+{
+	public GForm()
+	{
+		JRadioButton visibleBtn = new JRadioButton("Visible"),
+					 hiddenBtn = new JRadioButton("Hidden");
+		
+		JLabel zLabel = new JLabel("z:");
+		
+		Integer[] zs = {1, 2, 3, 4, 5};
+		
+		JComboBox<Integer> zBox = new JComboBox<Integer>(zs);
+		
+		addComponent(visibleBtn, 0, 0);
+		addComponent(hiddenBtn, 1, 0);
+		addComponent(zLabel, 0, 1);
+		addComponent(zBox, 1, 1);
+	}
+}

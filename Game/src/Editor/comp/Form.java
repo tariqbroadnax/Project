@@ -3,8 +3,7 @@ package Editor.comp;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
-import javax.swing.AbstractButton;
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -19,38 +18,29 @@ public class Form extends JPanel
 		gbc = new GridBagConstraints();
 		
 		gbc.insets.set(5, 5, 5, 5);
-		gbc.gridwidth = gbc.gridheight = 1;
+		gbc.gridheight = 1;
 	}
 	
-	public void addLabel(JLabel label, int gridx, int gridy)
+	public void addComponent(JComponent comp, int gridx, int gridy, int gridwidth)
 	{
 		gbc.gridx = gridx;
 		gbc.gridy = gridy;
 		gbc.weightx = 0;
+		gbc.gridwidth = gridwidth;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.anchor = GridBagConstraints.LINE_START;
 		
-		add(label, gbc);
+		add(comp, gbc);
 	}
 	
-	public void addField(JTextField field, int gridx, int gridy)
+	public void addField(JComponent comp, int gridx, int gridy, int gridwidth)
 	{
 		gbc.gridx = gridx;
 		gbc.gridy = gridy;
 		gbc.weightx = 1;
+		gbc.gridwidth = gridwidth;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		
-		add(field, gbc);
+		add(comp, gbc);
 	}
-	
-	public void addButton(AbstractButton button, int gridx, int gridy)
-	{
-		gbc.gridx = gridx;
-		gbc.gridy = gridy;
-		gbc.weightx = 0;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		
-		add(button, gbc);
-	}	
 }

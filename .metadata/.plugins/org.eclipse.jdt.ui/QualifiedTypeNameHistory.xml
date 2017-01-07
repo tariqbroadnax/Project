@@ -13,7 +13,6 @@
 <fullyQualifiedTypeName name="javax.swing.JOptionPane"/>
 <fullyQualifiedTypeName name="java.io.ObjectOutputStream"/>
 <fullyQualifiedTypeName name="javax.swing.undo.UndoableEdit"/>
-<fullyQualifiedTypeName name="javax.swing.SwingUtilities"/>
 <fullyQualifiedTypeName name="java.awt.BorderLayout"/>
 <fullyQualifiedTypeName name="EditorGUI.MouseMotionListener"/>
 <fullyQualifiedTypeName name="java.util.Collections"/>
@@ -30,7 +29,6 @@
 <fullyQualifiedTypeName name="EditorGUI.UndoManager"/>
 <fullyQualifiedTypeName name="Editor.Mode"/>
 <fullyQualifiedTypeName name="EditorGUI.MouseListener"/>
-<fullyQualifiedTypeName name="java.awt.Graphics"/>
 <fullyQualifiedTypeName name="Editor.tools.Tool"/>
 <fullyQualifiedTypeName name="Entity.Entity"/>
 <fullyQualifiedTypeName name="java.util.List"/>
@@ -46,8 +44,15 @@
 <fullyQualifiedTypeName name="java.awt.FontMetrics"/>
 <fullyQualifiedTypeName name="Graphic.TextGraphic"/>
 <fullyQualifiedTypeName name="java.awt.geom.Line2D.Double"/>
+<fullyQualifiedTypeName name="javax.swing.JFrame"/>
+<fullyQualifiedTypeName name="javax.swing.BorderFactory"/>
+<fullyQualifiedTypeName name="java.awt.Color"/>
+<fullyQualifiedTypeName name="java.awt.Graphics"/>
+<fullyQualifiedTypeName name="javax.swing.JColorChooser"/>
+<fullyQualifiedTypeName name="Maths.Maths"/>
+<fullyQualifiedTypeName name="javax.swing.SwingUtilities"/>
+<fullyQualifiedTypeName name="Graphic.Vector2D"/>
+<fullyQualifiedTypeName name="Maths.Vector2D"/>
 <fullyQualifiedTypeName name="java.awt.geom.Point2D"/>
 <fullyQualifiedTypeName name="java.awt.geom.Point2D.Double"/>
-<fullyQualifiedTypeName name="javax.swing.JFrame"/>
-<fullyQualifiedTypeName name="java.awt.Color"/>
 </qualifiedTypeNameHistroy>

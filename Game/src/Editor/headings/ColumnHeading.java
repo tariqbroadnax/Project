@@ -26,6 +26,7 @@ import Graphic.GraphicsContext;
 import Graphic.ShapeGraphic;
 import Graphic.TextGraphic;
 import Maths.Dimension2D;
+import Maths.Maths;
 import Tileset.TMCell;
 import Tileset.TileMap;
 
@@ -106,8 +107,14 @@ public class ColumnHeading extends JPanel
 			double x = map.x(col);
 			
 			graph.setLoc(x + shape.width/2, y + shape.height/2);
+
+			if(Maths.len(col) <= 2)
+				txt.setCharWidth(3);
+			else
+				txt.setCharWidth(2);
 			
-			txt.setLoc(x, y + shape.height);
+			txt.setLoc(x + shape.width/2 - Maths.len(col) * txt.getCharWidth()/2, y + shape.height);
+			
 			txt.setText("" + col);
 			
 			if(col == hoveredCol || selectedCols.contains(col))

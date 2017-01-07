@@ -1,10 +1,11 @@
 package Editor;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
-import Editor.comp.Accordion;
 import Editor.comp.Guage;
 import Editor.entity_selector.EntitySelector;
 
@@ -45,14 +46,25 @@ public class EditorGUI
 		Guage guage = new Guage();
 		guage.setSize(400, 400);
 		
-		Accordion acc = new Accordion();
-		acc.add(selector);
+		//Accordion acc = new Accordion();
+		//acc.add(selector);
 		//acc.add(guage);
 		
 		JPanel right = new JPanel();
-		right.setLayout(new BorderLayout());
-		right.add(acc, BorderLayout.CENTER);
-		right.add(new EntitySelector(resources), BorderLayout.NORTH);
+		JTabbedPane toolPane = new JTabbedPane(),
+					editPane = new JTabbedPane();
+		
+		right.setLayout(new GridLayout(0, 2));
+		right.add(toolPane);
+		right.add(editPane);
+		
+		toolPane.add("Entities", new EntitySelector(resources));
+		toolPane.add("Tilesets", selector);
+		
+		editPane.add("Inspector", new JPanel());
+		
+		//right.add(acc, BorderLayout.CENTER);
+		//right.add(new EntitySelector(resources), BorderLayout.NORTH);
 			
 		pane.setCenterComponent(scenePnl);
 		pane.setRightComponent(right);

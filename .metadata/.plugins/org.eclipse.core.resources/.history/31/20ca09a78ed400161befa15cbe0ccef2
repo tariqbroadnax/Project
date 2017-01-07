@@ -1,0 +1,14 @@
+package Editor.comp;
+
+import javax.swing.JLabel;
+
+public class CellForm extends Form
+{
+	public CellForm()
+	{
+		JLabel rowLbl = new JLabel("Row"),
+			   colLbl = new JLabel("Column");
+
+		
+	}
+}
