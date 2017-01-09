@@ -1,0 +1,19 @@
+package Editor.comp;
+
+import javax.swing.JLabel;
+
+import Editor.DoubleField;
+
+public class Point2DForm extends Form
+{
+	public Point2DForm()
+	{
+		JLabel xLbl = new JLabel("X"),
+			   yLbl = new JLabel("Y");
+		
+		DoubleField xFld = new DoubleField(),
+				    yFld = new DoubleField();
+		
+		addComponent(xLbl, 0, 0, 1);
+	}
+}

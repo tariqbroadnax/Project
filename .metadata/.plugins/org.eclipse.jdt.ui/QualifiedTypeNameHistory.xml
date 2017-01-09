@@ -8,7 +8,6 @@
 <fullyQualifiedTypeName name="Tileset.TileMap"/>
 <fullyQualifiedTypeName name="Entity.Player"/>
 <fullyQualifiedTypeName name="javax.swing.TransferHandler"/>
-<fullyQualifiedTypeName name="EntityComponent.GraphicsComponent"/>
 <fullyQualifiedTypeName name="Editor.EditorResources"/>
 <fullyQualifiedTypeName name="javax.swing.JOptionPane"/>
 <fullyQualifiedTypeName name="java.io.ObjectOutputStream"/>
@@ -24,14 +23,11 @@
 <fullyQualifiedTypeName name="java.awt.geom.Rectangle2D"/>
 <fullyQualifiedTypeName name="java.awt.geom.Rectangle2D.Double"/>
 <fullyQualifiedTypeName name="Editor.selection.SelectionHandler"/>
-<fullyQualifiedTypeName name="Editor.selection.SelectionListener"/>
 <fullyQualifiedTypeName name="Editor.layer_selector.SetTiles"/>
 <fullyQualifiedTypeName name="EditorGUI.UndoManager"/>
 <fullyQualifiedTypeName name="Editor.Mode"/>
 <fullyQualifiedTypeName name="EditorGUI.MouseListener"/>
 <fullyQualifiedTypeName name="Editor.tools.Tool"/>
-<fullyQualifiedTypeName name="Entity.Entity"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="Editor.ResourceListener"/>
 <fullyQualifiedTypeName name="Editor.actions.SetStampTool"/>
 <fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
@@ -45,7 +41,6 @@
 <fullyQualifiedTypeName name="Graphic.TextGraphic"/>
 <fullyQualifiedTypeName name="java.awt.geom.Line2D.Double"/>
 <fullyQualifiedTypeName name="javax.swing.JFrame"/>
-<fullyQualifiedTypeName name="javax.swing.BorderFactory"/>
 <fullyQualifiedTypeName name="java.awt.Color"/>
 <fullyQualifiedTypeName name="java.awt.Graphics"/>
 <fullyQualifiedTypeName name="javax.swing.JColorChooser"/>
@@ -54,5 +49,15 @@
 <fullyQualifiedTypeName name="Graphic.Vector2D"/>
 <fullyQualifiedTypeName name="Maths.Vector2D"/>
 <fullyQualifiedTypeName name="java.awt.geom.Point2D"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="javax.swing.AbstractListModel"/>
+<fullyQualifiedTypeName name="EntityComponent.GraphicsComponent"/>
+<fullyQualifiedTypeName name="Movement.MovementComponent"/>
+<fullyQualifiedTypeName name="EntityComponent.LifetimeComponent"/>
+<fullyQualifiedTypeName name="java.awt.Dialog"/>
+<fullyQualifiedTypeName name="java.awt.Dialog.ModalityType"/>
+<fullyQualifiedTypeName name="javax.swing.BorderFactory"/>
+<fullyQualifiedTypeName name="Editor.selection.SelectionListener"/>
 <fullyQualifiedTypeName name="java.awt.geom.Point2D.Double"/>
+<fullyQualifiedTypeName name="Entity.Entity"/>
 </qualifiedTypeNameHistroy>

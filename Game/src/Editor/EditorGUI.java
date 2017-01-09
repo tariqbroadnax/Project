@@ -61,7 +61,7 @@ public class EditorGUI
 		toolPane.add("Entities", new EntitySelector(resources));
 		toolPane.add("Tilesets", selector);
 		
-		editPane.add("Inspector", new JPanel());
+		editPane.add("Inspector", new Inspector(resources));
 		
 		//right.add(acc, BorderLayout.CENTER);
 		//right.add(new EntitySelector(resources), BorderLayout.NORTH);

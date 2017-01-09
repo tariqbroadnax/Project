@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 
 import Editor.EditorResources;
 import Entity.Entity;
-import Entity.Player;
+import EntityComponent.GraphicsComponent;
 
 public class EntitySelector extends JPanel
 {	
@@ -24,7 +24,11 @@ public class EntitySelector extends JPanel
 		
 		setPreferredSize(new Dimension(200, 200));
 		
-		add(new Player());
+		Entity ent = new Entity();
+		
+		ent.add(new GraphicsComponent());
+		
+		add(ent);
 	}
 	
 	public void add(Entity ent)

@@ -1,0 +1,51 @@
+package Editor.comp;
+
+import java.awt.geom.Point2D;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+
+import Entity.Entity;
+
+public class EntityForm extends Form
+{
+	private Entity ent;
+	
+	private Point2DForm ptForm;
+	
+	public EntityForm()
+	{
+		this(new Entity());		
+	}
+	
+	public EntityForm(Entity ent)
+	{
+		ptForm = new Point2DForm();
+		
+		Border border = 
+				BorderFactory.createTitledBorder("Location");
+			
+		ptForm.setBorder(border);
+	
+		setEntity(ent);
+		
+		addField(ptForm, 0, 0, 1);
+	}
+	
+	public void setEntity(Entity ent) 
+	{
+		this.ent = ent;
+		
+		Point2D.Double loc = ent.getLoc();
+		
+		ptForm.setValue(loc);		
+	}
+	
+	private void updateLoc() 
+	{
+		Point2D.Double pt = ptForm.getPtValue();
+		
+		ent.setLoc(pt);
+	}
+}

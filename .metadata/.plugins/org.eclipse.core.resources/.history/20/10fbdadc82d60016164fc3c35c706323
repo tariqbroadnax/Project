@@ -1,0 +1,35 @@
+package Editor.comp;
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JToggleButton;
+
+import Editor.DoubleField;
+
+public class MovementForm extends Form
+{
+	private DoubleField speedFld, dirFld,
+						enabledFld;
+	
+	private JCheckBox enabledBox;
+	
+	public MovementForm()
+	{
+		JLabel speedLbl = new JLabel("Speed "),
+			   dirLbl = new JLabel("Direction "),
+			   enabledLbl = new JLabel("Enabled");
+		
+		speedFld = new DoubleField();
+		dirFld = new DoubleField();
+		
+		enabledBox = new JCheckBox();
+	
+		addComponent(speedLbl, 0, 0, 1);
+		addField(speedFld, 1, 0, 1);
+		addComponent(dirLbl, 0, 1, 1);
+		addField(dirFld, 1, 1, 1);
+		addComponent(enabledFld, 0, 2, 1);
+		addComponent(enabledBox, 1, 2, 1);
+		
+	}
+}

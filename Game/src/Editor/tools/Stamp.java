@@ -8,6 +8,7 @@ import Editor.EditorResources;
 import Editor.layer_selector.SetTile;
 import Editor.selection.SelectionHandler;
 import EditorGUI.UndoManager;
+import Entity.Entity;
 import Graphic.Camera;
 import Tileset.Tile;
 import Tileset.TileMap;
@@ -40,6 +41,14 @@ public class Stamp implements Tool
 		}
 	}
 	
+	private void stampEntity(Entity ent, Point2D.Double normLoc)
+	{
+		ent = (Entity)ent.clone();
+		ent.setLoc(normLoc);
+		resources.scene.addEntityNow(ent);
+		resources.notifyOfSceneChange();
+	}
+	
 	public void mousePressed(MouseEvent e)
 	{
 		SelectionHandler handler = resources.getSelectionHandler();
@@ -59,6 +68,12 @@ public class Stamp implements Tool
 				Tile tile = (Tile) obj;
 				
 				tryAndStampTile(tile, normLoc);
+			}
+			else if(obj instanceof Entity)
+			{
+				Entity ent = (Entity)obj;
+				
+				stampEntity(ent, normLoc);
 			}
 		}
 		else

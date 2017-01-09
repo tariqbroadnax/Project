@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import Editor.EditorResources;
+import Editor.selection.SelectionHandler;
 import EditorGUI.MouseListener;
 import Entity.Entity;
 import EntityComponent.GraphicsComponent;
@@ -42,15 +43,22 @@ public class EntityComponent extends JComponent
 	
 	private void updateSize()
 	{
-		Camera camera = new Camera();
-
-		Dimension2D.Double graphSize = 
-			ent.get(GraphicsComponent.class)
-			   .getGraphic()
-			   .getSize();
+		Dimension scrSize;
 		
-		Dimension scrSize = camera.sizeOnScreen(graphSize);
-				
+		if(ent.contains(GraphicsComponent.class))
+		{
+			Camera camera = new Camera();
+	
+			Dimension2D.Double graphSize = 
+				ent.get(GraphicsComponent.class)
+				   .getGraphic()
+				   .getSize();
+			
+			scrSize = camera.sizeOnScreen(graphSize);
+		}
+		else
+			scrSize = new Dimension(40, 40);
+		
 		setPreferredSize(scrSize);
 	}
 	
@@ -96,7 +104,9 @@ public class EntityComponent extends JComponent
 	
 	private void checkAndPaintSelectionIndicator(Graphics g)
 	{
-		if(resources.selection == ent)
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		if(handler.isSelection(ent))
 		{
 			Color selectionColor = new Color(0, 0, 255, 120);
 			
@@ -113,16 +123,18 @@ public class EntityComponent extends JComponent
 	{
 		if(SwingUtilities.isLeftMouseButton(e))
 		{
-			if(resources.selection == ent)
+			SelectionHandler handler = resources.getSelectionHandler();
+			
+			if(handler.isSelection(ent))
 			{
-				resources.selection = null;
+				handler.removeSelection();
+				resources.setTool(resources.SELECT_TOOL);
 			}
 			else
 			{
-				resources.selection = ent;
-				resources.sceneSelection = false;
+				resources.setTool(resources.STAMP);
+				handler.setSelection(ent, false);
 			}
-			
 			repaint();
 		}
 	}	

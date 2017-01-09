@@ -56,8 +56,8 @@ public class SceneEditor extends JPanel
 		addMouseListener(currTool);
 		addMouseMotionListener(currTool);
 		
-		SceneCompMaintainer maintainer = new SceneCompMaintainer(
-				resources, this);
+		//SceneCompMaintainer maintainer = new SceneCompMaintainer(
+			//	resources, this);
 		
 		TMComponent tmComp = new TMComponent(resources, this);
 				

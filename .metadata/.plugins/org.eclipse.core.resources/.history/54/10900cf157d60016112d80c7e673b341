@@ -1,0 +1,60 @@
+package Editor.comp;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.AbstractListModel;
+import javax.swing.JDialog;
+import javax.swing.JList;
+
+import Entity.Entity;
+import EntityComponent.GraphicsComponent;
+import EntityComponent.LifetimeComponent;
+import Movement.MovementComponent;
+
+public class AddComponentDialog extends JDialog
+{
+	private Entity ent;
+	
+	private JList<String> compList;
+	
+	private List<String> comps;
+	
+	public AddComponentDialog()
+	{
+		super(null, "Add Component");
+		
+		compList = new JList<String>();
+		
+		comps = new ArrayList<String>();
+		
+		compList.setModel(new MyListModel());
+	}
+	
+	public void setEntity(Entity ent)
+	{
+		comps.clear();
+		
+		if(!ent.contains(GraphicsComponent.class))
+			comps.add("Graphics");
+		
+		if(!ent.contains(MovementComponent.class))
+			comps.add("Movement");
+		
+		if(!ent.contains(LifetimeComponent.class))
+			comps.add("Lifetime");
+	}
+
+	private class MyListModel extends AbstractListModel<String> 
+	{
+		@Override
+		public String getElementAt(int index) {
+			return comps.get(index);
+		}
+
+		@Override
+		public int getSize() {
+			return comps.size();
+		}
+	}
+}

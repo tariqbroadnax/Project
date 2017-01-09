@@ -97,7 +97,7 @@ public class Entity
 	public <E extends EntityComponent> void remove(
 			Class<E> compClass)
 	{
-		comps.containsKey(compClass);
+		comps.remove(compClass);
 	}
 	
 	@SuppressWarnings("unchecked")

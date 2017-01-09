@@ -1,9 +1,0 @@
-package Editor.comp;
-
-import javax.swing.JLabel;
-
-public class MovementEditor 
-{
-	private JLabel speedLbl,
-				   dirLbl;
-}

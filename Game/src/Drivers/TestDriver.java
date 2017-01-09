@@ -2,7 +2,7 @@ package Drivers;
 
 import javax.swing.JFrame;
 
-import Editor.comp.GForm;
+import Editor.comp.EntityForm;
 
 public class TestDriver
 {
@@ -13,7 +13,8 @@ public class TestDriver
 		//new Game().start();
 	
 		JFrame frame = new JFrame();
-		GForm form = new GForm();
+		EntityForm form = new EntityForm();
+		//MovementComponentForm form = new MovementComponentForm();
 		
 		frame.add(form);
 		frame.setSize(400, 400);

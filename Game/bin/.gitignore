@@ -7,7 +7,6 @@
 /Editor/
 /EditorActions/
 /EditorGUI/
-/EditorMenuBar/
 /Entity/
 /EntityComponent/
 /EntityEditorGUI/
@@ -24,4 +23,3 @@
 /ToolBar/
 /Utilities/
 /Weather/
-/tile/

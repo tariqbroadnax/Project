@@ -29,9 +29,6 @@ public class EditorResources
 {
 	private static String STATE_FILE_NAME = "editor_state.obj";
 	
-	public Object selection;
-	public boolean sceneSelection;
-	
 	public ImagePool pool;
 	
 	public File file;
