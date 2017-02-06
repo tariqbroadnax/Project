@@ -1,0 +1,8 @@
+package Movement;
+
+public class Movement2 
+{
+
+
+	private boolean enabled; 
+}

@@ -1,0 +1,37 @@
+package Item;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Item.ConsumableItem;
+import Item.EquipItem;
+
+public class Inventory 
+{
+	private List<EquipItem> equips;
+	
+	private List<ConsumableItem> consumables;
+	
+	public Inventory()
+	{
+		equips = new ArrayList<EquipItem>();
+		
+		consumables = new ArrayList<ConsumableItem>();
+	}
+	
+	public void addEquipItem(EquipItem equip) {
+		equips.add(equip);
+	}
+
+	public void removeEquipItem(EquipItem equip) {
+		equips.remove(equip);
+	}
+	
+	public void addConsumblableItem(ConsumableItem consumable) {
+		consumables.add(consumable);
+	}
+	
+	public void removeConsumableItem(ConsumableItem consumable) {
+		consumables.remove(consumable);
+	}
+}

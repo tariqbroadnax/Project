@@ -2,15 +2,18 @@ package Editor.comp;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JPanel;
 
 public class ColorField extends Form
+	implements ValueListener
 {
 	private Color color;
-	
+		
 	public ColorField()
 	{
 		JPanel colorPnl = new JPanel() {
@@ -19,7 +22,7 @@ public class ColorField extends Form
 				g.fillRect(0, 0, getWidth(), getHeight());
 			}
 		};
-		
+
 		JButton chooserBtn = new JButton();
 		
 		chooserBtn.addActionListener(e -> updateColor());
@@ -31,6 +34,23 @@ public class ColorField extends Form
 	private void updateColor()
 	{
 		color = JColorChooser.showDialog(null, "Color", color);
+		notifyListeners();
 		repaint();
 	}
+
+	@Override
+	public void valueChanged() {
+		notifyListeners();
+	}
+	
+	public void setValue(Color color)
+	{
+		this.color = color;
+		repaint();
+	}
+	
+	public Color getValue() {
+		return color;
+	}
+	
 }

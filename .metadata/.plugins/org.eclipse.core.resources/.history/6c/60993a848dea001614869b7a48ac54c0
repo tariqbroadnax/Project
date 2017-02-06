@@ -1,0 +1,24 @@
+package Dialogue;
+
+import java.io.Serializable;
+
+public abstract class Dialogue 
+	implements Serializable
+{	
+	private String txt;
+	
+	public Dialogue()
+	{
+		txt = "";
+	}
+	
+	public void setText(String txt)
+	{
+		this.txt = txt;
+	}
+	
+	public String getText()
+	{
+		return txt;
+	}
+}

@@ -1,0 +1,27 @@
+package Dialogue;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class Dialogue 
+	implements Serializable
+{	
+	private String txt;
+	
+	private List<Branch> branches;
+	
+	public Dialogue()
+	{
+		txt = "Hello World";
+	}
+	
+	public void setText(String txt) {
+		this.txt = txt;
+	}
+	
+	public String getText() {
+		return txt;
+	}
+	
+	
+}

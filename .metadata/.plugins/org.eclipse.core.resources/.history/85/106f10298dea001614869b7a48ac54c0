@@ -1,0 +1,34 @@
+package Dialogue;
+
+import java.io.Serializable;
+
+public abstract class Dialogue 
+	implements Serializable
+{	
+	private String txt;
+	
+	public Dialogue()
+	{
+		txt = "";
+	}
+	
+	public void setID(int id)
+	{
+		this.id = id;
+	}
+	
+	public void setText(String txt)
+	{
+		this.txt = txt;
+	}
+	
+	public int getID()
+	{
+		return id;
+	}
+	
+	public String getText()
+	{
+		return txt;
+	}
+}

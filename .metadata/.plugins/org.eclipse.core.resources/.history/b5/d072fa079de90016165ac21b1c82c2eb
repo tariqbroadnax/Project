@@ -1,0 +1,21 @@
+package Actions;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Game.Updatable;
+
+public abstract class Action implements Updatable
+{
+	private boolean finished;
+	
+	public boolean isFinished();
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		Point2D.Double src = ent.getLoc();
+	
+		force.setSrc(src);
+	}
+}

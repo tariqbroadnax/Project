@@ -11,7 +11,7 @@ import Editor.tools.Tool;
 import Utilities.GUIUtils;
 
 public class SetEraseTool extends AbstractAction
-implements ResourceListener
+	implements ResourceListener
 {
 	private EditorResources resources;
 	

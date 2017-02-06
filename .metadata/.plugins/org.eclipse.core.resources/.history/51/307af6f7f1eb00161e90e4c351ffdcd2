@@ -1,0 +1,61 @@
+package Quest;
+
+import Ability.AbilityListener;
+import Entity.Entity;
+import EntityComponent.AbilityComponent;
+
+public class KillTask extends Task
+	implements AbilityListener
+{
+	private int id, curr, target;
+
+	public KillTask()
+	{
+		id = -1;
+		curr = 0;
+		target = 5;
+	}
+	
+	@Override
+	public void start(Entity ent) 
+	{
+		
+	}
+	
+	public void setTargetID(int id) {
+		this.id = id;
+	}
+	
+	public void setTargetKillCount(int target) {
+		this.target = target;
+	}
+	
+	public int getTargetID() {
+		return id;
+	}
+	
+	public int getTargetKillCount() {
+		return target;
+	}
+	
+	public int getCurrentKillCount() {
+		return curr;
+	}
+	
+	@Override
+	public void entityKilled(Entity ent) 
+	{
+		if(ent.getID() == id)
+		{
+			curr++;
+			
+			if(curr == target)
+			{
+				taskCompleted();
+				
+				ent.get(AbilityComponent.class)
+				   .addAbilityListener(this);
+			}
+		}
+	}
+}

@@ -1,0 +1,84 @@
+package Game;
+
+import Actions.ActionComponent;
+import Entity.Entity;
+import EntityComponent.GraphicsComponent;
+import GUI.UI;
+import Movement.MovementComponent;
+import Quest.Quest;
+import Quest.QuestComponent;
+import Quest.TravelTask;
+import Utilities.Scheduler;
+
+public class Game
+{
+	private Scene scene;
+
+	private Entity player;
+	
+	private UI ui;
+	
+	private Updater updater;
+	private Scheduler scheduler;
+		
+	public Game()
+	{	
+		scene = new Scene();
+		
+		updater = new Updater(60);
+
+		scheduler = new Scheduler();
+		
+		updater.addUpdatable(
+				delta -> scene.update(delta),
+				delta -> scheduler.update(delta));
+		
+		player = new Entity();
+		
+		ui = new UI(scene, updater, player);
+		
+		// TESTING
+		
+		player.add(new GraphicsComponent(),
+				   new MovementComponent(),
+				   new ActionComponent(),
+				   new QuestComponent());
+		
+		scene.addEntityNow(player);
+		
+		Quest quest = new Quest();
+
+		TravelTask task = new TravelTask();
+		task.setTargetCenter(-50, -50);
+		quest.addTask(task);
+		
+		task = new TravelTask();
+		task.setTargetCenter(-50, 50);
+		quest.addTask(task);
+		
+		task = new TravelTask();
+		task.setTargetCenter(50, 50);
+		quest.addTask(task);
+		
+		task = new TravelTask();
+		task.setTargetCenter(50, -50);
+		quest.addTask(task);
+		
+		player.get(QuestComponent.class)
+			  .addQuest(quest);
+		
+		Entity npc = new Entity();
+		
+		npc.add(new GraphicsComponent());
+		
+		npc.setLoc(0, -50);
+		
+		scene.addEntity(npc);
+	}
+	
+	public void start()
+	{
+		ui.setGUIVisible(true);
+		updater.start();
+	}
+}

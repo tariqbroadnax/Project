@@ -1,0 +1,96 @@
+package Graphic;
+
+import java.awt.Canvas;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Window;
+import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class Painter
+{
+	private List<Paintable> paintables;
+			
+	private Map<?, ?> renderingHintMap;
+	
+	private Camera camera;
+	
+	private Window window;
+	
+	private Canvas canvas;
+	
+	public Painter(Window window, Camera camera)
+	{
+		this.window = window;
+		this.camera = camera;
+				
+		paintables = new ArrayList<Paintable>();
+	}
+	
+	public Painter(Canvas canvas, Camera camera)
+	{
+		this.canvas = canvas;
+		this.camera = camera;
+				
+		paintables = new ArrayList<Paintable>();
+	}
+	
+	public void paint()
+	{
+		BufferStrategy strategy;
+		Dimension size;
+		
+		if(window == null)
+		{
+			strategy = canvas.getBufferStrategy();
+			size = canvas.getSize();
+		}
+		else
+		{
+			strategy = window.getBufferStrategy();
+			size = window.getSize();
+		}
+						
+		if(strategy == null) return;
+		
+		do {
+			
+			do {	
+				Graphics g = strategy.getDrawGraphics();
+				
+				g.clearRect(0, 0, size.width, size.height);
+
+				camera.setScreenDimension(size.width, size.height);
+
+				GraphicsContext gc = new GraphicsContext(g, camera);
+			
+				for(Paintable p : paintables)
+					p.paint(gc);	
+				
+				if(window != null)
+					window.paintComponents(g);	
+				
+				g.dispose();
+				gc.g2d.dispose();
+				
+			} while(strategy.contentsRestored());
+			
+			strategy.show();
+			
+		} while(strategy.contentsLost());
+	}
+	
+	public void addPaintable(Paintable p) {
+		paintables.add(p);
+	}
+	
+	public void removePaintable(Paintable p) {
+		paintables.remove(p);
+	}
+	
+	public void clear() {
+		paintables.clear();
+	}
+}

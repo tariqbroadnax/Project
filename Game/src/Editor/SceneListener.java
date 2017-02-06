@@ -7,4 +7,8 @@ public interface SceneListener
 	public default void sceneLoaded(){};
 	
 	public default void sceneSaved(){};
+	
+	public default void scenePlayerStarted(){}
+	
+	public default void scenePlayerStopped(){}
 }

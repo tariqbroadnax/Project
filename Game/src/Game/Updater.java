@@ -202,6 +202,11 @@ public class Updater implements Runnable
 		updatables.remove(u);
 	}
 	
+	public void clear()
+	{
+		updatables.clear();
+	}
+	
 	public void setTargetFrequency(long frequency)
 	{
 		this.targetFrequency = 

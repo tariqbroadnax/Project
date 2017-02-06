@@ -22,9 +22,7 @@ public class MovementComponentForm extends Form
 						 disMoveForm;
 	
 	private JCheckBox enabledBox;
-	
-	private List<ValueListener> listeners;
-	
+		
 	public MovementComponentForm()
 	{
 		this(new MovementComponent());
@@ -44,8 +42,6 @@ public class MovementComponentForm extends Form
 		
 		enabledBox = new JCheckBox();
 		
-		listeners = new ArrayList<ValueListener>();
-
 		normMoveForm.setBorder(normMoveBorder);
 		disMoveForm.setBorder(disMoveBorder);
 		
@@ -99,17 +95,4 @@ public class MovementComponentForm extends Form
 		notifyListeners();
 	}
 
-	private void notifyListeners()
-	{
-		for(ValueListener listener : listeners)
-			listener.valueChanged();
-	}
-	
-	public void addValueListener(ValueListener listener) {
-		listeners.add(listener);
-	}
-	
-	public void removeValueListener(ValueListener listener) {
-		listeners.remove(listener);
-	}
 }

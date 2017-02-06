@@ -1,0 +1,8 @@
+package Movement;
+
+public interface Force 
+{
+	public double xVel(double x);
+	
+	public double yVel(double t);
+}

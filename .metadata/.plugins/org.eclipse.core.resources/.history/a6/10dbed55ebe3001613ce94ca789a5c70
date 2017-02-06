@@ -1,0 +1,111 @@
+package Editor.comp;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataListener;
+
+import Graphic.Animation;
+import Graphic.Graphic;
+import Graphic.ShapeGraphic;
+
+public class AnimationList extends JList<Graphic>
+{
+	private Animation ani;
+	
+	private AnimationModel model;
+	
+	public AnimationList()
+	{
+		this(new Animation());
+	}
+	
+	public AnimationList(Animation ani)
+	{
+		this.ani = ani;
+		
+		for(int i = 0; i < 5; i++)
+			ani.addGraphic(new ShapeGraphic());
+		
+		AnimationRenderer renderer = new AnimationRenderer();
+		
+		setCellRenderer(renderer);
+		
+		model = new AnimationModel(ani);
+		
+		setModel(model);
+				
+		setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		
+		setVisibleRowCount(-1);
+	}
+	
+	public Dimension getPreferredSize() {
+		if(ani.size() == 0)
+			return new Dimension(50, 50);
+		else
+			return super.getPreferredSize();
+			
+	}
+	
+	public void setAnimation(Animation ani) {
+		this.ani = ani;
+		
+		model.setAnimation(ani);
+		
+		System.out.println(getPreferredSize());
+		revalidate();
+		repaint();
+	}
+}
+
+class AnimationRenderer implements ListCellRenderer<Graphic>
+{
+	private GraphicPreview preview = new GraphicPreview();
+	
+	@Override
+	public Component getListCellRendererComponent(
+			JList<? extends Graphic> list,
+			Graphic val, int index, boolean isSelected,
+			boolean cellHasFocus) 
+	{
+		if(isSelected)
+			preview.setBackground(Color.blue);
+		else
+			preview.setBackground(Color.white);
+		
+		preview.setGraphic(val);
+		
+		return preview;
+	}
+}
+
+class AnimationModel implements ListModel<Graphic>
+{
+	private Animation ani;
+	
+	public AnimationModel(Animation ani) {
+		this.ani = ani;
+	}
+	
+	public void setAnimation(Animation ani) {
+		this.ani = ani;
+	}
+
+	@Override
+	public Graphic getElementAt(int index) {
+		return ani.getGraphic(index);
+	}
+
+	@Override
+	public int getSize() {
+		return ani.size();
+	}
+
+	public void addListDataListener(ListDataListener l) {}
+	public void removeListDataListener(ListDataListener l) {}
+}

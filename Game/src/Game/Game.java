@@ -1,107 +1,109 @@
 package Game;
 
 import java.io.File;
-import java.io.IOException;
 
-import Actions.ActionBuffer;
-import Entity.Fire;
-import Entity.Hole;
-import Entity.NPC;
-import Entity.Player;
-import GUI.GUI;
-import Graphic.Camera;
-import Graphic.Painter;
-import Tileset.Tileset;
-import Utilities.ImagePool;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent.Type;
+
+import Actions.ActionComponent;
+import Entity.Entity;
+import EntityComponent.AbilityComponent;
+import EntityComponent.GraphicsComponent;
+import GUI.UI;
+import Inventory.InventoryComponent;
+import Movement.MovementComponent;
+import Quest.KillTask;
+import Quest.Quest;
+import Quest.QuestComponent;
+import Quest.Task;
+import Utilities.Scheduler;
 
 public class Game
-{	
-	private final GUI gui;
-	
-	private final Updater updater;
-	
-	private final Painter painter;
-		
-	private final ActionBuffer actionBuffer;
-	
-	private final Player player;
+{
+	private Scene scene;
 
-	private final Camera camera;
+	private Entity player;
 	
-	private final ImagePool imgPool;
+	private UI ui;
+	
+	private Updater updater;
+	private Scheduler scheduler;
+	private AudioPlayer audioPlayer;
 		
-	private final Scene scene;
-	
 	public Game()
-	{
-		player = new Player();
-		
-		camera = new Camera();
-	
-		imgPool = new ImagePool();
-		
-		actionBuffer = new ActionBuffer();
-		
+	{	
 		scene = new Scene();
 		
 		updater = new Updater(60);
-				
-		GameResources resources =
-				new GameResources(scene, 
-								  null, updater,
-								  camera, player,
-								  actionBuffer);
-		
-		gui = new GUI(resources);
 
-		painter = new Painter(gui, camera, imgPool);	
+		scheduler = new Scheduler();
 		
-		painter.addPaintable(scene);
-		
-		scene.addEntity(player);
-		
-		Debug_addTestEntity();
-		
-		camera.setFocus(player.getLoc());		
-
 		updater.addUpdatable(
-				delta -> actionBuffer.invokeAll(),
 				delta -> scene.update(delta),
-				delta -> painter.paint());
+				delta -> scheduler.update(delta));
+		
+		player = new Entity();
+		
+		ui = new UI(scene, updater, player);
+		
+		audioPlayer = new AudioPlayer();
+		// TESTING
+		
+		player.add(new GraphicsComponent(),
+				   new MovementComponent(),
+				   new AbilityComponent(),
+				   new ActionComponent(),
+				   new InventoryComponent(),
+				   new QuestComponent());
+		
+		scene.addEntityNow(player);
+		
+		Quest quest = new Quest();
+
+		Task task = new KillTask();
+		
+		quest.addTask(task);
+		
+		player.get(QuestComponent.class)
+			  .addQuest(quest);
+
+		for(int i = 0; i < 2500; i += 500)
+		{
+			scheduler.schedule(
+					()-> player.get(AbilityComponent.class)
+							   .notifyEntityKilled(new Entity()), i);
+		}
+		
+		Entity npc = new Entity();
+		
+		npc.add(new GraphicsComponent());
+		
+		npc.setLoc(0, -50);
+		
+		scene.addEntity(npc);
 		
 		try {
-			imgPool.importTileset(new Tileset("fire.png", 4, 8));
-			imgPool.importImage(new File("electr_mach.png"));
-		} catch (IOException e) {
+			File file = new File("C:\\Users\\Tariq Broadnax\\Downloads\\Deep.wav");
+			System.out.println(file.exists());
+			Clip clip = AudioSystem.getClip();
+			
+			for(javax.sound.sampled.AudioFileFormat.Type type : AudioSystem.getAudioFileTypes())	
+				System.out.println(type.getExtension());
+			
+			clip.open(AudioSystem.getAudioInputStream(file));
+			
+			audioPlayer.start(clip);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	private void Debug_addTestEntity()
-	{
-		scene.addEntity(new NPC());
-
-		Fire fire = new Fire();
 		
-		fire.setLoc(-100, 0);
-		
-		Hole hole = new Hole();
-		
-		hole.setLoc(-30, -30);
-		
-		scene.addEntity(fire);
-		scene.addEntity(hole);
 	}
 	
 	public void start()
 	{
-		gui.setVisible(true);
-	}
-	
-	public void stop() 
-	{
-		gui.setVisible(false);
-		
-		updater.stop();
+		ui.setGUIVisible(true);
+		updater.start();
 	}
 }

@@ -1,0 +1,20 @@
+package Game;
+
+import java.applet.AudioClip;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class AudioPlayer
+{
+	private ExecutorService service;
+	
+	public AudioPlayer()
+	{
+		service = Executors.newCachedThreadPool();	
+	}
+	
+	public void play(AudioClip clip)
+	{
+		
+	}
+}

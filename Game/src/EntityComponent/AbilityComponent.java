@@ -1,10 +1,10 @@
 package EntityComponent;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import Ability.AbilityListener;
 import Ability.ActiveAbility;
@@ -37,14 +37,14 @@ public class AbilityComponent extends EntityComponent
 		enabled = true;
 		casting = false;
 		
-		castRoot = new Root();
+		//castRoot = new Root();
 		
-		indicator = new CastingIndicator();
-		
-		addActiveAbility(new HomingProjectileAbility());
-		addActiveAbility(new FreeProjectileAbility());
+//		indicator = new CastingIndicator();
+//		
+//		addActiveAbility(new HomingProjectileAbility());
+//		addActiveAbility(new FreeProjectileAbility());
 
-		castRoot.setLifetime(Lifetime.FOREVER);
+		//castRoot.setLifetime(Lifetime.FOREVER);
 	}
 	
 	public AbilityComponent(AbilityComponent comp)
@@ -90,23 +90,23 @@ public class AbilityComponent extends EntityComponent
 	@Override
 	public void update(Duration delta)
 	{				
-		boolean _casting = false;
-		
-		for(ActiveAbility a : actives)
-		{
-			a.update(delta);
-			
-			if(a.isCasting())
-				_casting = true;
-		}
-		
-		if(casting && !_casting)
-		{
-			removeCastRoot();
-			removeCastingIndicator();
-		}
-		
-		casting = _casting;
+//		boolean _casting = false;
+//		
+//		for(ActiveAbility a : actives)
+//		{
+//			a.update(delta);
+//			
+//			if(a.isCasting())
+//				_casting = true;
+//		}
+//		
+//		if(casting && !_casting)
+//		{
+//			removeCastRoot();
+//			removeCastingIndicator();
+//		}
+//		
+//		casting = _casting;
 	}
 	
 	private void addCastRoot()
@@ -125,7 +125,7 @@ public class AbilityComponent extends EntityComponent
 			  .add(indicator, 0, -15);
 	}
 	
-	public void addListener(AbilityListener list) {
+	public void addAbilityListener(AbilityListener list) {
 		lists.add(list);
 	}
 	
@@ -142,7 +142,7 @@ public class AbilityComponent extends EntityComponent
 			  .remove(indicator);
 	}
 	
-	public void removeListener(AbilityListener list) {
+	public void removeAbilityListener(AbilityListener list) {
 		lists.remove(list);
 	}
 
@@ -178,7 +178,16 @@ public class AbilityComponent extends EntityComponent
 		for(ActiveAbility a : actives)
 			a.setSrc(parent);
 		
-		castRoot.setTarget(parent);
+		//castRoot.setTarget(parent);
+	}
+	
+	public void notifyEntityKilled(Entity ent) 
+	{
+		List<AbilityListener> copy = 
+				new ArrayList<AbilityListener>(lists);
+	
+		for(AbilityListener list : copy)
+			list.entityKilled(ent);
 	}
 
 	private void readObject(java.io.ObjectInputStream in)

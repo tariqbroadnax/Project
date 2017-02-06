@@ -1,9 +1,0 @@
-package Editor.comp;
-
-public class GForm extends Form
-{
-	public GForm()
-	{
-		
-	}
-}

@@ -30,7 +30,8 @@ import Maths.Dimension2D;
 import Tileset.TileMap;
 
 public class Scene 
-	implements Updatable, Paintable, Serializable
+	implements Updatable, Paintable, Serializable,
+			   Cloneable
 {	
 	private Map<Class<? extends EntityComponent>, List<Entity>> compMap;
 	
@@ -53,6 +54,18 @@ public class Scene
 	// private RainManager rain;
 	// private LayeredGraphic background;
 
+	public Scene(Scene scene)
+	{
+		this();
+
+		for(Entity ent : scene.getEntities())
+		{
+			ent = (Entity) ent.clone();
+			
+			addEntityNow(ent);
+		}
+	}
+	
 	public Scene()
 	{			
 		compMap = new HashMap<Class<? extends EntityComponent>,
@@ -105,11 +118,13 @@ public class Scene
 	
 	@Override
 	public void paint(GraphicsContext gc)
-	{
+	{		
+		// System.out.println("painting");
+
 		//tileMap.paint(gc)
 		//lightMap.paint(gc);
 		
-		tileMap.paint(gc);
+		//tileMap.paint(gc);
 		drawGrid(gc);
 		painter.paint(gc);
 		
@@ -232,6 +247,30 @@ public class Scene
 		return visibleEntities;
 	}
 	
+	public List<Entity> entitiesVisibleInsideBound(
+			Rectangle2D.Double bound)
+	{
+		List<Entity> visibleEntities =
+				new LinkedList<Entity>();
+				
+		for(Entity entity : entities)
+		{
+			if(entity.contains(GraphicsComponent.class))
+			{
+				Rectangle2D.Double graphicBound =
+						entity.get(GraphicsComponent.class)
+							  .getGraphic()
+							  .getBound();
+				
+				if(Maths.Maths.overlaps(bound, graphicBound))
+					visibleEntities.add(entity);
+			}
+		}
+		
+		return visibleEntities;
+	}
+	
+	
 	public List<Entity> entitiesWithComponent(
 			Class<? extends EntityComponent> c)
 	{
@@ -259,6 +298,7 @@ public class Scene
 	public void addEntityNow(Entity entity)
 	{
 		addEntity(entity);
+		entity.setSceneLoc(this);
 		clearAddQueue();
 	}
 	
@@ -354,5 +394,9 @@ public class Scene
 	
 	public CollisionManager getCollisionManager() {
 		return collManager;
+	}
+	
+	public Object clone() {
+		return new Scene(this);
 	}
 }

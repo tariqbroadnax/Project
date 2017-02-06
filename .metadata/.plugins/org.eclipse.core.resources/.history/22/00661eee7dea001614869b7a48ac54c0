@@ -1,0 +1,17 @@
+package Drivers;
+
+import GUI.GUI;
+import Game.Game;
+
+public class GameDriver
+{
+	public static void main(String[] args)
+	{
+		//new EditorGUI();
+		Game game = new Game();
+		
+		game.start();
+		
+		
+	}
+}

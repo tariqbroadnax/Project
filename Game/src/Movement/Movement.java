@@ -1,69 +1,54 @@
 package Movement;
 
 import java.awt.geom.Point2D;
-import java.io.Serializable;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
-import Maths.Vector2D;
-
-public class Movement implements Cloneable, Serializable
+public class Movement 
 {
-	protected double speed, dir;
-	
-	private boolean enabled = true;
-	
+	private boolean enabled; 
+
+	private List<Force> forces;
+
 	public Movement()
 	{
-		speed = 0;
+		enabled = true;
 		
-		enabled = false;
+		forces = new ArrayList<Force>();
 	}
 	
-	public Movement(Movement movement)
+	public void move(Point2D.Double loc, Duration delta)
 	{
-		speed = movement.speed;
-		
-		enabled = false;
-	}
+		if(enabled)
+		{
+			double netDX = 0, netDY = 0;
+			
+			double t = delta.toNanos() / 1E9;
 
-	public void move(Point2D.Double currLoc, Duration delta)
-	{		
-		if(!enabled) return;
-		
-		double t = delta.toNanos() / 1E9;
-
-		Vector2D.Double vel = Vector2D.Double.direction(dir)
-							   				 .getScaled(speed),
-						offset = vel.getScaled(t);
-		
-		offset.move(currLoc);		
-	}
-	
-	public void setSpeed(double speed) {
-		this.speed = speed;
-	}
-	
-	public void setDirection(double dir) {
-		this.dir = dir;
+			for(Force force : forces)
+			{				
+				netDX += force.dx(t);
+				netDY += force.dy(t);
+			}
+			
+			loc.x += netDX; loc.y += netDY;
+		}
 	}
 	
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 	
-	public double getSpeed() {
-		return speed;
-	}
-	
-	public double getDirection() {
-		return dir;
-	}
-	
 	public boolean isEnabled() {
 		return enabled;
 	}
 	
-	public Object clone() {
-		return null;
+	public void addForce(Force force) {
+		forces.add(force);
+	}
+	
+	public void removeForce(Force force) {
+		forces.remove(force);
 	}
 }

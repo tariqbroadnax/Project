@@ -1,0 +1,13 @@
+package Dialogue;
+
+public class Branch 
+{	
+	private String transition;
+	
+	private Dialogue dialogue;
+	
+	public Branch()
+	{
+		transition = "";
+	}
+}

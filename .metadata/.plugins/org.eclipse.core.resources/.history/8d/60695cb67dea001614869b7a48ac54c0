@@ -1,0 +1,90 @@
+package GUI;
+
+
+import java.awt.Font;
+
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.KeyStroke;
+import javax.swing.plaf.FontUIResource;
+
+import Actions.AbilityAction;
+import Game.Scene;
+import Game.Updater;
+import Graphic.Camera;
+import Graphic.Painter;
+import Utilities.Components;
+
+public class UI
+{
+	private GFrame frame;
+	
+	private Painter painter;
+	
+	private Camera camera;
+	
+	public UI(Scene scene, Updater updater)
+	{		
+		frame = new GFrame(updater);
+		
+		Camera camera = game.getCamera();
+		
+		painter = new Painter(frame, camera);
+				
+		updater.addUpdatable(d -> painter.paint());
+		
+		//debugPanel = new DebugPanel(resources);
+		
+		frame.getRootPane().setOpaque(false);
+		//frame.setContentPane(layeredPane);
+
+		//layeredPane.addAndSetLayer(debugPanel, 2);
+		
+		//frame.addMouseListener(resources.miHandler);
+		//frame.addMouseMotionListener(resources.miHandler);
+		
+		//frame.addMouseMotionListener(
+			//	new MouseIconUpdater(resources));
+		
+		//addActions();
+		
+		FontUIResource font = 
+				new FontUIResource("Consolas", 12, Font.PLAIN);
+	
+		Components.setUIFont(font);
+	}
+	
+	private void addActions()
+	{
+		InputMap inputMap = 
+				frame.getRootPane().getInputMap(
+						JComponent.WHEN_IN_FOCUSED_WINDOW);
+		
+		inputMap.put(KeyStroke.getKeyStroke("D"),
+					 "toggleVisibility");
+		
+		ActionMap actionMap = 
+				frame.getRootPane().getActionMap();
+		
+		actionMap.put("toggleVisibility", 
+					  new ToggleVisibility(debugPanel));
+	
+		inputMap.put(KeyStroke.getKeyStroke("Q"),
+				 "test");
+		actionMap.put("test", 
+				  new AbilityAction(resources, 1));
+	}
+	
+	public void setGUIVisible(boolean visible)
+	{
+		frame.setVisible(visible);
+	}
+	
+	public JFrame getFrame()
+	{
+		return frame;
+	}
+}

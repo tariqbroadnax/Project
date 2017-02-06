@@ -14,7 +14,7 @@ public class GLayeredPane extends JLayeredPane
 	public GLayeredPane()
 	{
 		setLayout(new BorderLayout());
-		
+
 		addComponentListener(this);
 	}
 	

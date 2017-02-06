@@ -1,0 +1,12 @@
+package GUI;
+
+import javax.swing.JPanel;
+
+public class HUD extends JPanel
+{		
+	public HUD()
+	{	
+		setOpaque(false);
+		setLayout(null);	
+	}
+}

@@ -1,5 +1,6 @@
 package Editor;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -14,24 +15,31 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import Editor.selection.SelectionHandler;
+import Editor.selection.SelectionListener;
 import Editor.tile.TMComponent;
 import Editor.tools.Tool;
 import EditorGUI.UndoManager;
+import Entity.Entity;
+import EntityComponent.GraphicsComponent;
 import Game.Scene;
 import Graphic.Camera;
 import Graphic.GraphicsContext;
+import Graphic.ShapeGraphic;
 import Maths.Vector2D;
-import Maths.Vector2D.Double;
 
 public class SceneEditor extends JPanel
 	implements MouseListener, MouseMotionListener,
 			   MouseWheelListener,
 			   KeyListener, SceneListener,
-			   FocusListener, ResourceListener
+			   FocusListener, ResourceListener,
+			   SelectionListener
 {
 	private EditorResources resources;
 	
@@ -67,6 +75,9 @@ public class SceneEditor extends JPanel
 		addKeyListener(this);
 		addFocusListener(this);
 		
+		resources.getSelectionHandler()
+				 .addSelectionListener(this);
+		
 		setLayout(null);
 		resources.addSceneListener(this);
 		resources.addResourceListener(this);
@@ -85,15 +96,48 @@ public class SceneEditor extends JPanel
 		
 		camera.setScreenDimension(size);
 		
-		GraphicsContext gc = new GraphicsContext(
-				g.create(), camera, resources.pool);
+		GraphicsContext gc = new GraphicsContext(g, camera);
 	
 		scene.paint(gc);
+		
+		paintSelectedEntitiesHighlight(gc);
 		
 		if(currTool != null)
 			currTool.paint(g);
 		
 		gc.g2d.dispose();
+	}
+	
+	private void paintSelectedEntitiesHighlight(GraphicsContext gc)
+	{
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		if(handler.sceneSelection())
+		{
+			List<Object> selection = resources.getSelectionHandler()
+					  .getSelection();
+
+			for(Object obj : selection)
+			{
+				ShapeGraphic graph = new ShapeGraphic();
+
+				graph.setPaint(new Color(0, 0, 255, 120));
+				
+				if(obj instanceof Entity)
+				{
+					Entity ent = (Entity) obj;
+					
+					Rectangle2D.Double graphBound = 
+							ent.get(GraphicsComponent.class)
+							   .getGraphic()
+							   .getBound();
+
+					graph.setShape(graphBound);
+				
+					graph.paint(gc);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -105,6 +149,8 @@ public class SceneEditor extends JPanel
 		
 		addMouseListener(newTool);
 		addMouseMotionListener(newTool);
+		
+		currTool = newTool;
 	}
 	
 	protected void addImpl(
@@ -127,6 +173,7 @@ public class SceneEditor extends JPanel
 	@Override
 	public void mouseExited(MouseEvent e) 
 	{		
+		repaint();
 	}
 
 	@Override
@@ -148,7 +195,7 @@ public class SceneEditor extends JPanel
 	@Override
 	public void mouseReleased(MouseEvent e) 
 	{
-		
+		repaint();
 	}
 
 	private void slide()
@@ -251,5 +298,13 @@ public class SceneEditor extends JPanel
 		camera.moveFocus(0, rotation * 5);
 		
 		resources.notifyOfSceneChange();
+	}
+	
+	@Override
+	public void selectionChanged(){}
+
+	@Override
+	public void selectionModified() {
+		repaint();
 	}
 }

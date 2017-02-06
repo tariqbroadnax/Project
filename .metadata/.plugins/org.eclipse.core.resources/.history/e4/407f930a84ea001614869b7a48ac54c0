@@ -1,0 +1,53 @@
+package Actions;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Entity.Entity;
+import Movement.Force;
+
+public class Move implements Action
+{
+	private Entity ent;
+	
+	private Force force;
+	
+	public Move()
+	{
+		this.ent = ent;
+	
+		Point2D.Double src = ent.getLoc();
+		
+	}
+
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setActor(Entity actor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}

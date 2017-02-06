@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="WorkbenchPreferenceDialogSettings">
-		<item value="172" key="DIALOG_X_ORIGIN"/>
+		<item value="104" key="DIALOG_X_ORIGIN"/>
 		<item value="14" key="DIALOG_Y_ORIGIN"/>
 	</section>
 	<section name="org.eclipse.ui.internal.QuickAccess">
@@ -15,6 +15,8 @@
 		</list>
 		<list key="textArray">
 		</list>
+	</section>
+	<section name="NewWizardAction">
 	</section>
 	<section name="ImportExportAction">
 		<item value="org.eclipse.ui.wizards.import.ExternalProject" key="ImportExportPage.STORE_SELECTED_IMPORT_WIZARD_ID"/>

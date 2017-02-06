@@ -1,0 +1,114 @@
+package GUI;
+
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import javax.swing.JTextArea;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+
+import Dialogue.Dialogue;
+import EditorGUI.SimpleDocumentListener;
+
+public class DialogueArea extends JTextArea
+	implements SimpleDocumentListener
+{
+	private static final int CHARS_PER_SEC = 20;
+	
+	private Dialogue dialogue;
+	
+	private Timer timer;
+	
+	private long start;
+	
+	private int yOffset = 0;
+
+	public DialogueArea()
+	{
+		timer = new Timer(33, e -> updateText());
+	
+		setLineWrap(true);
+		setWrapStyleWord(true);
+		setEditable(false);
+		
+		Font font = new Font("Consolas", Font.PLAIN, 20);
+		
+		getDocument().addDocumentListener(this);
+		
+		setFont(font);	
+
+		setPreferredSize(new Dimension(400, 100));
+	}
+	
+	private void updateText()
+	{
+		long elapsed = System.currentTimeMillis() - start;
+		
+		int visChars = (int)(elapsed / 1000.0 * CHARS_PER_SEC);
+	
+		String txt = dialogue.getText();
+		
+		if(txt.length() < visChars)
+		{
+			setText(txt);
+			
+			timer.stop();
+		}
+		else
+		{
+			String substr = txt.substring(0, visChars);
+			setCaretPosition(getDocument().getLength());
+			setText(substr);
+		}		
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		Graphics2D g2d = (Graphics2D) g.create();
+		
+		g2d.translate(0, yOffset);
+		
+		super.paintComponent(g2d);
+	}
+
+	public void setDialogue(Dialogue dialogue)
+	{
+		this.dialogue = dialogue;
+	
+		start = System.currentTimeMillis();
+		
+		timer.start();
+	}
+	
+	private int maxLines()
+	{
+		FontMetrics metrics = getGraphics()
+							 .getFontMetrics();
+		
+		int height = getHeight(),
+			txtHeight = metrics.getHeight();
+		
+		return height / txtHeight;
+	}
+
+	@Override
+	public void documentChanged(DocumentEvent e) 
+	{
+		int lines = getLineCount(),
+			maxLines = maxLines();
+		
+		int txtHeight = getGraphics()
+				 	   .getFontMetrics()
+				 	   .getHeight();
+		
+		if(lines > maxLines)
+			yOffset = (lines - maxLines) * txtHeight;
+		else 
+			yOffset = 0;
+		
+		System.out.println(lines + " " + maxLines);
+	}
+}

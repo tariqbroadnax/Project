@@ -1,0 +1,76 @@
+package Movement;
+
+import java.awt.geom.Point2D;
+
+public class TargetForce implements Force
+{
+	private Point2D.Double src, target;
+
+	private FreeForce force;
+	
+	public TargetForce(
+			Point2D.Double src, Point2D.Double target,
+			double speed)
+	{
+		this.src = src;
+		this.target = target;
+		
+		force = new FreeForce();
+		
+		force.setSpeed(speed);
+	}
+	
+	public double dx(double t)
+	{
+		updateDir();
+		
+		double dx = force.dx(t),
+			   remaining = -(target.x - src.x);
+		
+		
+		return Math.min(dx, remaining);
+	}
+	
+	public double dy(double t)
+	{
+		updateDir();
+
+		double dy = force.dy(t),
+			   remaining = -(target.y - src.y);
+		
+		return Math.min(dy, remaining);
+	}
+	
+	private void updateDir()
+	{
+		double dir = Math.atan2(target.y - src.y,
+								target.x - src.x);
+
+		force.setDirection(dir);
+	}
+	
+	public void setSrc(Point2D.Double src) {
+		this.src = src;
+	}
+	
+	public void setTarget(Point2D.Double target) {
+		this.target = target;
+	}
+	
+	public void setSpeed(double speed) {
+		force.setSpeed(speed);
+	}
+	
+	public Point2D.Double getSrc() {
+		return src;
+	}
+	
+	public Point2D.Double getTarget() {
+		return target;
+	}
+	
+	public double getSpeed() {
+		return force.getSpeed();
+	}
+
+}

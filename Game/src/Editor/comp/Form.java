@@ -2,6 +2,8 @@ package Editor.comp;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -11,12 +13,16 @@ public class Form extends JPanel
 {
 	private GridBagConstraints gbc;
 	
+	private List<ValueListener> listeners;
+
 	public Form()
 	{
 		setLayout(new GridBagLayout());
 	
 		gbc = new GridBagConstraints();
 		
+		listeners = new ArrayList<ValueListener>();
+
 		gbc.insets.set(5, 5, 5, 5);
 		gbc.gridheight = 1;
 	}
@@ -43,4 +49,21 @@ public class Form extends JPanel
 		
 		add(comp, gbc);
 	}
+	
+	public void updateFields() {}
+	
+	protected void notifyListeners()
+	{
+		for(ValueListener listener : listeners)
+			listener.valueChanged();
+	}
+	
+	public void addValueListener(ValueListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeValueListener(ValueListener listener) {
+		listeners.remove(listener);
+	}
+
 }

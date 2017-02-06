@@ -1,0 +1,114 @@
+package Editor.comp;
+
+import java.awt.event.ComponentEvent;
+
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+
+import Editor.ComponentListener;
+import Graphic.Animation;
+import Graphic.Graphic;
+import Graphic.ShapeGraphic;
+
+public class AnimationForm extends Form
+	implements ValueListener, ComponentListener
+{
+	private Animation ani;
+	
+	private JButton addBtn, removeBtn;
+	
+	private AnimationList aniList;
+
+	private GraphicForm2 form;
+	
+	public AnimationForm()
+	{
+		this(new Animation());
+	}
+	
+	public AnimationForm(Animation ani)
+	{
+		JToolBar toolbar = new JToolBar();
+		
+		addBtn = new JButton("Add");
+		removeBtn = new JButton("Remove");
+				
+		aniList = new AnimationList();
+
+
+		form = new GraphicForm2();
+		
+		toolbar.add(addBtn);
+		toolbar.add(removeBtn);
+		
+		addField(toolbar, 0, 0, 1);
+		addField(aniList, 1, 0, 1);
+		addField(form, 0, 1, 2);
+				
+
+		addBtn.addActionListener(e -> addGraphic());
+	
+		form.addValueListener(this);
+
+		System.out.println(aniList.getPreferredSize());
+
+		setValue(ani);
+
+
+		System.out.println(aniList.getPreferredSize());
+	}
+	
+	public void setValue(Animation ani) 
+	{
+		this.ani = ani;
+		
+		aniList.setAnimation(ani);
+		
+		Graphic graph;
+		if(ani.size() == 0)
+			graph = null;
+		else
+			graph = ani.getGraphic(0);
+		
+		form.setValue(graph);
+	}
+	
+	private void addGraphic()
+	{
+		int size = ani.size();
+		
+		Graphic graph;
+		if(size == 0)
+		{
+			graph = new ShapeGraphic();
+		}
+		else
+		{
+			graph = (Graphic) ani.getGraphic(size - 1)
+								 .clone();
+		}
+		
+		ani.addGraphic(graph);
+		aniList.setAnimation(ani);
+		aniList.setSelectedIndex(size);
+	
+		form.setValue(graph);
+		
+		aniList.revalidate();
+		aniList.repaint();
+		repaint();
+	}
+	
+	public void repaint()
+	{
+		super.repaint();
+		
+		if(aniList != null)
+			System.out.println(aniList.getSize());
+	}
+
+	@Override
+	public void valueChanged() {
+		notifyListeners();
+	}
+}

@@ -1,5 +1,9 @@
 package Editor.comp;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
@@ -7,6 +11,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import Entity.Entity;
@@ -15,8 +20,12 @@ import EntityComponent.LifetimeComponent;
 import Movement.MovementComponent;
 
 public class EntityForm extends Form
+	implements ValueListener, ActionListener,
+			   FocusListener
 {
 	private Entity ent;
+	
+	private JTextField nameFld;
 	
 	private Point2DForm ptForm;
 	
@@ -29,6 +38,7 @@ public class EntityForm extends Form
 	private Form currCompForm;
 	
 	private MovementComponentForm moveCompForm;
+	private GraphicsComponentForm graphCompForm;
 	
 	public EntityForm()
 	{
@@ -37,35 +47,47 @@ public class EntityForm extends Form
 	
 	public EntityForm(Entity ent)
 	{
+		nameFld = new JTextField();
+		
 		ptForm = new Point2DForm();
 		
 		addBtn = new JButton("Add");
 		removeBtn = new JButton("Remove");
 				
-		JLabel compLbl = new JLabel("Component");
+		JLabel nameLbl = new JLabel("Name"),
+			   compLbl = new JLabel("Component");
 		
 		compBox = new JComboBox<String>();
 		
 		addDialog = new AddComponentDialog();
 	
 		moveCompForm = new MovementComponentForm();
+		graphCompForm = new GraphicsComponentForm();
 		
 		Border border = 
 				BorderFactory.createTitledBorder("Location");
 			
 		ptForm.setBorder(border);
-		ptForm.addValueListener(() -> updateLoc());
+		
+		ptForm.addValueListener(this);
+		graphCompForm.addValueListener(this);
+		moveCompForm.addValueListener(this);
+		
+		nameFld.addFocusListener(this);
+		nameFld.addActionListener(e -> valueChanged());
 		
 		addBtn.addActionListener(e -> addComponents());
 		removeBtn.addActionListener(e -> removeComponent());
 				
-		compBox.addActionListener(e -> updateCompForm());
+		compBox.addActionListener(this);
 		
-		addField(ptForm, 0, 0, 2);
-		addComponent(addBtn, 0, 1, 1);
-		addComponent(removeBtn, 1, 1, 1);
-		addComponent(compLbl, 0, 2, 1);
-		addComponent(compBox, 1, 2, 1);
+		addComponent(nameLbl, 0, 0, 1);
+		addField(nameFld, 1, 0, 1);
+		addField(ptForm, 0, 1, 2);
+		addComponent(addBtn, 0, 2, 1);
+		addComponent(removeBtn, 1, 2, 1);
+		addComponent(compLbl, 0, 3, 1);
+		addComponent(compBox, 1, 3, 1);
 	
 		setEntity(ent);
 	}
@@ -74,11 +96,37 @@ public class EntityForm extends Form
 	{
 		this.ent = ent;
 		
+		updateFields();
+	}
+	
+	public void updateFields()
+	{
+		String name = ent.getName();
+		
 		Point2D.Double loc = ent.getLoc();
 		
+		nameFld.setText(name);
 		ptForm.setValue(loc);	
 		
+		compBox.removeActionListener(this);
+		
+		if(ent.contains(GraphicsComponent.class))
+		{
+			GraphicsComponent gcomp = ent.get(GraphicsComponent.class);
+			
+			graphCompForm.setGraphicsComponent(gcomp);
+		}
+		
+		if(ent.contains(MovementComponent.class))
+		{
+			MovementComponent mcomp = ent.get(MovementComponent.class);
+			
+			moveCompForm.setMovementComponent(mcomp);
+		}
+		
 		updateCompArea();
+		
+		compBox.addActionListener(this);
 	}
 	
 	private void addComponents()
@@ -129,6 +177,15 @@ public class EntityForm extends Form
 		
 		if(comp == null)
 			currCompForm = null;
+		else if(comp.equals("Graphics"))
+		{
+			GraphicsComponent gcomp =
+					ent.get(GraphicsComponent.class);
+			
+			currCompForm = graphCompForm;
+			
+			graphCompForm.setGraphicsComponent(gcomp);
+		}
 		else if(comp.equals("Movement"))
 		{
 			MovementComponent mcomp = 
@@ -141,7 +198,7 @@ public class EntityForm extends Form
 		
 		if(currCompForm != null)
 		{
-			addField(currCompForm, 0, 3, 2);
+			addField(currCompForm, 0, 4, 2);
 			revalidate();
 			repaint();
 		}
@@ -164,10 +221,33 @@ public class EntityForm extends Form
 			compBox.addItem(str);
 	}
 	
-	private void updateLoc() 
+	private void updateValues() 
 	{
+		String name = nameFld.getText();
+		
 		Point2D.Double pt = ptForm.getPtValue();
 		
+		ent.setName(name);
 		ent.setLoc(pt);
+	}
+
+	@Override
+	public void valueChanged() {
+		updateValues();
+		notifyListeners();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		updateCompForm();
+		notifyListeners();
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {}
+
+	@Override
+	public void focusLost(FocusEvent arg0) {
+		valueChanged();
 	}
 }

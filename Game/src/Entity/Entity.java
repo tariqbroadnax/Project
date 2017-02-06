@@ -2,8 +2,10 @@ package Entity;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import EntityComponent.EntityComponent;
@@ -12,6 +14,10 @@ import Game.Scene;
 public class Entity
 	implements Serializable, Cloneable
 {		
+	private String name;
+	
+	private int id;
+	
 	private Scene sceneLoc;
 	
 	protected Point2D.Double loc;
@@ -19,12 +25,20 @@ public class Entity
 	private Map<Class<? extends EntityComponent>,
 				EntityComponent> comps;
 	
+	private List<EntityListener> lists;
+	
 	public Entity()
 	{		
+		name = "Unnamed";
+		
+		id = -1;
+		
 		comps = new HashMap<Class<? extends EntityComponent>,
 							EntityComponent>();
 				
 		loc = new Point2D.Double();
+	
+		lists = new ArrayList<EntityListener>();
 	}
 	
 	public Entity(Entity e)
@@ -52,6 +66,10 @@ public class Entity
 			//System.out.println(comp.getClass()); // FIXME DELETEME
 			add((EntityComponent)comp.clone());
 		}
+		
+		name = model.name;
+		id = model.id;
+		
 		setLoc(model.loc);
 	}
 
@@ -134,20 +152,46 @@ public class Entity
 		return sceneLoc;
 	}
 	
-	public void setLoc(double x, double y)
-	{
-		loc.x = x;
-		loc.y = y;
+	public void setName(String name) {
+		this.name = name;
 	}
 	
-	public void move(double xOff, double yOff)
+	public void setLoc(double x, double y)
 	{
+		Point2D.Double prevLoc = (Point2D.Double) loc.clone();
+		
+		loc.x = x;
+		loc.y = y;
+				
+		
+		List<EntityListener> copy = new ArrayList<EntityListener>(lists);
+		
+		for(EntityListener list : copy)
+			list.locationChanged(prevLoc, loc);
+	}
+	
+	public void move(double xOff, double yOff) {
 		setLoc(loc.x + xOff, loc.y + yOff);
 	}
 	
-	public Point2D.Double getLoc()
-	{
+	public String getName() {
+		return name;
+	}
+	
+	public int getID() {
+		return id;
+	}
+	
+	public Point2D.Double getLoc() {
 		return loc;
+	}
+	
+	public void addEntityListener(EntityListener list) {
+		lists.add(list);
+	}
+	
+	public void removeEntityListeners(EntityListener list) {
+		lists.remove(list);
 	}
 
 	public Object clone()

@@ -1,8 +1,22 @@
 package Editor;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -12,11 +26,16 @@ import Editor.comp.ValueListener;
 import EditorGUI.SimpleDocumentListener;
 
 public class DoubleField extends JTextField
-	implements SimpleDocumentListener
+	implements SimpleDocumentListener, ActionListener,
+			   FocusListener
 {
+	private double val;
+	
 	private double min, max;
 	
 	private List<ValueListener> listeners;
+	
+	private String guess = "0.000001";
 	
 	public DoubleField()
 	{
@@ -27,11 +46,13 @@ public class DoubleField extends JTextField
 	public DoubleField(double start)
 	{
 		this(Double.NEGATIVE_INFINITY,
-				 Double.POSITIVE_INFINITY, start);
+			 Double.POSITIVE_INFINITY, start);
 	}
 	
 	public DoubleField(double min, double max, double start)
 	{
+		this.val = start;
+		
 		this.min = min;
 		this.max = max;
 		
@@ -40,19 +61,28 @@ public class DoubleField extends JTextField
 		Document doc = getDocument();
 		doc.addDocumentListener(this);
 		
-		setText(start + "");
+		addActionListener(this);
+		
+		setColumns(1); 
+		// prevents resizing when text changed
+		
+		setText(val + "");	
+		
+		Font font = new Font("Consolas", Font.PLAIN, 12);
+		
+		setFont(font);
+		
 	}
 	
 	public void setValue(double val)
 	{
+		this.val = val;
+		
 		setText(val + "");
 	}
 	
-	public double getValue()
-	{
-		String txt = getText();
-
-		return 	Double.parseDouble(txt);
+	public double getValue() {
+		return val;
 	}
 	
 	public boolean validText()
@@ -60,8 +90,10 @@ public class DoubleField extends JTextField
 		String txt = getText();
 		
 		try {
-			Double.parseDouble(txt);
-			return true;
+			double val = Double.parseDouble(txt);
+			
+			return min <= val && val <= max;
+			
 		} catch(Exception e) {
 			return false;
 		}
@@ -73,10 +105,14 @@ public class DoubleField extends JTextField
 		if(validText())
 		{
 			setForeground(Color.black);
-			notifyListeners();
+			setUnderlined(false);
+			setValueWithText();
 		}
 		else
+		{
 			setForeground(Color.red);
+			setUnderlined(true);
+		}
 	}
 	
 	private void notifyListeners()
@@ -91,5 +127,58 @@ public class DoubleField extends JTextField
 	
 	public void removeValueListener(ValueListener listener) {
 		listeners.remove(listener);
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {}
+
+	@Override
+	public void focusLost(FocusEvent e) 
+	{
+		if(!validText())
+			setTextWithValue();
+		
+		notifyListeners();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		if(!validText())
+			setTextWithValue();
+		
+		notifyListeners();
+	}
+	
+	private void setTextWithValue()
+	{
+		String txt = val + "";
+		
+		setText(txt);	
+	}
+	
+	private void setValueWithText()
+	{
+		String txt = getText();
+
+		val = Double.parseDouble(txt);
+	}
+	
+	private void setUnderlined(boolean underlined)
+	{
+		Font font = getFont();
+		
+		Map attributes = font.getAttributes();
+		
+		if(underlined)
+			attributes.put(TextAttribute.UNDERLINE,
+						   TextAttribute.UNDERLINE_LOW_DOTTED);
+		else
+			attributes.put(TextAttribute.UNDERLINE,
+						   null);
+		
+		font = font.deriveFont(attributes);
+	
+		setFont(font);
 	}
 }

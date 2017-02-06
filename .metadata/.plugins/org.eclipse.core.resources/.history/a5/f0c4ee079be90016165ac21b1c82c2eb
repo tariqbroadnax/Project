@@ -1,0 +1,9 @@
+package Movement;
+
+import Graphic.Vector2D;
+
+public interface Force 
+{
+	public double dx(double t);
+	public double dy(double t);
+}

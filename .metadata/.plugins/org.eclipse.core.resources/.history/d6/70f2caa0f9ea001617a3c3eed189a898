@@ -1,0 +1,68 @@
+package GUI;
+
+import java.awt.Dimension;
+import java.awt.Font;
+
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+
+import Dialogue.Dialogue;
+
+public class DialogueArea extends JTextArea
+{
+	private static final int CHARS_PER_SEC = 2;
+	
+	private Dialogue dialogue;
+	
+	private Timer timer;
+	
+	private long start;
+	
+	public DialogueArea()
+	{
+		timer = new Timer(33, e -> updateText());
+				
+		setEditable(false);
+		
+		Font font = new Font("Consolas", Font.PLAIN, 20);
+		
+		setFont(font);	
+		
+		setPreferredSize(new Dimension(400, 100));
+	}
+	
+	private void updateText()
+	{
+		long elapsed = System.currentTimeMillis() - start;
+		
+		int visChars = (int)(elapsed / 1000) * CHARS_PER_SEC;
+	
+		String txt = dialogue.getText();
+		
+		System.out.println(visChars + " " + txt.length());
+		
+		if(txt.length() < visChars)
+		{
+			setText(txt);
+			
+			System.out.println("stop");
+			timer.stop();
+		}
+		else
+		{
+			String substr = txt.substring(0, visChars);
+			
+			SwingUtilities.invokeLater(()->setText(substr));
+		}		
+	}
+
+	public void setDialogue(Dialogue dialogue)
+	{
+		this.dialogue = dialogue;
+	
+		start = System.currentTimeMillis();
+		
+		timer.start();
+	}
+}

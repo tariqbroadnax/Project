@@ -18,7 +18,7 @@ import Maths.Dimension2D;
 import Maths.Maths;
 import Maths.Vector2D;
 
-public class Camera extends Observable
+public class Camera
 {
 	private Point2D.Double focus;
 	
@@ -415,6 +415,10 @@ public class Camera extends Observable
 				focus.y * viewSize.height / 100);
 	}
 
+	public void setZoom(double zoom) {
+		this.zoom = zoom;
+	}
+	
 	public void setDisplaySize(Dimension displaySize)
 	{
 		setDisplaySize(displaySize.width,
@@ -425,9 +429,6 @@ public class Camera extends Observable
 	{
 		displaySize.width = width;
 		displaySize.height = height;
-		
-		setChanged();
-		notifyObservers();
 	}
 
 	public void setScreenSize(Dimension screenSize)
@@ -440,9 +441,6 @@ public class Camera extends Observable
 	{
 		screenSize.width = width;
 		screenSize.height = height;
-		
-		setChanged();
-		notifyObservers();
 	}
 	
 	public void setScreenDimension(Dimension size)
@@ -454,9 +452,6 @@ public class Camera extends Observable
 	{
 		// copies references to allow camera to move with focus		
 		this.focus = focus;
-		
-		setChanged();
-		notifyObservers();
 	}
 	
 	public void setFocus(double x, double y)

@@ -1,0 +1,21 @@
+package GUI;
+
+import java.awt.event.MouseEvent;
+
+import EditorGUI.MouseListener;
+import Entity.Entity;
+
+public class MouseController implements MouseListener
+{
+	private Entity player;
+	
+	public MouseController(Entity player)
+	{
+		this.player = player;
+	}
+	
+	public void mousePressed(MouseEvent e)
+	{
+		
+	}
+}

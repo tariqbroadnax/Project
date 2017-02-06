@@ -1,0 +1,18 @@
+package Quest;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Task 
+{
+	private List<TaskListener> taskLists;
+	
+	public Task()
+	{
+		taskLists = new ArrayList<TaskListener>();
+	}
+	
+	public void addTaskListener(TaskListener list) {
+		taskLists.add(list);
+	}
+}

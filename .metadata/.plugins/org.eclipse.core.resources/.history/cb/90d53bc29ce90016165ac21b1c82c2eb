@@ -1,0 +1,43 @@
+package Actions;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Entity.Entity;
+import Movement.MovementComponent;
+import Movement.TargetForce;
+
+public class MoveEntity implements Action
+{
+	private Entity ent;
+	
+	private TargetForce force;
+	
+	public MoveEntity(Entity ent, Point2D.Double target,
+					  double speed)
+	{
+		this.ent = ent;
+	
+		Point2D.Double src = ent.getLoc();
+		
+		force = new TargetForce(src, target, speed);
+	
+		ent.get(MovementComponent.class)
+		   .getMovement()
+		   .add(force);
+	}
+
+	@Override
+	public void update(Duration delta) 
+	{
+		Point2D.Double src = ent.getLoc();
+	
+		force.setSrc(src);
+	}
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+}

@@ -11,10 +11,10 @@ import Editor.DoubleField;
 public class Point2DForm extends Form
 	implements ValueListener
 {	
+	private Point2D.Double pt;
+	
 	private DoubleField xFld, yFld;
-	
-	private List<ValueListener> listeners;
-	
+		
 	public Point2DForm()
 	{
 		this(0, 0);
@@ -22,14 +22,17 @@ public class Point2DForm extends Form
 	
 	public Point2DForm(double x, double y)
 	{
+		this(new Point2D.Double());
+	}
+	
+	public Point2DForm(Point2D.Double pt1)
+	{
 		JLabel xLbl = new JLabel("X"),
 			   yLbl = new JLabel("Y");
 		
 		xFld = new DoubleField();
 		yFld = new DoubleField();
 		
-		listeners = new ArrayList<ValueListener>();
-
 		addComponent(xLbl, 0, 0, 1);
 		addField(xFld, 1, 0, 1);
 		addComponent(yLbl, 0, 1, 1);
@@ -38,38 +41,37 @@ public class Point2DForm extends Form
 		xFld.addValueListener(this);
 		yFld.addValueListener(this);
 	}
-	
-	private void notifyListeners()
-	{
-		for(ValueListener listener : listeners)
-			listener.valueChanged();
-	}
-	
-	public void addValueListener(ValueListener listener) {
-		listeners.add(listener);
-	}
-	
-	public void removeValueListener(ValueListener listener) {
-		listeners.remove(listener);
-	}
 
 	@Override
 	public void valueChanged() {
+		updateValues();
 		notifyListeners();
 	}
 	
-	public void setXValue(double x) {
-		xFld.setValue(x);
-	}
-	
-	public void setYValue(double y) {
-		yFld.setValue(y);
+	public void setValue(double x, double y) {
+		setValue(new Point2D.Double(x, y));
 	}
 	
 	public void setValue(Point2D.Double pt) 
 	{
+		this.pt = pt;
+		
+		updateFields();
+	}
+	
+	public void updateFields()
+	{
 		xFld.setValue(pt.x);
 		yFld.setValue(pt.y);
+	}
+	
+	private void updateValues()
+	{
+		double x = xFld.getValue(),
+			   y = yFld.getValue();
+		
+		pt.x = x;
+		pt.y = y;
 	}
 	
 	public double getXValue() {
@@ -78,6 +80,13 @@ public class Point2DForm extends Form
 	
 	public double getYValue() {
 		return yFld.getValue();
+	}
+	
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		
+		xFld.setEnabled(enabled);
+		yFld.setEnabled(enabled);
 	}
 	
 	public Point2D.Double getPtValue() 

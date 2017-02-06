@@ -1,0 +1,55 @@
+package Game;
+
+import Entity.Entity;
+import EntityComponent.GraphicsComponent;
+import GUI.UI;
+import Movement.FreeForce;
+import Movement.Movement;
+import Movement.MovementComponent;
+
+public class Game
+{	
+	private Scene scene;
+
+	private UI gui;
+	
+	private Updater updater;
+		
+	public Game()
+	{	
+		scene = new Scene();
+		
+		updater = new Updater(60);
+		
+		//gui = new GUI(resources);
+
+//		//painter = new Painter(gui, camera, imgPool);	
+		
+		//painter.addPaintable(scene);
+				
+		//camera.setFocus(player.getLoc());		
+
+		updater.addUpdatable(
+				delta -> scene.update(delta));
+//				delta -> painter.paint());
+		
+		Entity ent = new Entity();
+		
+		ent.add(new GraphicsComponent(),
+				new MovementComponent());
+		
+		scene.addEntity(ent);
+		
+		Movement movement = ent.get(MovementComponent.class)
+							   .getMovement();
+		
+		movement.add(new FreeForce(100, 0));
+		movement.add(new FreeForce(100, 1));
+	}
+	
+	public void start()
+	{
+		updater.start();
+	}
+	
+}

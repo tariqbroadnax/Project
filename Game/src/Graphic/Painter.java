@@ -1,92 +1,110 @@
 package Graphic;
 
-import java.awt.Color;
+import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
+import java.awt.Window;
 import java.awt.image.BufferStrategy;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-
-import GUI.GUI;
-import Utilities.ImagePool;
 
 public class Painter
 {
-	private Collection<Paintable> paintables;
+	private List<Paintable> paintables;
 			
-	private Map<?, ?> renderingHintMap;
+	private Map<Object, Object> hints;
 	
 	private Camera camera;
 	
-	private ImagePool imgPool;
+	private Window window;
 	
-	private JFrame frame;
-	private JLayeredPane hud;
+	private Canvas canvas;
 	
-	public Painter(GUI gui, Camera camera,
-				   ImagePool imgPool)
+	public Painter(Window window, Camera camera)
 	{
+		this.window = window;
 		this.camera = camera;
-		this.imgPool = imgPool;
+				
+		hints = new HashMap<Object, Object>();
 		
-		frame = gui.getFrame();
+		hints.put(RenderingHints.KEY_ANTIALIASING,
+				  RenderingHints.VALUE_ANTIALIAS_ON);
 		
-		hud = gui.getLayeredPane();
+		hints.put(RenderingHints.KEY_RENDERING,
+				  RenderingHints.VALUE_RENDER_QUALITY);
 		
-		paintables = new LinkedList<Paintable>();
+		paintables = new ArrayList<Paintable>();
+	}
+	
+	public Painter(Canvas canvas, Camera camera)
+	{
+		this.canvas = canvas;
+		this.camera = camera;
+				
+		paintables = new ArrayList<Paintable>();
 	}
 	
 	public void paint()
 	{
-		BufferStrategy strategy =
-				frame.getBufferStrategy();
-
+		BufferStrategy strategy;
+		Dimension size;
+		
+		if(window == null)
+		{
+			strategy = canvas.getBufferStrategy();
+			size = canvas.getSize();
+		}
+		else
+		{
+			strategy = window.getBufferStrategy();
+			size = window.getSize();
+		}
+						
 		if(strategy == null) return;
 		
-		Graphics g = strategy.getDrawGraphics();
-		
-		Dimension screenDim = frame.getSize();
+		do {
+			
+			do {	
+				Graphics g = strategy.getDrawGraphics();				
+				
+				g.clearRect(0, 0, size.width, size.height);
 
-		g.setColor(Color.white);
-		g.fillRect(0, 0, screenDim.width, screenDim.height);
-		
-		Graphics2D g2d = (Graphics2D)g;
+				camera.setScreenDimension(size.width, size.height);
 
-		g2d.setRenderingHint(
-				RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		
-		g2d.setRenderingHint(
-				RenderingHints.KEY_COLOR_RENDERING,
-				RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-		
-		camera.setScreenDimension(screenDim.width, 
-								  screenDim.height);
+				GraphicsContext gc = new GraphicsContext(g, camera);
 
-		GraphicsContext gc = 
-				new GraphicsContext(
-						g2d, camera, imgPool);
-	
-		camera.transformGraphics(gc.g2d);
-		
-		for(Paintable p : paintables)
-			p.paint(gc);	
-		
-		gc.g2d.setTransform(new AffineTransform());
-		frame.paintComponents(gc.g2d);		
-		strategy.show();
-		gc.g2d.dispose();
-	}
-	
-	public Camera getCamera() {
-		return camera;
+				gc.g2d.setRenderingHints(hints);
+				
+				for(Paintable p : paintables)
+					p.paint(gc);	
+
+// comment this out if no comps are added
+// else the default comp will hide background
+				if(window != null)
+				{
+					try {
+						EventQueue.invokeAndWait(() -> window.paintComponents(g));
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					//window.paintComponents(g);	
+
+				}
+				g.dispose();
+				gc.g2d.dispose();
+				
+			} while(strategy.contentsRestored());
+						
+			strategy.show();
+			
+		} while(strategy.contentsLost());
 	}
 	
 	public void addPaintable(Paintable p) {
@@ -95,5 +113,9 @@ public class Painter
 	
 	public void removePaintable(Paintable p) {
 		paintables.remove(p);
+	}
+	
+	public void clear() {
+		paintables.clear();
 	}
 }

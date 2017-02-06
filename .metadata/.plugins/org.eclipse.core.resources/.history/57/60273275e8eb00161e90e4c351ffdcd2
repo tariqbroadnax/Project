@@ -1,0 +1,17 @@
+package Inventory;
+
+import EntityComponent.EntityComponent;
+
+public class InventoryComponent extends EntityComponent
+{
+	private Inventory inventory;
+	
+	public InventoryComponent()
+	{
+		inventory = new Inventory();
+	}
+	
+	public Inventory getInventory() {
+		return inventory;
+	}
+}

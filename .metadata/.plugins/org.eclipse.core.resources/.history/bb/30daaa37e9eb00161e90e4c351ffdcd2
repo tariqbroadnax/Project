@@ -1,0 +1,11 @@
+package Item;
+
+public class Item
+{	
+	private int id;
+	
+	public Item()
+	{
+		id = -1;
+	}
+}

@@ -6,16 +6,20 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import Editor.comp.ScenePlayer;
 import Editor.headings.ColumnHeading;
 import Editor.headings.RowHeading;
 import Editor.headings.SelectAllButton;
-import Graphic.Camera;
 
 public class ScenePanel extends JPanel 
+	implements SceneListener
 {
 	private JPanel northPanel;
 	
 	private RowHeading rowHeading;
+	
+	private SceneEditor editor;
+	private ScenePlayer player;
 	
 	public ScenePanel(EditorResources resources)
 	{
@@ -23,7 +27,8 @@ public class ScenePanel extends JPanel
 		
 		ColumnHeading colHeading = new ColumnHeading(resources);
 		rowHeading = new RowHeading(resources);
-		SceneEditor editor = new SceneEditor(resources);
+		editor = new SceneEditor(resources);
+		player = new ScenePlayer(resources);
 		
 		northPanel = new JPanel();
 		JButton button = new SelectAllButton(resources);
@@ -39,6 +44,8 @@ public class ScenePanel extends JPanel
 		
 		northPanel.add(button, BorderLayout.WEST);
 		northPanel.add(colHeading, BorderLayout.CENTER);
+		
+		resources.addSceneListener(this);
 	}
 	
 	public void setHeadingVisible(boolean visible)
@@ -47,5 +54,28 @@ public class ScenePanel extends JPanel
 		rowHeading.setVisible(visible);
 		
 		revalidate();
+	}
+	
+	@Override
+	public void scenePlayerStarted() 
+	{		
+		remove(editor);
+		add(player, BorderLayout.CENTER);
+	
+		revalidate();
+		repaint();
+		
+		player.start();
+	}
+	
+	@Override
+	public void scenePlayerStopped() 
+	{		
+		player.stop();
+		remove(player);
+		add(editor, BorderLayout.CENTER);
+
+		revalidate();
+		repaint();
 	}
 }

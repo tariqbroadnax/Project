@@ -3,14 +3,14 @@ package Graphic;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.time.Duration;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 import Utilities.CircularIterator;
 
 public class Animation extends Graphic
 {
-	private Collection<Graphic> graphics;
+	private List<Graphic> graphics;
 	
 	private long delay, elapsed;
 	
@@ -20,7 +20,7 @@ public class Animation extends Graphic
 
 	public Animation()
 	{
-		graphics = new LinkedList<Graphic>();
+		graphics = new ArrayList<Graphic>();
 	
 		elapsed = 0;	
 		delay = 100;
@@ -30,6 +30,8 @@ public class Animation extends Graphic
 	
 	public Animation(Animation ani)
 	{
+		graphics = new ArrayList<Graphic>();
+
 		elapsed = 0;		
 		delay = ani.delay;
 		
@@ -55,7 +57,8 @@ public class Animation extends Graphic
 	
 	@Override
 	protected void _paint(GraphicsContext gc) {
-		curr.paint(gc);
+		if(curr != null)
+			curr.paint(gc);
 	}
 	
 	public void reset()
@@ -76,9 +79,37 @@ public class Animation extends Graphic
 		iter = new CircularIterator<Graphic>(graphics);
 		curr = iter.next();
 	}
+	
+	public void setGraphic(int index, Graphic graph)
+	{
+		graphics.set(index, graph);
+		
+		iter = new CircularIterator<Graphic>(graphics);
+		curr = iter.next();
+	}
+	
+	public void removeGraphic(Graphic graph)
+	{
+		graphics.remove(graph);
+		
+		iter = new CircularIterator<Graphic>(graphics);
+		curr = iter.next();
+	}
+	
+	public Graphic getGraphic(int index) {
+		return graphics.get(index);
+	}
+	
+	public int size() {
+		return graphics.size();
+	}
 
 	public void setDelay(long delay) {
 		this.delay = delay;
+	}
+	
+	public long getDelay() {
+		return delay;
 	}
 	
 	@Override
@@ -92,7 +123,10 @@ public class Animation extends Graphic
 	
 	@Override
 	public Rectangle2D.Double getBound() {	
-		return curr.getBound();
+		if(curr == null)
+			return new Rectangle2D.Double();
+		else
+			return curr.getBound();
 	}
  	
 	@Override

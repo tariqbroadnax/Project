@@ -88,8 +88,11 @@ public abstract class Graphic
 	{
 		Rectangle2D.Double bound = getBound();
 		
-		return new Dimension2D.Double(
+		if(bound != null)
+			return new Dimension2D.Double(
 				bound.width, bound.height);
+		else
+			return null;
 	}
 
 	public abstract Rectangle2D.Double getBound();

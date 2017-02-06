@@ -1,0 +1,23 @@
+package Quest;
+
+import Entity.Entity;
+
+public class KillTask extends Task
+{
+	private int targetID, curr, target;
+
+	public KillTask()
+	{
+		curr = 0;
+		target = 5;
+	}
+	
+	@Override
+	public void start(Entity ent) {
+		
+	}
+	
+	public void setTarget(int target) {
+		this.target = target;
+	}
+}

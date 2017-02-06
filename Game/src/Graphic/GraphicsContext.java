@@ -12,8 +12,6 @@ public class GraphicsContext
 	
 	public final Camera camera;
 	
-	public final ImagePool imgPool;
-	
 	public GraphicsContext(Graphics g)
 	{
 		this(g, new Camera());
@@ -22,21 +20,13 @@ public class GraphicsContext
 	public GraphicsContext(Graphics g, Dimension screenSize)
 	{
 		this(g, new Camera(screenSize.width, screenSize.height));
-	}
-		
+	}	
+	
 	public GraphicsContext(
 			Graphics g, Camera camera)
 	{
-		this(g, camera, new ImagePool());
-	}
-	
-	public GraphicsContext(
-			Graphics g, Camera camera,
-			ImagePool imgPool)
-	{
 		this.g2d = (Graphics2D) g.create();
 		this.camera = camera;
-		this.imgPool = imgPool;
 		
 		camera.transformGraphics(g2d);
 	}

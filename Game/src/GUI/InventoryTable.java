@@ -14,7 +14,7 @@ import javax.swing.table.TableCellRenderer;
 import EntityComponent.GraphicsComponent;
 import EntityComponent.Inventory;
 import Graphic.Graphic;
-import Item.InventoryItem;
+import Inventory.InventoryItem;
 
 public class InventoryTable extends JTable
 {

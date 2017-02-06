@@ -1,37 +1,56 @@
 package Dialogue;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class Dialogue 
-	implements Serializable
-{
-	private int id;
+public class Dialogue implements Serializable
+{	
+	private List<String> pages;
 	
-	private String txt;
+	private List<Branch> branches;
 	
 	public Dialogue()
 	{
-		id = 0;
-		txt = "";
+		pages = new ArrayList<String>();
+		
+		branches = new ArrayList<Branch>();
+		
+		addPage("Testing...");
+		addPage("Testing...");
+		addPage("Testing...");
+		addPage("Testing...");
 	}
 	
-	public void setID(int id)
-	{
-		this.id = id;
+	public void addPage(String txt) {
+		pages.add(txt);
 	}
 	
-	public void setText(String txt)
-	{
-		this.txt = txt;
+	public void removePage(int page) {
+		pages.remove(page);
 	}
 	
-	public int getID()
-	{
-		return id;
+	public void setPage(int page, String txt) {
+		pages.set(page, txt);
 	}
 	
-	public String getText()
-	{
-		return txt;
+	public String getPage(int page) {
+		return pages.get(page);
+	}
+	
+	public int pageCount() {
+		return pages.size();
+	}
+	
+	public void addBranch(Branch branch) {
+		branches.add(branch);
+	}
+	
+	public void removeBranch(Branch branch) {
+		branches.remove(branch);
+	}
+	
+	public Branch getBranch(int index) {
+		return branches.get(index);
 	}
 }

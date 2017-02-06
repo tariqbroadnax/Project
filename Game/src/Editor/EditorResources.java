@@ -51,13 +51,15 @@ public class EditorResources
 	
 	private SelectionHandler selectionHandler;
 	
-	private Mode mode;
+	private boolean tiledMode;
 	
 	public final Stamp STAMP;
 	public final SelectTool SELECT_TOOL;
 	public final EraseTool ERASE_TOOL;
 	
 	private Tool tool;
+	
+	private EditorAssets editorAssets;
 	
 	public EditorResources()
 	{
@@ -82,8 +84,12 @@ public class EditorResources
 		STAMP = new Stamp(this);
 		SELECT_TOOL = new SelectTool(this);
 		ERASE_TOOL = new EraseTool(this);
+	
+		editorAssets = new EditorAssets();
 		
 		tool = SELECT_TOOL;
+		
+		tiledMode = true;
 		
 		try {
 			pool.importTileset(new Tileset("GrassTileSet.png", 1, 2), 320, 160);
@@ -219,6 +225,18 @@ public class EditorResources
 		}
 	}
 	
+	public void startPlayingScene()
+	{
+		for(SceneListener list : listeners)
+			list.scenePlayerStarted();
+	}
+	
+	public void stopPlayingScene()
+	{
+		for(SceneListener list : listeners)
+			list.scenePlayerStopped();
+	}
+	
 	private boolean restoreState()
 	{
 		try (ObjectInputStream in = 
@@ -270,6 +288,22 @@ public class EditorResources
 	
 	public Tool getTool() {
 		return tool;
+	}
+	
+	public EditorAssets getEditorAssets() {
+		return editorAssets;
+	}
+	
+	public void setTiledMode(boolean tiledMode) 
+	{
+		this.tiledMode = tiledMode;
+		
+		for(ResourceListener list : rlisteners)
+			list.tiledModeChanged(tiledMode);
+	}
+	
+	public boolean tiledMode() {
+		return tiledMode;
 	}
 	
 	public Camera getCamera() {

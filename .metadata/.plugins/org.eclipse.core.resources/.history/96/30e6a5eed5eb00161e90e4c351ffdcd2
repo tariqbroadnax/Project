@@ -1,0 +1,73 @@
+package Quest;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Entity.Entity;
+
+public class Quest implements TaskListener
+{
+	private List<Requirement> reqs;
+	private List<Task> tasks;
+	private List<Reward> rewards;
+	
+	private boolean completed;
+	
+	public Quest()
+	{
+		reqs = new ArrayList<Requirement>();
+		tasks = new ArrayList<Task>();
+		rewards = new ArrayList<Reward>();
+	}
+	
+	public boolean canBeStarted(Entity ent) 
+	{
+		if(completed)
+			return false;
+		
+		for(Requirement req : reqs)
+			if(!req.isSatisfied(ent))
+				return false;
+		return true;
+	}
+	
+	protected void checkAndComplete()
+	{
+		for(Task task : tasks)
+			if(!task.isCompleted())
+				return;
+		
+		
+	}
+	
+	public void addRequirement(Requirement req) {
+		reqs.add(req);
+	}
+	
+	public void removeRequirement(Requirement req) {
+		reqs.remove(req);
+	}
+	
+	public void addTask(Task task) {
+		tasks.add(task);
+	}
+	
+	public void removeTask(Task task) {
+		tasks.remove(task);
+	}
+	
+	public void addReward(Reward reward) {
+		rewards.add(reward);
+	}
+	
+	public void removeReward(Reward reward) {
+		rewards.remove(reward);
+	}
+
+
+	@Override
+	public void taskCompleted() 
+	{
+		
+	}
+}

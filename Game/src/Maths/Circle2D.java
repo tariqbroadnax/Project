@@ -26,7 +26,7 @@ public class Circle2D
 
 		public Double(double x, double y, double radius)
 		{
-			super(x, y, 2 * radius, 2 * radius);
+			super(x - radius, y - radius, 2 * radius, 2 * radius);
 			
 			this.radius = radius;
 		}

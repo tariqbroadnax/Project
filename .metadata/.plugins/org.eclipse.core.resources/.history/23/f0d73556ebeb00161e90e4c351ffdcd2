@@ -1,0 +1,55 @@
+package Quest;
+
+import Entity.Entity;
+import Inventory.InventoryComponent;
+import Inventory.InventoryListener;
+
+public class GatherTask extends Task
+	implements InventoryListener
+{
+	private Entity ent;
+	
+	private int id, curr, target;
+
+	public GatherTask()
+	{
+		id = -1;
+		curr = 0;
+		target = 5;
+	}
+	
+	@Override
+	public void start(Entity ent) 
+	{
+		this.ent = ent;
+		
+		ent.get(InventoryComponent.class)
+		   .getInventory()
+		   .addInventoryListener(this);
+	}
+	
+	public void setTargetID(int id) {
+		this.id = id;
+	}
+	
+	public void setTargetGatherCount(int target) {
+		this.target = target;
+	}
+	
+	public int getTargetID() {
+		return id;
+	}
+	
+	public int getTargetGatherCount() {
+		return target;
+	}
+	
+	public int getCurrentGatherCount() {
+		return curr;
+	}
+
+	@Override
+	public void itemAdded() {
+		
+	}
+}

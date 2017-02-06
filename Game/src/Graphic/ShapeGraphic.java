@@ -54,14 +54,14 @@ public class ShapeGraphic extends Graphic
 	
 	@Override
 	protected void _paint(GraphicsContext gc) 
-	{
+	{		
 		double w = shape.getWidth(),
 			   h = shape.getHeight();
 		
 		shape.setFrame(loc.x - w/2, loc.y - h/2, w, h);
 		
 		gc.camera.screenShape(shape, screenShape);
-		
+
 		gc.g2d.setPaint(paint);
 		
 		paintShape(gc.g2d, screenShape);
@@ -96,6 +96,11 @@ public class ShapeGraphic extends Graphic
 	{
 		this.shape = (RectangularShape)shape.clone();
 		screenShape = (RectangularShape)shape.clone();	 
+	
+		double centerX = shape.getCenterX(),
+			   centerY = shape.getCenterY();
+	
+		setLoc(centerX, centerY);
 	}
 	
 	public void setFilled(boolean filled) {

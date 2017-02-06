@@ -89,6 +89,12 @@ public class SelectionHandler
 		listeners.add(listener);
 	}
 	
+	public void notifySelectionModified()
+	{
+		for(SelectionListener list : listeners)
+			list.selectionModified();
+	}
+	
 	public boolean sceneSelection() {
 		return sceneSelection;
 	}

@@ -1,0 +1,38 @@
+package Quest;
+
+import java.awt.geom.Point2D;
+
+import Entity.Entity;
+import Maths.Circle2D;
+
+public class TravelTask extends Task
+{
+	private Circle2D.Double zone;
+	
+	
+	public TravelTask()
+	{
+		zone = new Circle2D.Double(0, 0, 1);
+	}
+	
+	@Override
+	public void start(Entity ent) 
+	{
+		
+	}
+	
+	public void setTargetCenter(double x, double y)
+	{
+		zone.x = x; zone.y = y;
+	}
+	
+	public void setTargetCenter(Point2D.Double target)
+	{
+		this.target.x = target.x;
+		this.target.y = target.y;
+	}
+	
+	public void setRadius(double radius) {
+		this.radius = radius;
+	}
+}

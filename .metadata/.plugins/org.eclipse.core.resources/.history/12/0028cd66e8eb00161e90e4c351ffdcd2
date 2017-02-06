@@ -1,0 +1,15 @@
+package Inventory;
+
+public class InventoryComponent 
+{
+	private Inventory inventory;
+	
+	public InventoryComponent()
+	{
+		inventory = new Inventory();
+	}
+	
+	public Inventory getInventory() {
+		return inventory;
+	}
+}

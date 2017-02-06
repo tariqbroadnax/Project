@@ -1,0 +1,61 @@
+package Game;
+
+import Actions.ActionComponent;
+import Entity.Entity;
+import EntityComponent.GraphicsComponent;
+import GUI.UI;
+import Movement.MovementComponent;
+import Quest.QuestComponent;
+
+public class Game
+{
+	private Scene scene;
+
+	private Entity player;
+	
+	private UI ui;
+	
+	private Updater updater;
+		
+	public Game()
+	{	
+		scene = new Scene();
+		
+		updater = new Updater(60);
+
+		updater.addUpdatable(
+				delta -> scene.update(delta));
+		
+		player = new Entity();
+		
+		ui = new UI(scene, updater, player);
+		
+		
+		// TESTING
+		
+		player.add(new GraphicsComponent(),
+				   new MovementComponent(),
+				   new ActionComponent(),
+				   new QuestComponent());
+		
+		player.get(QuestComponent.class)
+			  .addQuest(new Quest());
+		
+		scene.addEntity(player);
+		
+		Entity npc = new Entity();
+		
+		npc.add(new GraphicsComponent());
+		
+		
+		npc.setLoc(0, -50);
+		
+		scene.addEntity(npc);
+	}
+	
+	public void start()
+	{
+		ui.setGUIVisible(true);
+		updater.start();
+	}
+}

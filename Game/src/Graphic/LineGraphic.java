@@ -10,6 +10,8 @@ import java.awt.geom.Rectangle2D;
 
 public class LineGraphic extends Graphic
 {	
+	/* NOTICE -- 
+	 * Line2D not used b/c loc is used pt1 */
 	private Point2D.Double pt1, pt2;
 	
 	private Paint paint;
@@ -52,6 +54,8 @@ public class LineGraphic extends Graphic
 		pt2 = new Point2D.Double(graph.pt2.x, graph.pt2.y);
 		
 		paint = graph.paint;
+		
+		stroke = graph.stroke;
 	}
 	
 	@Override

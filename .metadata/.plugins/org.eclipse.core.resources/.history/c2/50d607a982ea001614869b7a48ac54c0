@@ -1,0 +1,8 @@
+package Actions;
+
+import Game.Updatable;
+
+public interface Action extends Updatable
+{
+	public boolean isFinished();
+}

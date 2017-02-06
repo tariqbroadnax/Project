@@ -1,14 +1,12 @@
 package Editor.entity_selector;
 
-import java.awt.Dimension;
-import java.util.HashMap;
+import java.awt.BorderLayout;
 import java.util.Map;
 
 import javax.swing.JPanel;
 
 import Editor.EditorResources;
 import Entity.Entity;
-import EntityComponent.GraphicsComponent;
 
 public class EntitySelector extends JPanel
 {	
@@ -20,31 +18,13 @@ public class EntitySelector extends JPanel
 	{
 		this.resources = resources;
 		
-		map = new HashMap<Entity, EntityComponent>();
+		ToolBar toolbar = new ToolBar(resources);
+		EntitySelectorPanel pnl = new EntitySelectorPanel(resources);
 		
-		setPreferredSize(new Dimension(200, 200));
+		setLayout(new BorderLayout());
 		
-		Entity ent = new Entity();
-		
-		ent.add(new GraphicsComponent());
-		
-		add(ent);
+		add(toolbar, BorderLayout.NORTH);
+		add(pnl, BorderLayout.CENTER);	
 	}
-	
-	public void add(Entity ent)
-	{
-		EntityComponent comp = new EntityComponent(
-				resources, ent, this);
-		
-		map.put(ent, comp);
-		add(comp);
-	}
-	
-	public void remove(Entity ent)
-	{
-		EntityComponent comp = map.get(ent);
-		
-		map.remove(ent);
-		remove(comp);
-	}
+
 }

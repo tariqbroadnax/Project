@@ -1,0 +1,30 @@
+package Actions;
+
+import java.time.Duration;
+import java.util.List;
+
+import EntityComponent.EntityComponent;
+
+// this components starts and performs actions
+public class ActionComponent extends EntityComponent
+{
+	private List<Action> actions;
+	
+	public ActionComponent()
+	{
+		actions = new ArrayList<Action>();
+	}
+	
+	@Override
+	public void update(Duration delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

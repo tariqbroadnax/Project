@@ -9,7 +9,6 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -17,34 +16,33 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
+import Game.Game;
 import Game.Updatable;
 import Game.Updater;
+import Graphic.Camera;
+import Graphic.Painter;
 
 public class GFrame extends JFrame
 	implements WindowListener, ComponentListener,
 			   Updatable
 {
-	private static final Dimension DEFAULT_DIMENSION =
+	private static final Dimension DEFAULT_SIZE =
 			new Dimension(800, 600);
 		
 	private Timer timer;
 	
-	private boolean isFullScreen,
-					requestFullScreen;
-	
 	private GraphicsDevice device;
 	
 	private Updater updater;
-
+	
 	public GFrame(Updater updater)
 	{
-		setSize(DEFAULT_DIMENSION);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
 		this.updater = updater;
 		
-		isFullScreen = false;
-		
+		setIgnoreRepaint(true);
+		setSize(DEFAULT_SIZE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+				
 		timer = new Timer(1000, e -> updateTitle());
 		
 		device = GraphicsEnvironment
@@ -53,56 +51,19 @@ public class GFrame extends JFrame
 				
 		addWindowListener(this);
 		addComponentListener(this);
-		
-		updater.addUpdatable(this);
-		
-		getRootPane().getInputMap(
-				JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				KeyStroke.getKeyStroke("F"),
-				"toggleFS");
-		
-		getRootPane().getActionMap()
-					 .put("toggleFS", new MyAction());
-		
-		timer.start();
+			
+		timer.start();		
 	}
 	
 	@Override
 	public void update(Duration delta)
 	{
-		if(requestFullScreen == isFullScreen)
-			return;
 		
-		isFullScreen = requestFullScreen;
-		
-		if(isFullScreen)
-		{
-			device.setFullScreenWindow(this);
-			timer.stop();
-		
-		}
-		else
-		{
-			device.setFullScreenWindow(null);
-			timer.start();
-		}
-	}
-	
-	private class MyAction extends AbstractAction
-	{
-		public void actionPerformed(ActionEvent e) {
-			toggleFullScreen();
-		}	
-	}
-	
-	public void toggleFullScreen()
-	{
-		setFullScreen(!isFullScreen);
 	}
 	
 	public void setFullScreen(boolean isFullScreen)
 	{
-		requestFullScreen = isFullScreen;
+		
 	}
 
 	private void updateTitle()

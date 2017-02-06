@@ -78,20 +78,23 @@ public class TileMap extends Graphic
 	//	System.out.println(x(startCol) + " " + y(startRow));
 		Sprite sprite = new Sprite();
 		
+		Tile tile = map[0][0];
+
+		sprite.setFile(tile.file.getAbsoluteFile());
+		sprite.setTileBound(0, 0, 16, 16);
 		sprite.setSize(tileSize.width, tileSize.height);
 				
 		for(int row = startRow; row < endRow; row++)
 		{
 			for(int col = startCol; col < endCol; col++)
 			{
-				Tile tile = map[col][row];
+				tile = map[col][row];
 				
 				if(tile == null) continue;
 				
 				double x = loc.x + col * tileSize.width,
 					   y = loc.y + row * tileSize.height;
 		
-				sprite.setTile(tile);
 				sprite.setLoc(x + tileSize.width / 2,
 							  y + tileSize.height / 2);
 				

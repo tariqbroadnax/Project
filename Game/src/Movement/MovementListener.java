@@ -5,6 +5,9 @@ public interface MovementListener
 	default public void movementStarted(
 			MovementComponent src){}
 	
+	default public void movementOccurred(
+			MovementComponent src){}
+	
 	default public void movementStopped(
 			MovementComponent src){}
 	

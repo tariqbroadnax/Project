@@ -1,0 +1,17 @@
+package GUI;
+
+import Dialogue.Dialogue;
+
+public class UIController 
+{	
+	public UIController(UI ui)
+	{
+		
+	}
+	
+	public void startDialogue(Dialogue dialogue)
+	{
+		
+	}
+	
+}

@@ -7,15 +7,15 @@ import java.util.LinkedList;
 
 public class ActionBuffer 
 {
-	protected Collection<SyncGameAction> actions;
+	protected Collection<Runnable> actions;
 	
 	public ActionBuffer()
 	{
 		actions = Collections.synchronizedCollection(
-				new LinkedList<SyncGameAction>());
+				new LinkedList<Runnable>());
 	}
 	
-	public void addAction(SyncGameAction action)
+	public void schedule(Runnable action)
 	{
 		actions.add(action);
 	}
@@ -24,11 +24,11 @@ public class ActionBuffer
 	{
 		synchronized(actions)
 		{
-			Iterator<SyncGameAction> iter = 
+			Iterator<Runnable> iter = 
 					actions.iterator();
 			
 			while(iter.hasNext())
-				iter.next().invoke();
+				iter.next().run();
 		}
 		
 		actions.clear();

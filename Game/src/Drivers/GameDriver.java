@@ -6,7 +6,8 @@ public class GameDriver
 {
 	public static void main(String[] args)
 	{
-		//new EditorGUI();
-		new Game().start();;
+		Game game = new Game();
+		
+		game.start();
 	}
 }

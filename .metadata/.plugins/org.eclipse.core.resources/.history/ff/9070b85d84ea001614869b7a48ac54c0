@@ -1,0 +1,56 @@
+package Actions;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Entity.Entity;
+import Movement.Force;
+
+public class Move implements Action
+{
+	private Entity actor;
+	
+	private Force force;
+	
+	private Point2D.Double target;
+	
+	private boolean finished;
+	
+	public Move(double speed, double targetX, double targetY)
+	{
+		force = new Force();
+		
+		target = new Point2D.Double(targetX, targetY);
+		
+		
+	}
+
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+
+	@Override
+	public void start() {
+	
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setActor(Entity actor) {
+		this.actor = actor;
+	}
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}

@@ -1,5 +1,6 @@
 package Editor.tools;
 
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -9,7 +10,11 @@ import Editor.layer_selector.SetTile;
 import Editor.selection.SelectionHandler;
 import EditorGUI.UndoManager;
 import Entity.Entity;
+import EntityComponent.GraphicsComponent;
 import Graphic.Camera;
+import Graphic.Graphic;
+import Graphic.GraphicsContext;
+import Maths.Dimension2D;
 import Tileset.Tile;
 import Tileset.TileMap;
 
@@ -17,9 +22,72 @@ public class Stamp implements Tool
 {
 	private EditorResources resources;
 	
+	private Point mouseLoc;
+	
 	public Stamp(EditorResources resources)
 	{
 		this.resources = resources;
+	}
+	
+	@Override
+	public void paint(Graphics g) 
+	{		
+		if(mouseLoc == null)
+			return;
+		
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		// stamp only works with one selection
+		if(handler.selectionCount() == 1) 
+		{
+			Camera camera = resources.getCamera();
+			
+			Point2D.Double normLoc = camera.normalLocation(mouseLoc);
+			
+			GraphicsContext gc = new GraphicsContext(g, camera);
+			
+			Object obj = handler.getSelection().get(0);
+			
+			if(obj instanceof Entity)
+			{
+				Entity ent = (Entity) obj;
+				
+				if(resources.tiledMode())
+					updateToTileLoc(ent, normLoc);
+			
+				paintEntity(ent, gc, normLoc);
+			}
+		}
+	}
+	
+	private void updateToTileLoc(
+			Entity ent,
+			Point2D.Double loc)
+	{
+		Dimension2D.Double graphSize = 
+				ent.get(GraphicsComponent.class)
+				   .getGraphic()
+				   .getSize();
+	
+		if(loc.x > 0) loc.x += 10;
+		if(loc.y > 0) loc.y += 10;
+			
+		loc.x = ((int) loc.x / 10) * 10 - graphSize.width/2;
+		loc.y = ((int) loc.y / 10) * 10 - graphSize.height/2;
+	}
+	
+	private void paintEntity(
+			Entity ent, GraphicsContext gc, 
+			Point2D.Double normLoc)
+	{
+		Graphic graph = (Graphic)
+				ent.get(GraphicsComponent.class)
+						  .getGraphic()
+						  .clone();
+				
+		graph.setLoc(normLoc);
+		
+		graph.paint(gc);
 	}
 	
 	private void tryAndStampTile(Tile tile, Point2D.Double normLoc)
@@ -44,7 +112,12 @@ public class Stamp implements Tool
 	private void stampEntity(Entity ent, Point2D.Double normLoc)
 	{
 		ent = (Entity)ent.clone();
+		
+		if(resources.tiledMode())
+			updateToTileLoc(ent, normLoc);
+		
 		ent.setLoc(normLoc);
+		
 		resources.scene.addEntityNow(ent);
 		resources.notifyOfSceneChange();
 	}
@@ -80,5 +153,17 @@ public class Stamp implements Tool
 		{
 			
 		}
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e)
+	{
+		mouseLoc = e.getPoint();
+	}
+	
+	@Override
+	public void mouseExited(MouseEvent e)
+	{
+		mouseLoc = null;
 	}
 }

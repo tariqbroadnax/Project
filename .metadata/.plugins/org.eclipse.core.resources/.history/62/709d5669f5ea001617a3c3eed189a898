@@ -1,0 +1,22 @@
+package GUI;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JPanel;
+
+import Dialogue.Dialogue;
+
+public class HUD extends JPanel
+{		
+	public HUD()
+	{	
+		setOpaque(false);
+		setLayout(new BorderLayout());
+		
+		DialogueArea area = new DialogueArea();
+		
+		add(area, BorderLayout.SOUTH);
+		
+		area.setDialogue(new Dialogue());
+	}
+}

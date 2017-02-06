@@ -5,20 +5,13 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeSet;
 
 import Entity.Entity;
 import EntityComponent.EntityComponent;
-import Modifiers.Modifier;
 
 public class MovementComponent extends EntityComponent
-{
-	private boolean enabled;
-	
-	protected Movement normalMovement;
-
-	private Movement disablingMovement;
+{	
+	protected Movement movement;
 
 	private Cardinal dir, prevDir;
 	
@@ -28,8 +21,6 @@ public class MovementComponent extends EntityComponent
 
 	private Point2D.Double prevLoc,
 						   parentLoc;
-
-	private TreeSet<Modifier> speedMods;
 	
 	public MovementComponent()
 	{
@@ -40,10 +31,7 @@ public class MovementComponent extends EntityComponent
 	{
 		enabled = true;
 		
-		normalMovement = new Movement();
-		normalMovement.setSpeed(50);
-		
-		disablingMovement = new Movement();
+		movement = new Movement();
 		
 		listeners = new LinkedList<MovementListener>();
 		
@@ -52,39 +40,22 @@ public class MovementComponent extends EntityComponent
 		prevLoc = new Point2D.Double();
 		
 		dir = prevDir = Cardinal.NORTH;
-	
-		speedMods = new TreeSet<Modifier>();
 	}
 	
 	public MovementComponent(MovementComponent comp)
 	{
 		this();
-		
-		normalMovement = (Movement)comp.normalMovement.clone();
-		disablingMovement = (Movement)comp.disablingMovement.clone();
 	}
 	
 	@Override
 	public void update(Duration delta)
 	{		
-		Movement movement;
-
-		//System.out.println(enabled + " " + parent.getClass());
-		movement = enabled ? normalMovement :
-							 disablingMovement;
-	
 		prevLoc.setLocation(parentLoc);
 
-		double prevSpeed = movement.getSpeed(),
-			   currSpeed = prevSpeed;
-			
-		for(Modifier mod : speedMods)
-			currSpeed = mod.modify(currSpeed);
-		
-		movement.setSpeed(currSpeed);
 		movement.move(parentLoc, delta);
-		movement.setSpeed(prevSpeed);
 				
+		parent.setLoc(parentLoc);
+		
 		notifyListeners();
 	}
 	
@@ -131,43 +102,16 @@ public class MovementComponent extends EntityComponent
 		listeners.add(listener);
 	}
 	
-	public void addSpeedMod(Modifier mod)
-	{
-		speedMods.add(mod);
-	}
-	
-	public void removeSpeedMod(Modifier mod)
-	{
-		speedMods.remove(mod);
-	}
-	
 	public void setEnabled(boolean enabled)
 	{
 		this.enabled = enabled;
 	}
 	
-	public void setNormalMovement(Movement normalMovement)
-	{
-		this.normalMovement = normalMovement;
+	public Movement getMovement() {
+		return movement;
 	}
 	
-	public void setDisablingMovement(Movement disablingMovement)
-	{
-		this.disablingMovement = disablingMovement;
-	}
-	
-	public Movement getDisablingMovement()
-	{
-		return disablingMovement;
-	}
-	
-	public Movement getNormalMovement()
-	{ 
-		return normalMovement;
-	}
-	
-	public Cardinal getDirection()
-	{
+	public Cardinal getDirection() {
 		return dir;
 	}
 	
@@ -176,16 +120,10 @@ public class MovementComponent extends EntityComponent
 		return prevDir;
 	}
 	
-	public boolean isMoving()
-	{
+	public boolean isMoving() {
 		return moving;
 	}
 	
-	public boolean isMovementEnabled()
-	{
-		return enabled;
-	}
-
 	@Override
 	public void setParent(Entity parent)
 	{

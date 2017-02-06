@@ -19,9 +19,7 @@ public class MovementForm extends Form
 	private DoubleField speedFld, dirFld;
 	
 	private JCheckBox enabledBox;
-	
-	private List<ValueListener> listeners;
-	
+		
 	public MovementForm()
 	{
 		this(new Movement());
@@ -37,8 +35,6 @@ public class MovementForm extends Form
 		dirFld = new DoubleField();
 		
 		enabledBox = new JCheckBox();
-	
-		listeners = new ArrayList<ValueListener>();
 
 		addComponent(speedLbl, 0, 0, 1);
 		addField(speedFld, 1, 0, 1);
@@ -91,20 +87,6 @@ public class MovementForm extends Form
 		movement.setEnabled(enabled);
 	}
 	
-	private void notifyListeners()
-	{
-		for(ValueListener listener : listeners)
-			listener.valueChanged();
-	}
-	
-	public void addValueListener(ValueListener listener) {
-		listeners.add(listener);
-	}
-	
-	public void removeValueListener(ValueListener listener) {
-		listeners.remove(listener);
-	}
-
 	@Override
 	public void valueChanged() {
 		updateAndNotify();

@@ -1,0 +1,43 @@
+package Dialogue;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Dialogue implements Serializable
+{	
+	private String txt;
+	
+	private List<Branch> branches;
+	
+	public Dialogue()
+	{
+		txt = 
+				 "This is an editable JTextArea. " +
+						    "A text area is a \"plain\" text component, " +
+						    "which means that although it can display text " +
+						    "in any font, all of the text is in the same font.";
+						    
+		branches = new ArrayList<Branch>();
+	}
+	
+	public void setText(String txt) {
+		this.txt = txt;
+	}
+	
+	public String getText() {
+		return txt;
+	}
+	
+	public void addBranch(Branch branch) {
+		branches.add(branch);
+	}
+	
+	public void removeBranch(Branch branch) {
+		branches.remove(branch);
+	}
+	
+	public Branch getBranch(int index) {
+		return branches.get(index);
+	}
+}

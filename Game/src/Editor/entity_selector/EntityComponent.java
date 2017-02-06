@@ -3,14 +3,17 @@ package Editor.entity_selector;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D;
 
-import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import Editor.EditorResources;
 import Editor.selection.SelectionHandler;
+import Editor.selection.SelectionListener;
 import EditorGUI.MouseListener;
 import Entity.Entity;
 import EntityComponent.GraphicsComponent;
@@ -19,24 +22,24 @@ import Graphic.Graphic;
 import Graphic.GraphicsContext;
 import Maths.Dimension2D;
 
-public class EntityComponent extends JComponent 
-	implements MouseListener
+public class EntityComponent extends JPanel
+	implements MouseListener, SelectionListener,
+			   FocusListener
 {
 	private EditorResources resources;
 	
 	private Entity ent;
 	
-	private EntitySelector parent;
-	
-	public EntityComponent(
-			EditorResources resources,
-			Entity ent, EntitySelector parent)
+	public EntityComponent(EditorResources resources, Entity ent)
 	{
 		this.resources = resources;
 		this.ent = ent;
-		this.parent = parent;
+		
+		resources.getSelectionHandler()
+				 .addSelectionListener(this);
 		
 		addMouseListener(this);
+		addFocusListener(this);
 		
 		updateSize();
 	}
@@ -53,13 +56,15 @@ public class EntityComponent extends JComponent
 				ent.get(GraphicsComponent.class)
 				   .getGraphic()
 				   .getSize();
-			
+		
 			scrSize = camera.sizeOnScreen(graphSize);
 		}
 		else
 			scrSize = new Dimension(40, 40);
 		
 		setPreferredSize(scrSize);
+		
+		revalidate();
 	}
 	
 	public void paintComponent(Graphics g)
@@ -76,19 +81,20 @@ public class EntityComponent extends JComponent
 		{			
 			Graphic graph = ent.get(GraphicsComponent.class)
 					   		   .getGraphic();
-			
+						
 			Camera camera = new Camera();
 
-			Rectangle2D.Double graphBound = graph.getBound(),
-							   viewBound = camera.normalViewBound();
-				
-			camera.setFocus(graphBound.x + viewBound.width/2,
-							graphBound.y + viewBound.height/2);
+			Dimension size = getSize();
 			
-
-			GraphicsContext gc = new GraphicsContext(
-					g, camera);
-		
+			Point2D.Double graphLoc = graph.getLoc();
+			
+			Dimension2D.Double normSize = camera.normalSize(size);
+			
+			camera.setFocusTL(graphLoc.x  - normSize.width/2,
+							  graphLoc.y - normSize.height/2);
+			
+			GraphicsContext gc = new GraphicsContext(g, camera);
+	
 			graph.paint(gc);
 					
 			gc.g2d.dispose();
@@ -118,24 +124,60 @@ public class EntityComponent extends JComponent
 		}
 	}
 	
+	private void updateSelection()
+	{
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		if(handler.isSelection(ent))
+		{
+			handler.removeSelection();
+			resources.setTool(resources.SELECT_TOOL);
+		}
+		else
+		{
+			resources.setTool(resources.STAMP);
+			handler.setSelection(ent, false);
+		}
+		
+		repaint();
+	}
+	
 	@Override
 	public void mousePressed(MouseEvent e) 
-	{
+	{					
 		if(SwingUtilities.isLeftMouseButton(e))
 		{
-			SelectionHandler handler = resources.getSelectionHandler();
+			requestFocusInWindow();
+
+			boolean focused = hasFocus();
 			
-			if(handler.isSelection(ent))
-			{
-				handler.removeSelection();
-				resources.setTool(resources.SELECT_TOOL);
-			}
-			else
-			{
-				resources.setTool(resources.STAMP);
-				handler.setSelection(ent, false);
-			}
-			repaint();
-		}
+			if(focused)
+				updateSelection();
+		}	
+	}
+
+	@Override
+	public void selectionChanged() {
+		repaint();
 	}	
+	
+	public void selectionModified() {
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		if(handler.isSelection(ent))
+			updateSize();
+		
+		repaint();
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		updateSelection();
+	}
+
+	@Override
+	public void focusLost(FocusEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }

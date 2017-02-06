@@ -1,17 +1,19 @@
 package Editor;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import Editor.comp.EntityForm;
+import Editor.comp.ValueListener;
+import Editor.selection.SelectionHandler;
 import Editor.selection.SelectionListener;
 import Entity.Entity;
 
 public class Inspector extends JPanel
-	implements SelectionListener
+	implements SelectionListener, ValueListener
 {
 	private EditorResources resources;
 	
@@ -27,6 +29,8 @@ public class Inspector extends JPanel
 		
 		resources.getSelectionHandler()
 				 .addSelectionListener(this);
+		
+		entForm.addValueListener(this);
 	}
 	
 	private void inspectSelectedObj()
@@ -35,24 +39,26 @@ public class Inspector extends JPanel
 				resources.getSelectionHandler()
 						 .getSelection();
 		
-		Object obj = selectedObjs.get(0);
-		
-		inspect(obj);
+		if(selectedObjs.size() > 0)
+		{
+			Object obj = selectedObjs.get(0);
+			
+			inspect(obj);
+		}
 	}
 	
 	public void inspect(Object obj)
 	{		
 		removeAll();
-		
-		System.out.println("here");
-		
+				
 		if(obj instanceof Entity)
 		{	
 			Entity entity = (Entity)obj;
 			
 			entForm.setEntity(entity);
 		
-			add(entForm);
+			add(new JScrollPane(entForm, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+										 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
 		}
 		
 		revalidate();
@@ -62,7 +68,15 @@ public class Inspector extends JPanel
 	@Override
 	public void selectionChanged() 
 	{
-		System.out.println("here");
 		inspectSelectedObj();
 	}
+
+	@Override
+	public void valueChanged() 
+	{
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		handler.notifySelectionModified();
+	}
+		
 }

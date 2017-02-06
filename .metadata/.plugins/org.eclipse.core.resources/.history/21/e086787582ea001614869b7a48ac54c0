@@ -1,0 +1,28 @@
+package Actions;
+
+import java.time.Duration;
+
+import Game.Updatable;
+
+public abstract class Action implements Updatable
+{
+	private boolean finished = false;
+	
+	protected abstract void _update(Duration delta);
+	protected abstract boolean _isFinished();
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		if(!finished)
+		{
+			_update(delta);
+			
+			finished = _isFinished();
+		}
+	}
+	
+	public boolean isFinshsied() {
+		return finished;
+	}
+}

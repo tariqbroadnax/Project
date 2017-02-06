@@ -1,9 +1,0 @@
-package Editor.comp;
-
-public class MovementComponentForm extends Form
-{
-	public MovementComponentForm()
-	{
-		
-	}
-}

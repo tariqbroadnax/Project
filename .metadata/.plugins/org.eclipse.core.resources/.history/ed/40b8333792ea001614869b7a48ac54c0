@@ -1,0 +1,8 @@
+package GUI;
+
+import Dialogue.Dialogue;
+
+public interface UIResponder
+{
+	public default void startDialogue(Dialogue dialogue){}
+}

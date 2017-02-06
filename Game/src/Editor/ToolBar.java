@@ -11,6 +11,7 @@ import Editor.actions.Save;
 import Editor.actions.SetEraseTool;
 import Editor.actions.SetSelectTool;
 import Editor.actions.SetStampTool;
+import Editor.actions.ToggleTiledModeButton;
 
 public class ToolBar extends JToolBar
 {
@@ -27,11 +28,17 @@ public class ToolBar extends JToolBar
 		add(new SetEraseTool(resources));
 		
 		addSeparator();
+		
+		add(new ToggleTiledModeButton(resources));
+		
+		addSeparator();
 
 		add(new Cut());
 		add(new Copy());
 		add(new Paste());
 		
 		addSeparator();
+		
+		add(new PlayScene(resources));
 	}
 }

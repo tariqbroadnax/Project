@@ -53,16 +53,17 @@ public class TextGraphic extends Graphic
 			
 	protected void _paint(GraphicsContext gc)
 	{
-		Font font = new Font(fontName, style, 25);		
-		
+		Font font = new Font(fontName, style, 60);		
+	
 		FontMetrics metrics = gc.g2d.getFontMetrics(font);
 		
 		double scrCharW = gc.camera.screenWidth(charWidth),
 			   scrCharH = gc.camera.screenHeight(charHeight);
 		
-		int w = metrics.stringWidth(" "),
-			h = metrics.getHeight();
+		int w = metrics.stringWidth("_"),
+			h = metrics.getHeight() / 2;
 		
+		// w / w
 		Graphics2D g2d = (Graphics2D)gc.g2d.create();
 		
 		double scaleX = scrCharW / w,
@@ -70,7 +71,10 @@ public class TextGraphic extends Graphic
 		
 		g2d.scale(scaleX, scaleY);
 
-		Point2D.Double screenLoc = gc.camera.screenLocation2D(loc);
+		Point2D.Double screenLoc = 
+				gc.camera.screenLocation2D(
+						loc.x - text.length()/2.0 * charWidth,
+						loc.y + charHeight/2);
 		
 		screenLoc.x /= scaleX;
 		screenLoc.y /= scaleY;
@@ -98,6 +102,14 @@ public class TextGraphic extends Graphic
 		this.charWidth = charWidth;
 	}
 	
+	public void setFontName(String fontName) {
+		this.fontName = fontName;
+	}
+	
+	public void setFontStyle(int style) {
+		this.style = style;
+	}
+	
 	public String getText() {
 		return text;
 	}
@@ -113,12 +125,21 @@ public class TextGraphic extends Graphic
 	public double getCharWidth() {
 		return charWidth;
 	}
+	
+	public String getFontName() {
+		return fontName;
+	}
+	
+	public int getFontStyle() {
+		return style;
+	}
 
 	@Override
 	public Double getBound() 
 	{
 		return new Rectangle2D.Double(
-				loc.x , loc.y - charHeight,
+				loc.x - text.length()/2.0 * charWidth,
+				loc.y - charHeight/2,
 				charWidth * text.length(),
 				charHeight);
 	}
