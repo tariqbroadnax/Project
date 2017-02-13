@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
 import Editor.EditorResources;
+import Editor.edit.RemoveEntity;
 import Entity.Entity;
 import Graphic.Camera;
 import Tileset.TMCell;
@@ -32,8 +33,13 @@ public class EraseTool implements Tool
 		
 		if(ent != null)
 		{
-			resources.scene.removeEntity(ent);
-			resources.notifyOfSceneChange();
+			RemoveEntity edit = new RemoveEntity(ent, resources);
+			
+			edit.invoke();
+			
+			resources.getUndoManager()
+					 .addEdit(edit);
+			
 			return;
 		}
 		
@@ -46,6 +52,5 @@ public class EraseTool implements Tool
 			cell.set(null);
 			resources.notifyOfSceneChange();
 		}
-		
 	}
 }

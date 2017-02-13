@@ -45,8 +45,7 @@ public class Cut extends AbstractAction
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void actionPerformed(ActionEvent e) {
+	
 	}
 }

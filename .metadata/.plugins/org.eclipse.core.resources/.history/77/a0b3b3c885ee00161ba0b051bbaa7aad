@@ -1,0 +1,6 @@
+package Quest;
+
+public class QuestRequirement extends Quest
+{
+	private Quest quest;
+}

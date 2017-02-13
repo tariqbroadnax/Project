@@ -1,0 +1,27 @@
+package Editor.actions;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
+import Editor.EditorResources;
+import Editor.SnapSettingsDialog;
+
+public class OpenSnapSettings extends AbstractAction
+{
+	private SnapSettingsDialog dialog;
+	
+	public OpenSnapSettings(EditorResources resources)
+	{
+		super("Snap Settings");
+		
+		SnapSettings settings = dialog.get
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		
+	}
+
+}

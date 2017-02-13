@@ -1,0 +1,65 @@
+package GUI;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JButton;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+
+import Editor.ComponentListener;
+
+public class GPanel extends JPanel
+	implements ComponentListener
+{	
+	private BufferedImage offscr;
+	
+	private JLayeredPane pane;
+	
+	private JPanel panel;
+	
+	public GPanel()
+	{
+		panel = new JPanel();
+	
+		addComponentListener(this);
+	
+		panel.setLayout(new BorderLayout());
+		//panel.setOpaque(true);
+		
+		JButton but = new JButton("Test");
+		
+		panel.add(but);
+	}
+	
+	public void addNotify()
+	{
+		super.addNotify();
+		
+		createBufferStrategy(2);
+	}
+	
+	public void add(Component comp)
+	{
+		panel.add(comp);
+	}
+	
+	public void paintComponents(Graphics g)
+	{
+		System.out.println("here");
+		
+		panel.paintComponents(g);
+	}
+	
+	public void componentResized(ComponentEvent e) 
+	{
+		Dimension size = getSize();
+		
+		offscr = new BufferedImage(
+				size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+	}
+}

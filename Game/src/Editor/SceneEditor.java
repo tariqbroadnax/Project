@@ -16,11 +16,16 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
 
+import Editor.edit.SceneEditorTransferHandler;
 import Editor.selection.SelectionHandler;
 import Editor.selection.SelectionListener;
 import Editor.tile.TMComponent;
@@ -35,11 +40,10 @@ import Graphic.ShapeGraphic;
 import Maths.Vector2D;
 
 public class SceneEditor extends JPanel
-	implements MouseListener, MouseMotionListener,
-			   MouseWheelListener,
-			   KeyListener, SceneListener,
-			   FocusListener, ResourceListener,
-			   SelectionListener
+	implements MouseListener, MouseMotionListener, MouseWheelListener,
+			   KeyListener, FocusListener, 
+			   SceneListener, ResourceListener, SelectionListener,
+			   ActionSupportNotifier
 {
 	private EditorResources resources;
 	
@@ -51,6 +55,8 @@ public class SceneEditor extends JPanel
 	
 	private Point startp, currp;
 
+	private List<ActionSupportListener> lists;
+	
 	public SceneEditor(EditorResources resources)
 	{
 		this.resources = resources;
@@ -60,6 +66,8 @@ public class SceneEditor extends JPanel
 		currTool = resources.getTool();
 	
 		focus = new Point2D.Double();
+		
+		lists = new ArrayList<ActionSupportListener>();
 		
 		addMouseListener(currTool);
 		addMouseMotionListener(currTool);
@@ -83,7 +91,14 @@ public class SceneEditor extends JPanel
 		resources.addResourceListener(this);
 		setPreferredSize(new Dimension(800, 600));
 	
-		add(tmComp);
+		add(tmComp);		
+		
+		setTransferHandler(new SceneEditorTransferHandler(resources));
+		
+		ActionMap map = getActionMap();
+		
+		 map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
+	                TransferHandler.getCopyAction());
 	}
 	
 	public void paintComponent(Graphics g)
@@ -301,10 +316,39 @@ public class SceneEditor extends JPanel
 	}
 	
 	@Override
-	public void selectionChanged(){}
+	public void selectionChanged()
+	{
+		for(ActionSupportListener list : lists)
+			list.actionSupportChanged(this);
+	}
 
 	@Override
 	public void selectionModified() {
 		repaint();
 	}
+
+	@Override
+	public void addActionSupportListener(
+			ActionSupportListener list) {
+		lists.add(list);
+	}
+
+	@Override
+	public void removeActionSupportListener(ActionSupportListener list) {
+		lists.remove(list);
+	}
+
+	@Override
+	public boolean actionSupported(Action action) 
+	{
+		if(action.equals(TransferHandler.getCopyAction()))
+		{
+			SelectionHandler handler = resources.getSelectionHandler();
+			
+			return handler.selectionCount() > 0 & handler.sceneSelection();
+		}
+		
+		return false;
+	}
+
 }

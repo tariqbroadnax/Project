@@ -1,6 +1,0 @@
-package Entity;
-
-public interface EntityListener 
-{
-	public default void positionChanged(){}
-}

@@ -1,5 +1,7 @@
 package Editor;
 
+import java.awt.Component;
+
 import javax.swing.JToolBar;
 
 import Editor.actions.Copy;
@@ -40,5 +42,8 @@ public class ToolBar extends JToolBar
 		addSeparator();
 		
 		add(new PlayScene(resources));
+		
+		for(Component comp : getComponents())
+			comp.setFocusable(false);
 	}
 }

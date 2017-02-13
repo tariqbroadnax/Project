@@ -1,0 +1,50 @@
+package Editor;
+
+import java.awt.Dimension;
+
+import javax.swing.JDialog;
+
+import Editor.comp.Dimension2DForm;
+import Editor.comp.ValueListener;
+
+public class SnapSettingsDialog extends JDialog
+	implements ValueListener
+{
+	private Dimension2DForm dimForm;
+	
+	private SnapSettings settings;
+	
+	public SnapSettingsDialog(SnapSettings settings)
+	{
+		dimForm = new Dimension2DForm();
+	
+		add(dimForm);		
+		
+		dimForm.addValueListener(this);
+	
+		setSnapSettings(settings);
+		
+		setSize(new Dimension(300, 200));
+	}
+	
+	public void setSnapSettings(SnapSettings settings)
+	{
+		this.settings = settings;
+		
+		double width = settings.getSnapWidth(),
+			   height = settings.getSnapHeight();
+		
+		dimForm.setValue(width, height);
+	}
+
+	@Override
+	public void valueChanged() 
+	{
+		double width = dimForm.getWidthValue(),
+			   height = dimForm.getHeightValue();
+		
+		settings.setSnapWidth(width);
+		settings.setSnapHeight(height);
+	}
+	
+}

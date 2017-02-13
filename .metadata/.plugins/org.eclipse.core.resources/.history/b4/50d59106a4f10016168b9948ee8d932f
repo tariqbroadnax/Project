@@ -1,0 +1,17 @@
+package Drivers;
+
+import Editor.SnapSettings;
+import Editor.SnapSettingsDialog;
+
+public class TestDriver
+{
+	public static void main(String[] args)
+	{	
+		SnapSettingsDialog tsd = new SnapSettingsDialog(
+				new SnapSettings());
+		
+		tsd.setVisible(true);
+	}
+}
+
+

@@ -1,0 +1,21 @@
+package Event;
+
+import java.awt.geom.Point2D;
+
+import Game.Game;
+
+public abstract class LocationEvent extends Event
+{
+	protected Point2D.Double loc;
+	
+	public LocationEvent(Game game) 
+	{
+		super(game);
+		
+		loc = new Point2D.Double();
+	}
+	
+	public void setLocation(Point2D.Double loc) {
+		this.loc = loc;
+	}
+}

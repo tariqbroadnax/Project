@@ -1,20 +1,22 @@
 package Editor.comp;
 
-import java.awt.Canvas;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 
+import javax.swing.JPanel;
+
 import Editor.ComponentListener;
 import Editor.EditorResources;
 import Editor.SceneListener;
+import GUI.UI;
 import Game.Game;
 import Game.Scene;
 import Game.Updater;
-import Graphic.Camera;
 import Graphic.Painter;
 
-public class ScenePlayer extends Canvas
+public class ScenePlayer extends JPanel
 	implements SceneListener,
 			   ComponentListener
 {
@@ -31,63 +33,36 @@ public class ScenePlayer extends Canvas
 		this.resources = resources;
 		
 		game = new Game();
-				
-		Camera camera = game.getCamera();
 		
-		painter = new Painter(this, camera);
-	
-		updater = new Updater(250);
-				
+		UI ui = game.getUI();
+		
+		ui.setViewMode(UI.CANVAS_MODE);
+						
+		setLayout(new BorderLayout());
+		
+		JPanel panel = ui.getPanel();
+		
+		add(panel);
+		
 		setIgnoreRepaint(true);
 		
 		addComponentListener(this);
 		
-		//resources.addSceneListener(this);
-		
-		setBackground(Color.white);
-		
-		//camera.setFocus(-100, -100);
+		setBackground(Color.white);		
 	}
 	
-	private void tryAndPaint()
-	{
-		try {
-			painter.paint();
-		} catch(IllegalStateException e) {}
-		
-		/* manages case where painter is still painting
-		 * when this component is not visible / buffers gone
-		 */
-	}
-	
-	public void addNotify()
-	{
-		super.addNotify();
-	
-		createBufferStrategy(2);
-	}
-
 	public void start()
 	{
-		updater.clear();
-		painter.clear();
-		
 		Scene scene = (Scene) resources.scene.clone();
 
-		updater.addUpdatable(
-					d -> scene.update(d),
-					d -> tryAndPaint());
-
-		painter.addPaintable(scene);
+		game.setScene(scene);	
 		
-		game.setScene(scene);
-		
-		updater.start();
+		game.start();		
 	}
 	
 	public void stop()
 	{
-		updater.stop();		
+		game.stop();	
 	}
 	
 	@Override
@@ -103,8 +78,8 @@ public class ScenePlayer extends Canvas
 	public void componentResized(ComponentEvent e) 
 	{
 		Dimension size = getSize();
-		
-		game.getCamera()
-			.setScreenSize(size);
+//		
+//		game.getCamera()
+//			.setScreenSize(size);
 	}
 }

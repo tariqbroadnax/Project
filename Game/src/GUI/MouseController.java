@@ -57,7 +57,7 @@ public class MouseController implements MouseListener
 		Point loc = e.getPoint();
 		
 		Point2D.Double normLoc = camera.normalLocation(loc);
-	
+		
 		// schedule
 		buffer.schedule(() -> makePlayerMoveToLoc(normLoc));
 	}

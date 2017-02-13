@@ -1,0 +1,47 @@
+package Ability;
+
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import Event.LocationEvent;
+
+public class TargetPointAbility extends TargetAbility
+{
+	protected Point2D.Double target;
+	
+	public TargetPointAbility()
+	{
+	}
+	
+	protected void activate()
+	{
+		super.activate();
+		
+	}
+	
+	public void addEvent(LocationEvent e) {
+		locEvents.add(e);
+	}
+	
+	public void removeEvent(LocationEvent e) {
+		locEvents.remove(e);
+	}
+	
+	public boolean canBeCast()
+	{
+		return super.canBeCast() && 
+			   target != null && inRange();
+	}
+	
+	protected boolean inRange()
+	{
+		Point2D.Double srcLoc = src.getLoc();
+	
+		return range * range > srcLoc.distanceSq(target);
+	}
+	
+	public void setTarget(Point2D.Double target) {
+		this.target = target;
+	}
+}

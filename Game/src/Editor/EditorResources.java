@@ -61,6 +61,10 @@ public class EditorResources
 	
 	private EditorAssets editorAssets;
 	
+	private SnapSettings snapSettings;
+
+	private JFileChooser fc;
+
 	public EditorResources()
 	{
 		scene = new Scene();
@@ -74,6 +78,8 @@ public class EditorResources
 		
 		saved = true;
 		
+		fc = new JFileChooser();
+		
 		undo = new Undo();
 		redo = new Redo();
 
@@ -86,6 +92,8 @@ public class EditorResources
 		ERASE_TOOL = new EraseTool(this);
 	
 		editorAssets = new EditorAssets();
+		
+		snapSettings = new SnapSettings();
 		
 		tool = SELECT_TOOL;
 		
@@ -308,5 +316,9 @@ public class EditorResources
 	
 	public Camera getCamera() {
 		return camera;
+	}
+	
+	public SnapSettings getSnapSettings() {
+		return snapSettings;
 	}
 }

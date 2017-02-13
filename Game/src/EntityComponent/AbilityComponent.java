@@ -1,112 +1,121 @@
 package EntityComponent;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import Ability.AbilityListener;
 import Ability.ActiveAbility;
 import Ability.CastingIndicator;
-import Ability.FreeProjectileAbility;
-import Ability.HomingProjectileAbility;
+import Ability.PassiveAbility;
+import Ability.PointAbility;
 import Entity.Entity;
 import Modifiers.Root;
 
 public class AbilityComponent extends EntityComponent
 {
-	public static final int BASIC_ATTACK_INDEX = 0;
-	
+	private ArrayList<PassiveAbility> passives;
 	private ArrayList<ActiveAbility> actives;
+	private ArrayList<PointAbility> points;
+	
 	private ArrayList<AbilityListener> lists;
 		
-	private boolean enabled, casting;
+	private ActiveAbility castingAbility;
 	
 	private Root castRoot;
 	
 	private CastingIndicator indicator;
-
+	
 	public AbilityComponent()
 	{
 		super();
 		
+		passives = new ArrayList<PassiveAbility>();
 		actives = new ArrayList<ActiveAbility>();
+		points = new ArrayList<PointAbility>();
+		
 		lists = new ArrayList<AbilityListener>();
 		
-		enabled = true;
-		casting = false;
-		
-		//castRoot = new Root();
-		
-//		indicator = new CastingIndicator();
-//		
-//		addActiveAbility(new HomingProjectileAbility());
-//		addActiveAbility(new FreeProjectileAbility());
-
-		//castRoot.setLifetime(Lifetime.FOREVER);
+		castingAbility = null;
 	}
 	
 	public AbilityComponent(AbilityComponent comp)
 	{
 		this();
 		
-		actives.clear();
-		
 		for(ActiveAbility active : comp.actives)
 			actives.add((ActiveAbility)active.clone());
 	}
 	
-	public void addActiveAbility(ActiveAbility active)
-	{
-		if(parent != null)
-			active.setSrc(parent);
-		
-		actives.add(active);
-	}
-	
-	public void cast(int i)
-	{
-		ActiveAbility ability =
-				actives.get(i);
-		
-		cast(ability);
-	}
-	
-	public void cast(ActiveAbility ability)
-	{
-		if(enabled && !casting && 
-		   actives.contains(ability))
-		{
-			ability.cast();
-			
-			if(ability.isCasting())
-			{
-				addCastRoot();
-				addCastingIndicator(ability);
-			}
-		}
-	}
 	@Override
 	public void update(Duration delta)
 	{				
-//		boolean _casting = false;
-//		
-//		for(ActiveAbility a : actives)
-//		{
-//			a.update(delta);
-//			
-//			if(a.isCasting())
-//				_casting = true;
-//		}
-//		
-//		if(casting && !_casting)
-//		{
-//			removeCastRoot();
-//			removeCastingIndicator();
-//		}
-//		
-//		casting = _casting;
+		if(castingAbility != null)
+		{
+			if(!castingAbility.isCasting())
+				castingAbility = null;
+			else
+				castingAbility.update(delta);
+		}
+		
+	}
+	
+	public void castActiveAbility(int i) 
+	{
+		ActiveAbility ability = actives.get(i);
+		
+		tryAndCast(ability);
+	}
+	
+	private void tryAndCast(ActiveAbility ability)
+	{
+		if(castingAbility == null && ability.canBeCast())
+		{
+			castingAbility = ability;
+			
+			ability.cast();
+		}
+	}
+	
+	public void castPointAbility(int i, Point2D.Double loc)
+	{
+		PointAbility ability = points.get(i);
+		
+		ability.setTarget(loc);
+		
+		tryAndCast(ability);
+	}
+	
+	public void addPassiveAbility(PassiveAbility ability) {
+		passives.add(ability);
+		ability.setSrc(parent);
+	}
+	
+	public void removePassiveAbility(PassiveAbility ability) {
+		passives.remove(ability);
+		ability.setSrc(null);
+	}
+
+	public void addActiveAbility(ActiveAbility ability) {
+		actives.add(ability);
+		ability.setSrc(parent);
+	}
+	
+	public void removeActiveAbility(ActiveAbility ability) {
+		actives.remove(ability);
+		ability.setSrc(null);
+	}
+	
+	public void addPointAbility(PointAbility ability) {
+		points.add(ability);
+		ability.setSrc(parent);
+	}
+	
+	public void removePointAbility(PointAbility ability) {
+		points.remove(ability);
+		ability.setSrc(null);
 	}
 	
 	private void addCastRoot()
@@ -124,11 +133,7 @@ public class AbilityComponent extends EntityComponent
 			  .getDecorations()
 			  .add(indicator, 0, -15);
 	}
-	
-	public void addAbilityListener(AbilityListener list) {
-		lists.add(list);
-	}
-	
+		
 	private void removeCastRoot()
 	{
 		parent.get(EffectComponent.class)
@@ -142,35 +147,18 @@ public class AbilityComponent extends EntityComponent
 			  .remove(indicator);
 	}
 	
+	public boolean isCasting() {
+		return castingAbility != null;
+	}
+
+	public void addAbilityListener(AbilityListener list) {
+		lists.add(list);
+	}
+
 	public void removeAbilityListener(AbilityListener list) {
 		lists.remove(list);
 	}
 
-	public void setAllActivesEnabled(boolean enabled)
-	{
-		for(ActiveAbility ability : actives)
-			ability.setEnabled(enabled);
-	}
-	
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public Collection<ActiveAbility> getActives()
-	{
-		return actives;
-	}
-	
-	public ActiveAbility getActive(int i)
-	{
-		return actives.get(i);
-	}
-	
-	public HomingProjectileAbility getBasicAttack()
-	{
-		return (HomingProjectileAbility) actives.get(0);
-	}
-	
 	public void setParent(Entity parent)
 	{
 		super.setParent(parent);
@@ -199,8 +187,7 @@ public class AbilityComponent extends EntityComponent
      }
 	 
 	@Override
-	protected EntityComponent _clone()
-	{
+	protected EntityComponent _clone() {
 		return new AbilityComponent(this);
 	}
 		

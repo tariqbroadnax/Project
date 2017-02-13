@@ -11,12 +11,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import Editor.EditorResources;
+import Editor.SnapSettings;
 import Editor.selection.SelectionHandler;
 import Entity.Entity;
+import EntityComponent.GraphicsComponent;
 import Game.Scene;
 import Graphic.Camera;
 import Graphic.GraphicsContext;
 import Graphic.ShapeGraphic;
+import Maths.Dimension2D;
 import Maths.Geometry;
 
 public class SelectTool implements Tool
@@ -148,7 +151,25 @@ public class SelectTool implements Tool
 				
 				Point2D.Double loc = iter.next();
 				
-				ent.setLoc(loc.x + xOffset, loc.y + yOffset);
+				if(resources.tiledMode())
+				{
+					SnapSettings settings = resources.getSnapSettings();
+					
+					Dimension2D.Double graphSize = 
+							ent.get(GraphicsComponent.class)
+							   .getGraphic()
+							   .getSize();
+					
+					loc = settings.snapLoc(loc.x + xOffset,
+										   loc.y + yOffset);
+					
+					loc.x += graphSize.width/2;
+					loc.y += graphSize.height/2;
+					
+					ent.setLoc(loc);
+				}
+				else
+					ent.setLoc(loc.x + xOffset, loc.y + yOffset);
 			}
 			
 			

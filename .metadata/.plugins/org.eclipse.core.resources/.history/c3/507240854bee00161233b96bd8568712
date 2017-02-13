@@ -1,0 +1,64 @@
+package Event;
+
+import java.awt.geom.Point2D;
+
+import Entity.Entity;
+import EntityComponent.GraphicsComponent;
+import Game.Game;
+import Graphic.Vector2D;
+import Movement.Force;
+import Movement.Movement;
+import Movement.MovementComponent;
+
+public class SpawnProjectile extends PointAbilityEvent
+{
+	private Entity ent;
+	
+	private double radius;
+	
+	private double speed;
+	
+	public SpawnProjectile(Game game) 
+	{
+		super(game);
+		
+		ent = new Entity();
+		
+		ent.add(new MovementComponent(),
+				new GraphicsComponent());	
+	
+		speed = 20;
+		radius = 10;
+	}
+
+	@Override
+	public void run() 
+	{
+		Point2D.Double src = ability.getSrc()
+			    					.getLoc();
+
+		Point2D.Double target = ability.getTarget();
+		
+		Vector2D.Double v = new Vector2D.Double(
+		target.x - src.x, target.y - src.y);
+		
+		v = v.getUnit().getScaled(radius);
+		
+		System.out.println(v);
+		ent.setLoc(src.x + v.x, src.y + v.y);
+				
+		Movement movement = ent.get(MovementComponent.class)
+					   		   .getMovement();
+		
+		Force force = new Force(speed, v.angle());
+				
+		movement.addForce(force);
+		
+		Entity clone = (Entity) ent.clone();
+		
+		movement.removeForce(force);
+		
+		game.getScene()
+			.addEntity(clone);
+	}
+}

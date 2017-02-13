@@ -1,0 +1,24 @@
+package Event;
+
+import Game.Game;
+
+public abstract class Event 
+{
+	protected Game game;
+	
+	public Event()
+	{
+		game = null;
+	}
+	
+	public Event(Game game)
+	{
+		this.game = game;
+	}
+	
+	public abstract void invoke();
+	
+	public void setGame(Game game) {
+		this.game = game;
+	}
+}

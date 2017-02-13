@@ -23,6 +23,10 @@ implements Serializable, Updatable, Cloneable
 	public void setSrc(Entity src) {
 		this.src = src;
 	}
+	
+	public Entity getSrc() {
+		return src;
+	}
 
 	public void addEffect(Effect effect) { 
 		effects.add(effect);

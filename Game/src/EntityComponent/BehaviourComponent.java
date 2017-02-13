@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import Behaviour.Behaviour;
 import Entity.Entity;
 
 public class BehaviourComponent extends EntityComponent
@@ -19,9 +18,9 @@ public class BehaviourComponent extends EntityComponent
 	public BehaviourComponent(BehaviourComponent comp)
 	{
 		this();
-		
-		for(Behaviour beh : comp.behaviours)
-			behaviours.add((Behaviour)beh.clone());
+//		
+//		for(Behaviour beh : comp.behaviours)
+//			behaviours.add((Behaviour)beh.clone());
 	}
 	
 	@Override
@@ -63,5 +62,4 @@ public class BehaviourComponent extends EntityComponent
 	protected EntityComponent _clone() {
 		return new BehaviourComponent(this);
 	}
-
 }

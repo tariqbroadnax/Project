@@ -1,0 +1,8 @@
+package EntityComponent;
+
+import Game.Updatable;
+
+public abstract class Behaviour implements Updatable
+{
+
+}

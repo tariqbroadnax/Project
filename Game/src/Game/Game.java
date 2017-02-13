@@ -1,22 +1,19 @@
 package Game;
 
-import java.io.File;
+import java.time.Duration;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineEvent.Type;
-
+import Ability.PointAbility;
 import Actions.ActionComponent;
 import Entity.Entity;
 import EntityComponent.AbilityComponent;
+import EntityComponent.BehaviourComponent;
 import EntityComponent.GraphicsComponent;
+import EntityComponent.TestBehaviour;
+import Event.SpawnProjectile;
 import GUI.UI;
 import Inventory.InventoryComponent;
 import Movement.MovementComponent;
-import Quest.KillTask;
-import Quest.Quest;
 import Quest.QuestComponent;
-import Quest.Task;
 import Utilities.Scheduler;
 
 public class Game
@@ -40,12 +37,12 @@ public class Game
 		scheduler = new Scheduler();
 		
 		updater.addUpdatable(
-				delta -> scene.update(delta),
-				delta -> scheduler.update(delta));
+				delta -> update(delta));
 		
 		player = new Entity();
 		
-		ui = new UI(scene, updater, player);
+		ui = new UI(scene, updater, player,
+					UI.FRAME_MODE);
 		
 		audioPlayer = new AudioPlayer();
 		// TESTING
@@ -57,53 +54,82 @@ public class Game
 				   new InventoryComponent(),
 				   new QuestComponent());
 		
+		SpawnProjectile event = new SpawnProjectile(this);
+		
+		PointAbility ability = new PointAbility();
+		
+		ability.addPointAbilityEvent(event);
+		
+		AbilityComponent comp = player.get(AbilityComponent.class);
+
+		comp.addPointAbility(ability);
+		
 		scene.addEntityNow(player);
-		
-		Quest quest = new Quest();
-
-		Task task = new KillTask();
-		
-		quest.addTask(task);
-		
-		player.get(QuestComponent.class)
-			  .addQuest(quest);
-
-		for(int i = 0; i < 2500; i += 500)
-		{
-			scheduler.schedule(
-					()-> player.get(AbilityComponent.class)
-							   .notifyEntityKilled(new Entity()), i);
-		}
-		
+	
 		Entity npc = new Entity();
 		
-		npc.add(new GraphicsComponent());
+		npc.add(new GraphicsComponent(),
+				new MovementComponent(),
+				new BehaviourComponent());
 		
 		npc.setLoc(0, -50);
+		npc.get(BehaviourComponent.class)
+		   .addBehaviour(new TestBehaviour());
 		
 		scene.addEntity(npc);
+//		
+//		try {
+//			File file = new File("C:\\Users\\Tariq Broadnax\\Downloads\\Deep.wav");
+//			System.out.println(file.exists());
+//			Clip clip = AudioSystem.getClip();
+//			
+//			for(javax.sound.sampled.AudioFileFormat.Type type : AudioSystem.getAudioFileTypes())	
+//				System.out.println(type.getExtension());
+//			
+//			clip.open(AudioSystem.getAudioInputStream(file));
+//			
+//			audioPlayer.start(clip);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+	}
+	
+	private void update(Duration delta)
+	{
+		scene.update(delta);
+		scheduler.update(delta);
+	}
+	
+	public void setScene(Scene scene)
+	{
+		this.scene = scene;
 		
-		try {
-			File file = new File("C:\\Users\\Tariq Broadnax\\Downloads\\Deep.wav");
-			System.out.println(file.exists());
-			Clip clip = AudioSystem.getClip();
-			
-			for(javax.sound.sampled.AudioFileFormat.Type type : AudioSystem.getAudioFileTypes())	
-				System.out.println(type.getExtension());
-			
-			clip.open(AudioSystem.getAudioInputStream(file));
-			
-			audioPlayer.start(clip);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		ui.setScene(scene);
 	}
 	
 	public void start()
 	{
 		ui.setGUIVisible(true);
 		updater.start();
+	}
+	
+	public void stop()
+	{
+		ui.setGUIVisible(false);
+		updater.stop();
+	}
+	
+	public Scene getScene() {
+		return scene;
+	}
+	
+	public Entity getPlayer() {
+		return player;
+	}
+	
+	public UI getUI() {
+		return ui;
 	}
 }

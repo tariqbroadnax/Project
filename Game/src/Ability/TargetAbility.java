@@ -8,7 +8,7 @@ public class TargetAbility extends ActiveAbility
 	{
 		super();
 		
-		range = 50;
+		range = 500;
 		
 		indicator = new CircleRangeIndicator(range);
 	}
@@ -31,8 +31,7 @@ public class TargetAbility extends ActiveAbility
 	}
 
 	@Override
-	public Object clone() 
-	{
+	public Object clone() {
 		return new TargetAbility(this);
 	}
 }

@@ -1,10 +1,11 @@
 package Ability;
 
+import java.awt.geom.Point2D;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
-import Game.Updatable;
-import Modifiers.Effect;
+import Event.LocationEvent;
 
 public abstract class ActiveAbility extends Ability
 {
@@ -20,7 +21,7 @@ public abstract class ActiveAbility extends Ability
 		cooldown = 0;	
 		castTime = 0;
 		elapsedSinceCast = 500;
-	
+		
 		casting = false;
 		enabled = true;		
 	}
@@ -110,7 +111,7 @@ public abstract class ActiveAbility extends Ability
 	public RangeIndicator getRangeIndicator() {
 		return indicator;
 	}
-
+	
 	public String toString()
 	{
 		String str = super.toString();

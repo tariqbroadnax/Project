@@ -1,0 +1,15 @@
+package Event;
+
+import Game.Game;
+
+public abstract class PointAbilityEvent extends Event
+{	
+	public PointAbilityEvent(Game game) {
+		super(game);
+		// TODO Auto-generated constructor stub
+	}
+	
+	public void setPointAbility(PointAbility ability) {
+	
+	}
+}

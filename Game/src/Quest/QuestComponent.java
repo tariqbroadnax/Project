@@ -1,38 +1,48 @@
 package Quest;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import EntityComponent.EntityComponent;
 
 public class QuestComponent extends EntityComponent
 {
-	public List<Quest> active, completed;
+	public Set<Quest> active, completed;
 	
 	public QuestComponent()
 	{
-		active = new ArrayList<Quest>();
-		completed = new ArrayList<Quest>();
+		active = new HashSet<Quest>();
+		completed = new HashSet<Quest>();
 	}
 	
-	public void addQuest(Quest quest)
+	public QuestComponent(QuestComponent comp)
+	{
+		this();
+	}
+	
+	public void startQuest(Quest quest)
 	{
 		quest.setQuester(parent);
-		
-		quest.start();
-		
-		active.add(quest);
+			
+		if(quest.start() && !quest.isCompleted())
+			active.add(quest);
 	}
 	
 	@Override
-	public void update(Duration delta) {
-		
+	public void update(Duration delta) {}
+
+	public Set<Quest> getActiveQuests() {
+		return Collections.unmodifiableSet(active);
+	}
+	
+	public Set<Quest> getCompletedQuests() {
+		return Collections.unmodifiableSet(completed);
 	}
 
 	@Override
 	protected EntityComponent _clone() {
-		return null;
+		return new QuestComponent(this);
 	}
-
 }

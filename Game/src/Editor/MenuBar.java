@@ -10,6 +10,7 @@ import Editor.actions.Import;
 import Editor.actions.InsertTileMap;
 import Editor.actions.New;
 import Editor.actions.Open;
+import Editor.actions.OpenSnapSettings;
 import Editor.actions.Paste;
 import Editor.actions.Save;
 import Editor.actions.SaveAs;
@@ -49,14 +50,20 @@ public class MenuBar extends JMenuBar
 		editMenu.add(resources.getUndoAction());
 		editMenu.add(resources.getRedoAction());
 		editMenu.add(new Cut());
+//		TransferActionListener l = new TransferActionListener();
+//		JMenuItem item = new JMenuItem("Copy");
+//		item.setActionCommand((String)TransferHandler.getCopyAction().getValue(Action.NAME));
+//		item.addActionListener(l);
+//		editMenu.add(item);
 		editMenu.add(new Copy());
 		editMenu.add(new Paste());
+		editMenu.addSeparator();
+		editMenu.add(new OpenSnapSettings(resources));
 		
 		insertMenu.add(new InsertTileMap(resources));
 	
 		toolMenu.add(new SetSelectTool(resources));
 		toolMenu.add(new SetStampTool(resources));
 		toolMenu.add(new SetEraseTool(resources));
-
 	}
 }

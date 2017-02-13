@@ -1,0 +1,24 @@
+package Event;
+
+import Entity.Entity;
+import Game.Game;
+
+public class SpawnProjectile extends PointAbilityEvent
+{
+	private Entity ent;
+	
+	private double offset;
+	
+	public SpawnProjectile(Game game) 
+	{
+		super(game);
+		
+		ent = new Entity();
+	}
+
+	@Override
+	public void run() 
+	{
+	}
+
+}

@@ -1,15 +1,26 @@
 package Editor.actions;
 
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.TransferHandler;
+import javax.swing.text.DefaultEditorKit;
 
+import Editor.ActionSupportListener;
+import Editor.ActionSupportNotifier;
 import Utilities.GUIUtils;
 
 public class Copy extends AbstractAction 
+	implements PropertyChangeListener,
+			   ActionSupportListener
 {
 	public static final String PATH =
 			"jlfgr-1.0\\toolbarButtonGraphics\\general\\";
@@ -19,9 +30,19 @@ public class Copy extends AbstractAction
 							   largeIconFileName =
 			PATH + "Copy24.gif";
 	
+	private Action THCopy,
+				   DEKCopy;
+	
+	private JComponent focusOwner;
+	
+	private ActionSupportNotifier notifier;
+	
 	public Copy()
 	{
 		super("Copy");
+	
+		THCopy = TransferHandler.getCopyAction();
+		DEKCopy = new DefaultEditorKit.CopyAction();
 		
 		ImageIcon smallIcon = GUIUtils.ImageIcon(
 				smallIconFileName),
@@ -42,11 +63,65 @@ public class Copy extends AbstractAction
 		putValue(ACCELERATOR_KEY, keyStroke);
 		putValue(SMALL_ICON, smallIcon);
 		putValue(LARGE_ICON_KEY, smallIcon);
+	
+		setEnabled(false);
+		
+		KeyboardFocusManager manager = KeyboardFocusManager.
+				getCurrentKeyboardFocusManager();
+		
+		manager.addPropertyChangeListener(this);
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
+	public void actionPerformed(ActionEvent e) {
+		System.out.println(focusOwner + "\n" + e.getSource());
+		THCopy.actionPerformed(new ActionEvent(focusOwner,
+											   ActionEvent.ACTION_PERFORMED,
+											   null));
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent e) 
+	{
+		if(notifier != null)
+		{
+			notifier.removeActionSupportListener(this);
+			notifier = null;
+		}
 		
+		Object o = e.getNewValue();
+		
+		if (o instanceof JComponent)
+		{
+			focusOwner = (JComponent) o;
+			
+			if(focusOwner instanceof ActionSupportNotifier)
+			{
+				notifier = (ActionSupportNotifier) focusOwner;
+				
+				notifier.addActionSupportListener(this);
+			
+				checkAndEnabled();
+			}
+		}
+		else
+		{
+			focusOwner = null;
+			setEnabled(false);
+		}
+	}
+	
+	private void checkAndEnabled()
+	{		
+		boolean enabled = notifier.actionSupported(THCopy);
+		
+		setEnabled(enabled);
+	}
+
+	@Override
+	public void actionSupportChanged(
+			ActionSupportNotifier src) 
+	{
+		checkAndEnabled();
 	}
 }

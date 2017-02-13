@@ -1,0 +1,8 @@
+package Editor;
+
+import javax.swing.JDialog;
+
+public class TileSettingsDialog extends JDialog
+{
+	
+}

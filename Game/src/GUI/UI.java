@@ -1,6 +1,10 @@
 package GUI;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import Actions.ActionBuffer;
+import Dialogue.Dialogue;
 import Entity.Entity;
 import Game.Scene;
 import Game.Updater;
@@ -9,9 +13,10 @@ import Graphic.Painter;
 
 public class UI
 {
-	private UIController controller;
-	
+	public final static int CANVAS_MODE = 0, FRAME_MODE = -1;
+		
 	private GFrame frame;
+	private GPanel panel;
 	
 	private Painter painter;
 	
@@ -19,19 +24,33 @@ public class UI
 	
 	private ActionBuffer buffer;
 	
-	public UI(Scene scene, Updater updater, Entity player)
-	{		
-		controller = new UIController(this);
-		
-		frame = new GFrame(updater);
+	private HUD hud;
 	
-		GLayeredPane layers = new GLayeredPane();
+	private int viewMode;
+	
+	private Scene scene;
+	
+	private GLayeredPane layers;
+	
+	public UI(Scene scene, Updater updater, Entity player,
+			  int viewMode)
+	{			
+		this.scene = scene;
 		
-		HUD hud = new HUD();
+		layers = new GLayeredPane();
+		
+		hud = new HUD();
 		
 		camera = new Camera();
 		
-		painter = new Painter(frame, camera);
+		frame = new GFrame(updater);
+
+		panel = new GPanel();
+
+		if(viewMode == FRAME_MODE)
+			painter = new Painter(frame, camera);
+		else
+			painter = new Painter(panel, camera);
 		
 		buffer = new ActionBuffer();
 		
@@ -45,17 +64,59 @@ public class UI
 		MouseController mouseControl = new MouseController(
 				player, camera, buffer);
 		
+		panel.addMouseListener(mouseControl);
 		frame.addMouseListener(mouseControl);
-		
+	
+		frame.setContentPane(layers);
 		frame.getRootPane()
 			 .setOpaque(false);
 	
-		frame.setContentPane(layers);
+		setViewMode(viewMode);
 		
 		layers.addAndSetLayer(hud, 1);
 	}
 	
-	public void setGUIVisible(boolean visible) {
-		frame.setVisible(visible);
+	public void setScene(Scene scene)
+	{
+		painter.swapPaintable(this.scene, scene);
+	
+		this.scene = scene;
+	}
+	
+	public void setViewMode(int viewMode)
+	{
+		this.viewMode = viewMode;
+		
+		if(viewMode == FRAME_MODE)
+		{
+			painter.setToWindow(frame);
+			frame.setContentPane(layers);
+		}
+		else
+		{
+			painter.setToPanel(panel);
+			panel.add(layers);
+		}
+	}
+	
+	public void setGUIVisible(boolean visible) 
+	{
+		if(viewMode == FRAME_MODE)
+			frame.setVisible(visible);
+		
+		hud.getDialogueArea()
+		   .setDialogue(new Dialogue());
+	}
+	
+	public HUD getHUD() {
+		return hud;
+	}
+	
+	public JFrame getFrame() {
+		return frame;
+	}
+	
+	public JPanel getPanel() {
+		return panel;
 	}
 }

@@ -1,0 +1,49 @@
+package Editor;
+
+import javax.swing.Action;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.TransferHandler;
+
+import Editor.actions.Cut;
+import Editor.actions.New;
+import Editor.actions.Open;
+import Editor.actions.Paste;
+import Editor.actions.Save;
+import Editor.actions.SetEraseTool;
+import Editor.actions.SetSelectTool;
+import Editor.actions.SetStampTool;
+import Editor.actions.ToggleTiledModeButton;
+
+public class ToolBar extends JToolBar
+{
+	public ToolBar(EditorResources resources)
+	{
+		add(new New(resources));
+		add(new Open(resources));
+		add(new Save(resources));
+		
+		addSeparator();
+
+		add(new SetSelectTool(resources));
+		add(new SetStampTool(resources));
+		add(new SetEraseTool(resources));
+		
+		addSeparator();
+		
+		add(new ToggleTiledModeButton(resources));
+		
+		addSeparator();
+
+		add(new Cut());
+		add(TransferHandler.getCopyAction());
+		KeyStroke keyStroke = 
+				KeyStroke.getKeyStroke("control C");
+		TransferHandler.getCopyAction().putValue(Action.ACCELERATOR_KEY, keyStroke);
+		add(new Paste());
+		
+		addSeparator();
+		
+		add(new PlayScene(resources));
+	}
+}

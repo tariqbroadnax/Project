@@ -1,0 +1,173 @@
+package EntityComponent;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+import Ability.AbilityListener;
+import Ability.ActiveAbility;
+import Ability.CastingIndicator;
+import Ability.PassiveAbility;
+import Ability.TargetAbility;
+import Entity.Entity;
+import Modifiers.Root;
+
+public class AbilityComponent extends EntityComponent
+{
+	private ArrayList<PassiveAbility> passives;
+	private ArrayList<ActiveAbility> actives;
+	
+	private ArrayList<AbilityListener> lists;
+		
+	private ActiveAbility castingAbility;
+	
+	private Root castRoot;
+	
+	private CastingIndicator indicator;
+	
+	public AbilityComponent()
+	{
+		super();
+		
+		passives = new ArrayList<PassiveAbility>();
+		actives = new ArrayList<ActiveAbility>();
+		
+		lists = new ArrayList<AbilityListener>();
+		
+		castingAbility = null;
+	}
+	
+	public AbilityComponent(AbilityComponent comp)
+	{
+		this();
+		
+		for(ActiveAbility active : comp.actives)
+			actives.add((ActiveAbility)active.clone());
+	}
+	
+	@Override
+	public void update(Duration delta)
+	{				
+		if(!castingAbility.isCasting())
+			castingAbility = null;
+		else
+			castingAbility.update(delta);
+	}
+	
+	public void castActiveAbility(int i) 
+	{
+		ActiveAbility ability = actives.get(i);
+		
+		if(castingAbility == null && ability.canBeCast())
+		{
+			castingAbility = ability;
+			
+			ability.cast();
+		}
+	}
+	
+	public void addPassiveAbility(PassiveAbility ability) {
+		passives.add(ability);
+		ability.setSrc(parent);
+	}
+	
+	public void removePassiveAbility(PassiveAbility ability) {
+		passives.remove(ability);
+		ability.setSrc(null);
+	}
+
+	public void addActiveAbility(ActiveAbility ability) {
+		actives.add(ability);
+		ability.setSrc(parent);
+	}
+	
+	public void removeActiveAbility(ActiveAbility ability) {
+		actives.remove(ability);
+		ability.setSrc(null);
+	}
+	
+	private void addCastRoot()
+	{
+		parent.get(EffectComponent.class)
+		  	  .add(castRoot);
+	}
+	
+	private void addCastingIndicator(
+			ActiveAbility ability)
+	{
+		indicator.setActiveAbility(ability);
+		
+		parent.get(GraphicsComponent.class)
+			  .getDecorations()
+			  .add(indicator, 0, -15);
+	}
+		
+	private void removeCastRoot()
+	{
+		parent.get(EffectComponent.class)
+			  .remove(castRoot);
+	}
+	
+	private void removeCastingIndicator()
+	{
+		parent.get(GraphicsComponent.class)
+			  .getDecorations()
+			  .remove(indicator);
+	}
+	
+	public boolean isCasting() {
+		return castingAbility != null;
+	}
+
+	public void addAbilityListener(AbilityListener list) {
+		lists.add(list);
+	}
+
+	public void removeAbilityListener(AbilityListener list) {
+		lists.remove(list);
+	}
+
+	public void setParent(Entity parent)
+	{
+		super.setParent(parent);
+		
+		for(ActiveAbility a : actives)
+			a.setSrc(parent);
+		
+		//castRoot.setTarget(parent);
+	}
+	
+	public void notifyEntityKilled(Entity ent) 
+	{
+		List<AbilityListener> copy = 
+				new ArrayList<AbilityListener>(lists);
+	
+		for(AbilityListener list : copy)
+			list.entityKilled(ent);
+	}
+
+	private void readObject(java.io.ObjectInputStream in)
+		     throws IOException, ClassNotFoundException
+     {
+		in.defaultReadObject();
+						
+		castRoot = new Root();		
+     }
+	 
+	@Override
+	protected EntityComponent _clone() {
+		return new AbilityComponent(this);
+	}
+		
+	public String toString()
+	{
+		String str = super.toString();
+		
+		str += "\nActives: ";
+		for(ActiveAbility active : actives)
+			str += '\n' + active.toString();
+		
+		return str;
+	}
+}

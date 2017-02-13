@@ -1,0 +1,37 @@
+package Editor;
+
+import javax.swing.JDialog;
+
+import Editor.comp.Dimension2DForm;
+import Editor.comp.ValueListener;
+
+public class TileSettingsDialog extends JDialog
+	implements ValueListener
+{
+	private Dimension2DForm dimForm;
+	
+	private TileSettings settings;
+	
+	public TileSettingsDialog(TileSettings settings)
+	{
+		dimForm = new Dimension2DForm();
+	
+		add(dimForm);		
+	
+		setTileSettings(settings);
+	}
+	
+	public void setTileSettings(TileSettings settings)
+	{
+		
+	}
+
+	@Override
+	public void valueChanged() {
+		double width = dimForm.getWidthValue(),
+			   height = dimForm.getHeightValue();
+		
+		
+	}
+	
+}

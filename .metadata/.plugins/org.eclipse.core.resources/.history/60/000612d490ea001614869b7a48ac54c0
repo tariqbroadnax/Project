@@ -1,6 +1,0 @@
-package GUI;
-
-public interface UIResponder
-{
-	public default void 
-}

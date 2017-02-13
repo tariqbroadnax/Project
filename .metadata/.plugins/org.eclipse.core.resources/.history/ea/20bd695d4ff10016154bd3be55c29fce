@@ -1,0 +1,8 @@
+package Editor.edit;
+
+import javax.swing.undo.UndoableEdit;
+
+public class RemoveEntity implements UndoableEdit
+{
+
+}

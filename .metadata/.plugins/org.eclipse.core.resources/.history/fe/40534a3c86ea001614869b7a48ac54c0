@@ -1,8 +1,0 @@
-package GUI;
-
-import EditorGUI.MouseListener;
-
-public class MouseController implements MouseListener
-{
-
-}

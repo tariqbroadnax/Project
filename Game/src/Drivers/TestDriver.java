@@ -1,32 +1,23 @@
 package Drivers;
 
-import javax.swing.JFrame;
+import java.awt.geom.Point2D;
 
-import Editor.comp.GraphicPreview;
+import Editor.SnapSettings;
+import Editor.SnapSettingsDialog;
 
 public class TestDriver
 {
-	
 	public static void main(String[] args)
 	{	
-		//EditorGUI editor = new EditorGUI();
-	
-		//new Game().start();
-	
-		JFrame frame = new JFrame();
-		//EntityForm form = new EntityForm();
-		//SpriteForm form = new SpriteForm();
+		SnapSettings settings = new SnapSettings();
 		
-//		DoubleField fld = new DoubleField();
-	
-		//AnimationList list = new AnimationList();
-		GraphicPreview preview = new GraphicPreview();
-		
-		frame.add(preview);
-		frame.setSize(400, 400);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
+		for(int y = -50; y <= 50; y+=10)
+			for(int x = -50; x <= 50; x+=10)
+			{
+				Point2D.Double loc = settings.snapLoc(x, y);
+				System.out.println(x + " " + y + " " + loc.x + " " + loc.y);
+			}
+		}
 }
 
 

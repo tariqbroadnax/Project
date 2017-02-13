@@ -2,10 +2,15 @@ package Editor.entity_selector;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
+import javax.swing.TransferHandler;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -13,14 +18,18 @@ import javax.swing.event.ListSelectionListener;
 import Editor.EditorAssetListener;
 import Editor.EditorResources;
 import Editor.comp.GraphicPreview;
+import Editor.edit.TransferActionListener;
+
+import Editor.selection.SelectionHandler;
 import Editor.selection.SelectionListener;
+import EditorGUI.MouseListener;
 import Entity.Entity;
 import EntityComponent.GraphicsComponent;
 import Graphic.Graphic;
 
 public class EntitySelectorPanel extends JList<Entity>
 	implements EditorAssetListener, ListSelectionListener,
-			   SelectionListener
+			   SelectionListener, MouseListener
 {
 	private EditorResources resources;
 	
@@ -36,6 +45,8 @@ public class EntitySelectorPanel extends JList<Entity>
 		setVisibleRowCount(-1);		
 		
 		addListSelectionListener(this);
+		
+		addMouseListener(this);
 		
 		resources.getEditorAssets()
 		 		 .addEditorAssetListener(this);	
@@ -109,10 +120,41 @@ public class EntitySelectorPanel extends JList<Entity>
 	@Override
 	public void valueChanged(ListSelectionEvent e) 
 	{
-		Entity ent = getSelectedValue();
+//		Entity ent = getSelectedValue();
+//		
+//		resources.getSelectionHandler()
+//				 .setSelection(ent, false);			
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		Point p = e.getPoint();
 		
-		resources.getSelectionHandler()
-				 .setSelection(ent, false);
+		int index = locationToIndex(p);
+		
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		if(index > -1)
+		{
+		
+			if(getCellBounds(index, index).contains(p))
+			{
+				Entity ent = getModel()
+							.getElementAt(index);
+		
+				if(!handler.isSelection(ent))
+				{
+					handler.setSelection(ent, false);
+					resources.setTool(resources.STAMP);
+				}
+				else
+				{					
+					handler.removeSelection();
+					resources.setTool(resources.SELECT_TOOL);
+				}
+			}
+		}			
 	}
 	
 	@Override

@@ -1,0 +1,6 @@
+package EntityComponent;
+
+public class EventComponent extends EntityComponent
+{
+
+}

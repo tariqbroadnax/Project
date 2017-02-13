@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
 import Editor.EditorResources;
+import Editor.SnapSettings;
+import Editor.edit.AddEntity;
 import Editor.layer_selector.SetTile;
 import Editor.selection.SelectionHandler;
 import EditorGUI.UndoManager;
@@ -68,12 +70,17 @@ public class Stamp implements Tool
 				ent.get(GraphicsComponent.class)
 				   .getGraphic()
 				   .getSize();
+		
+		SnapSettings settings = resources.getSnapSettings();
+		
+		double tw = settings.getSnapWidth(),
+			   th = settings.getSnapHeight();
 	
-		if(loc.x > 0) loc.x += 10;
-		if(loc.y > 0) loc.y += 10;
+		if(loc.x > 0) loc.x += tw;
+		if(loc.y > 0) loc.y += th;
 			
-		loc.x = ((int) loc.x / 10) * 10 - graphSize.width/2;
-		loc.y = ((int) loc.y / 10) * 10 - graphSize.height/2;
+		loc.x = ((int) (loc.x / tw)) * tw - graphSize.width/2;
+		loc.y = ((int) (loc.y / th)) * th - graphSize.height/2;
 	}
 	
 	private void paintEntity(
@@ -118,8 +125,12 @@ public class Stamp implements Tool
 		
 		ent.setLoc(normLoc);
 		
-		resources.scene.addEntityNow(ent);
-		resources.notifyOfSceneChange();
+		AddEntity edit = new AddEntity(ent, resources);
+		
+		edit.invoke();
+		
+		resources.getUndoManager()
+				 .addEdit(edit);
 	}
 	
 	public void mousePressed(MouseEvent e)

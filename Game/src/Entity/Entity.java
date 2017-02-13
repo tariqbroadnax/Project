@@ -1,5 +1,9 @@
 package Entity;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -12,7 +16,7 @@ import EntityComponent.EntityComponent;
 import Game.Scene;
 
 public class Entity
-	implements Serializable, Cloneable
+	implements Serializable, Cloneable, Transferable
 {		
 	private String name;
 	
@@ -85,12 +89,6 @@ public class Entity
 		{
 			Class<? extends EntityComponent> c =
 					comp.getClass();
-			
-			while(c.getSuperclass() != EntityComponent.class)
-				c = (Class<? extends EntityComponent>)
-					c.getSuperclass();
-			
-			EntityComponent oldComp = comps.get(c);
 			
 			comps.put(c, comp);
 	
@@ -214,5 +212,24 @@ public class Entity
 	public String toString2()
 	{
 		return super.toString();
+	}
+
+	@Override
+	public Object getTransferData(DataFlavor flavor) 
+			throws UnsupportedFlavorException, IOException {
+		return this;
+	}
+
+	@Override
+	public DataFlavor[] getTransferDataFlavors() 
+	{
+		DataFlavor entFlavor = new DataFlavor(Entity.class, "Entity");
+		
+		return new DataFlavor[]{entFlavor};
+	}
+
+	@Override
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		return flavor.getClass().equals(Entity.class);
 	}
 }

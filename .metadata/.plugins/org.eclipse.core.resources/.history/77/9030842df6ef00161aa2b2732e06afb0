@@ -1,0 +1,15 @@
+package Drivers;
+
+import Editor.TileSettings;
+import Editor.TileSettingsDialog;
+
+public class TestDriver
+{
+	public static void main(String[] args)
+	{	
+		TileSettingsDialog tsd = new TileSettingsDialog(
+				new TileSettings());
+	}
+}
+
+

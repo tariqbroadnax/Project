@@ -1,8 +1,0 @@
-package Movement;
-
-import Graphic.Vector2D;
-
-public interface Force 
-{
-	public void dv(double t, Vector2D.Double out);
-}

@@ -2,24 +2,36 @@ package Editor.comp;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListModel;
+import javax.swing.border.Border;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import Editor.DoubleField;
+import Movement.Force;
 import Movement.Movement;
 
 public class MovementForm extends Form
-	implements ValueListener, ActionListener
+	implements ValueListener, ActionListener,
+			   ListSelectionListener
 {
 	private Movement movement;
-	
-	private DoubleField speedFld, dirFld;
-	
-	private JCheckBox enabledBox;
 		
+	private JCheckBox enabledBox;
+	
+	private JButton addBtn, removeBtn;
+	
+	private JList<Force> list;
+	
+	private ForceForm form;
+	
 	public MovementForm()
 	{
 		this(new Movement());
@@ -27,27 +39,41 @@ public class MovementForm extends Form
 	
 	public MovementForm(Movement movement)
 	{
-		JLabel speedLbl = new JLabel("Speed "),
-			   dirLbl = new JLabel("Direction "),
-			   enabledLbl = new JLabel("Enabled");
+		Border forceBorder = BorderFactory.createTitledBorder("Forces");
 		
-		speedFld = new DoubleField();
-		dirFld = new DoubleField();
-		
+		JLabel enabledLbl = new JLabel("Enabled");
+
 		enabledBox = new JCheckBox();
 
-		addComponent(speedLbl, 0, 0, 1);
-		addField(speedFld, 1, 0, 1);
-		addComponent(dirLbl, 0, 1, 1);
-		addField(dirFld, 1, 1, 1);
-		addComponent(enabledLbl, 0, 2, 1);
-		addComponent(enabledBox, 1, 2, 1);	
+		addBtn = new JButton("Add");
+		removeBtn = new JButton("Remove");
+
+		list = new JList<Force>();
 		
-		speedFld.addValueListener(this);
-		dirFld.addValueListener(this);
-		enabledBox.addActionListener(this);
+		form = new ForceForm();
+		
+		list.setBorder(forceBorder);
+			
+		addComponent(enabledLbl, 0, 0, 1);
+		addField(enabledBox, 1, 0, 1);
+		addComponent(addBtn, 0, 1, 1);
+		addComponent(removeBtn, 1, 1, 1);
+		addComponent(new JScrollPane(list), 0, 2, 2);
+		addField(form, 0, 3, 2);
+		
+		addBtn.addActionListener(e -> addForce());
+		removeBtn.addActionListener(e -> removeForce());
+		
+		list.addListSelectionListener(this);
+		
+		enabledBox.addActionListener(this);	
+		
+		form.addValueListener(this);
 		
 		setMovement(movement);
+		
+		removeBtn.setEnabled(false);
+		form.setVisible(false);
 	}
 	
 	public void setMovement(Movement movement)
@@ -57,16 +83,53 @@ public class MovementForm extends Form
 		updateFields();
 	}
 	
+	private void addForce()
+	{
+		Force force = new Force();
+		
+		movement.addForce(force);
+		
+		list.setModel(new MyModel());
+		
+		int size = list.getModel().getSize();
+
+		list.setSelectedIndex(size - 1);
+
+		removeBtn.setEnabled(true);
+		form.setVisible(true);
+	}
+	
+	private void removeForce()
+	{
+		int index = list.getSelectedIndex();
+		
+		Force force = list.getSelectedValue();
+		
+		movement.removeForce(force);
+		
+		int size = list.getModel().getSize();
+		
+		if(index == size)
+			list.setSelectedIndex(index - 1);
+		else
+			list.setSelectedIndex(index);
+		
+		if(size == 0)
+		{
+			removeBtn.setEnabled(false);
+			form.setVisible(false);
+		}
+		
+		list.repaint();
+	}
+	
 	public void updateFields()
 	{
-		double speed = movement.getSpeed(),
-				   dir = movement.getDirection();
-			
 		boolean enabled = movement.isEnabled();
 		
-		speedFld.setValue(speed);
-		dirFld.setValue(dir);
 		enabledBox.setSelected(enabled);
+		
+		repaint();
 	}
 	
 	private void updateAndNotify()
@@ -77,14 +140,18 @@ public class MovementForm extends Form
 	
 	private void updateValues()
 	{
-		double speed = speedFld.getValue(),
-			   dir = dirFld.getValue();
-		
 		boolean enabled = enabledBox.isSelected();
 		
-		movement.setSpeed(speed);
-		movement.setDirection(dir);
 		movement.setEnabled(enabled);
+		
+		int index = list.getSelectedIndex();
+		
+		Force force = list.getSelectedValue();
+		
+		movement.getForces()
+				.set(index, force);
+	
+		repaint();
 	}
 	
 	@Override
@@ -95,5 +162,33 @@ public class MovementForm extends Form
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		updateAndNotify();
+	}
+	
+	private class MyModel implements ListModel<Force>
+	{
+		@Override
+		public Force getElementAt(int index) {
+			return movement.getForces()
+						   .get(index);
+		}
+
+		@Override
+		public int getSize() 
+		{
+			return movement.getForces()
+						   .size();
+		}
+
+		public void addListDataListener(ListDataListener l) {}
+		public void removeListDataListener(ListDataListener l) {}
+	}
+	
+	@Override
+	public void valueChanged(ListSelectionEvent e) 
+	{
+		Force force = list.getSelectedValue();
+		
+		if(force != null)
+			form.setForce(force);
 	}
 }

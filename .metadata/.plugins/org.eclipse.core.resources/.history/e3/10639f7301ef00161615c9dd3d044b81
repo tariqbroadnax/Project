@@ -1,0 +1,31 @@
+package GUI;
+
+import java.awt.Canvas;
+import java.awt.event.ComponentEvent;
+
+import Editor.ComponentListener;
+
+public class GCanvas extends Canvas
+implements ComponentListener
+{
+	public GCanvas()
+	{
+		addComponentListener(this);
+	}
+	
+	@Override
+	public void componentHidden(ComponentEvent e) {}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {}
+
+	@Override
+	public void componentResized(ComponentEvent e) 
+	{		
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		createBufferStrategy(2);
+	}	
+}

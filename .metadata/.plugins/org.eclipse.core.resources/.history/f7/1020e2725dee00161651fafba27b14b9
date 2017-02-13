@@ -1,0 +1,37 @@
+package EntityComponent;
+
+import java.time.Duration;
+
+import Entity.Entity;
+import Movement.Force;
+import Movement.MovementComponent;
+
+public class TestBehaviour extends Behaviour
+{
+	private Force force;
+	
+	private long period = 5000;
+	
+	private double radius = 50;
+
+	public TestBehaviour()
+	{
+		force = new Force();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		force.set
+	}
+	
+	public void setSrc(Entity src) 
+	{
+		super.setSrc(src);
+		
+		src.get(MovementComponent.class)
+		   .getMovement()
+		   .addForce(force);
+	}
+
+}

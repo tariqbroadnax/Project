@@ -1,0 +1,16 @@
+package Event;
+
+import Game.Game;
+
+public abstract class PointAbilityEvent extends Event
+{	
+	public LocationEvent(Game game) 
+	{
+		super(game);
+		
+	}
+	
+	public void setPointAbility(PointAbility ability) {
+	
+	}
+}

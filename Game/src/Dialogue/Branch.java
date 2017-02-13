@@ -8,7 +8,7 @@ public class Branch
 	
 	public Branch()
 	{
-		transition = "";
+		transition = "This is an option";
 		
 		dialogue = new Dialogue();
 	}

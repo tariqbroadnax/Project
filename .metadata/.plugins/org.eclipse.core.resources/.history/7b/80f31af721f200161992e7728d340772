@@ -1,0 +1,10 @@
+package Editor;
+
+public interface ActionSupportNotifier 
+{
+	public void addActionSupportListener(
+			ActionSupportListener list);
+	
+	public void removeActionSupportListener(
+			ActionSupportListener list);
+}

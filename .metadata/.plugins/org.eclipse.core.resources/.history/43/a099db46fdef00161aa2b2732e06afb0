@@ -1,0 +1,127 @@
+package Editor.comp;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataListener;
+
+import Movement.Force;
+import Movement.Movement;
+
+public class MovementForm extends Form
+	implements ValueListener, ActionListener
+{
+	private Movement movement;
+		
+	private JCheckBox enabledBox;
+	
+	private JButton addBtn, removeBtn;
+	
+	private JList<Force> list;
+	
+	private ForceForm form;
+	
+	public MovementForm()
+	{
+		this(new Movement());
+	}
+	
+	public MovementForm(Movement movement)
+	{
+		JLabel enabledLbl = new JLabel("Enabled");
+
+		enabledBox = new JCheckBox();
+
+		addBtn = new JButton("Add");
+		removeBtn = new JButton("Remove");
+
+		list = new JList<Force>();
+		
+		form = new ForceForm();
+	
+		JPanel pnl = new JPanel();
+		
+		pnl.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		pnl.add(addBtn); 
+		pnl.add(removeBtn);
+		pnl.add(list);
+		
+		addComponent(enabledLbl, 0, 0, 1);
+		addField(enabledBox, 1, 0, 1);
+		addField(pnl, 0, 1, 2);
+		addField(form, 2, 1, 1);
+		
+		enabledBox.addActionListener(this);
+		
+		setMovement(movement);
+	}
+	
+	public void setMovement(Movement movement)
+	{
+		this.movement = movement;
+	
+		updateFields();
+	}
+	
+	public void updateFields()
+	{
+		boolean enabled = movement.isEnabled();
+		
+		enabledBox.setSelected(enabled);
+		
+		repaint();
+	}
+	
+	private void updateAndNotify()
+	{
+		updateValues();
+		notifyListeners();
+	}
+	
+	private void updateValues()
+	{
+		boolean enabled = enabledBox.isSelected();
+		
+		movement.setEnabled(enabled);
+	
+		repaint();
+	}
+	
+	@Override
+	public void valueChanged() {
+		updateAndNotify();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		updateAndNotify();
+	}
+	
+	private class MyModel implements ListModel<Force>
+	{
+		@Override
+		public Force getElementAt(int index) {
+			return movement.getForces()
+						   .get(index);
+		}
+
+		@Override
+		public int getSize() 
+		{
+			return movement.getForces()
+						   .size();
+		}
+
+		public void addListDataListener(ListDataListener l) {}
+		public void removeListDataListener(ListDataListener l) {}
+		
+	}
+}

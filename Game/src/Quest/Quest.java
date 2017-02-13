@@ -9,61 +9,96 @@ public class Quest implements TaskListener
 {
 	private String name, description;
 	
+	private boolean satisfied;
+	
 	private List<Requirement> reqs;
 	private List<Task> tasks;
 	private List<Reward> rewards;
 	
-	private boolean completed;
+	private List<QuestListener> lists;
 	
+	private boolean started = false;
+
 	private Entity quester;
-	
+
 	public Quest()
 	{
 		reqs = new ArrayList<Requirement>();
 		tasks = new ArrayList<Task>();
-		rewards = new ArrayList<Reward>();
+		rewards = new ArrayList<Reward>();		
 		
-		completed = false;
+		lists = new ArrayList<QuestListener>();
+	
+		satisfied = true;
 	}
 	
-	public boolean canBeStarted() 
+	protected boolean satisfies(Entity ent) 
 	{
 		for(Requirement req : reqs)
-			if(!req.isSatisfied(quester))
+			if(!req.isSatisfied(ent))
 				return false;
+		
+		return satisfied;
+	}
+	
+	public boolean start()
+	{
+		if(started || !satisfies(quester))
+			return false;
+		
+		started = true;
+		
+		for(Task task : tasks)
+		{
+			task.setTasker(quester);
+			task.start();
+		}
+		
+		checkAndComplete();
+		
 		return true;
 	}
 	
-	public void start()
+	public void stop()
 	{
-		// DEBUG --
-		System.out.println("Quest started: " + name);
-		// --------
+		started = false;
 		
 		for(Task task : tasks)
-			task.start(quester);
-		
-		checkAndComplete();
+			task.stop();
 	}
 	
 	protected void checkAndComplete()
 	{
-		for(Task task : tasks)
-			if(!task.isCompleted())
-				return;
-		
-		// DEBUG --
-		System.out.println("Quest completed: " + name);
-		// --------
-		
-		completed = true;
-		
-		for(Reward reward : rewards)
-			reward.give(quester);
+		if(isCompleted())
+		{
+			started = false;
+			
+			for(Reward reward : rewards)
+				reward.give(quester);
+			
+			for(QuestListener list : lists)
+				list.questCompleted(this);
+		}
 	}
 	
-	public void setQuester(Entity quester) {
-		this.quester = quester;
+	public boolean isCompleted()
+	{
+		for(Task task : tasks)
+			if(!task.isCompleted())
+				return false;
+		return true;
+	}
+	
+	public void setQuester(Entity quester) 
+	{
+		if(started)
+		{
+			stop();
+			this.quester = quester;
+			start();
+		}
+		else
+			this.quester = quester;
 	}
 	
 	public void setName(String name) {
@@ -82,10 +117,6 @@ public class Quest implements TaskListener
 		return description;
 	}
 	
-	public boolean isCompleted() {
-		return completed;
-	}
-	
 	public void addRequirement(Requirement req) {
 		reqs.add(req);
 	}
@@ -97,15 +128,22 @@ public class Quest implements TaskListener
 	public void addTask(Task task) 
 	{
 		tasks.add(task);
-		
+	
 		task.addTaskListener(this);
+	
+		if(started)
+			task.stop();
 	}
 	
 	public void removeTask(Task task) 
 	{
-		tasks.remove(task);
-		
-		task.removeTaskListener(this);
+		if(tasks.remove(task))
+		{		
+			task.removeTaskListener(this);
+			
+			if(started) 
+				task.stop();
+		}
 	}
 	
 	public void addReward(Reward reward) {
@@ -115,7 +153,11 @@ public class Quest implements TaskListener
 	public void removeReward(Reward reward) {
 		rewards.remove(reward);
 	}
-
+	
+	public void setSatisified(boolean satisfied) {
+		this.satisfied = satisfied;
+	}
+	
 	@Override
 	public void taskCompleted() {
 		checkAndComplete();

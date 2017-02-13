@@ -1,0 +1,88 @@
+package Editor.comp;
+
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+
+import javax.swing.JPanel;
+
+import Editor.ComponentListener;
+import Editor.EditorResources;
+import Editor.SceneListener;
+import Game.Game;
+import Game.Scene;
+import Game.Updater;
+import Graphic.Painter;
+
+public class ScenePlayer extends JPanel
+	implements SceneListener,
+			   ComponentListener
+{
+	private EditorResources resources;
+	
+	private Updater updater;
+	
+	private Painter painter;
+	
+	private Game game;
+		
+	public ScenePlayer(EditorResources resources)
+	{
+		this.resources = resources;
+		
+		game = new Game();
+							
+		Canvas canvas = game.getUI()
+							.getCanvas();
+		
+		add(canvas);
+		
+		setIgnoreRepaint(true);
+		
+		addComponentListener(this);
+		
+		setBackground(Color.white);		
+	}
+	
+	private void tryAndPaint()
+	{
+		try {
+			painter.paint();
+		} catch(IllegalStateException e) {}
+		
+		/* manages case where painter is still painting
+		 * when this component is not visible / buffers gone
+		 */
+	}
+
+	public void start()
+	{
+		Scene scene = (Scene) resources.scene.clone();
+
+		game.setScene(scene);	
+	}
+	
+	public void stop()
+	{
+		game.stop();	
+	}
+	
+	@Override
+	public void scenePlayerStarted() {
+		start();
+	}
+	
+	@Override
+	public void scenePlayerStopped() {
+		stop();
+	}
+	
+	public void componentResized(ComponentEvent e) 
+	{
+		Dimension size = getSize();
+		
+		game.getCamera()
+			.setScreenSize(size);
+	}
+}

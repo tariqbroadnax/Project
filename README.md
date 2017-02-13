@@ -3,5 +3,8 @@ will eventually begin using SWT and libgdx.
 
 Currently working on the editor.
 
-![image](http://i.imgur.com/WFoob6Y.png)
+Update 2/13/17
+Currently debugging editor and filling in missing parts before moving forward. Thinking of removing ripped icons and making my own.
+
+![image](http://imgur.com/5pUl6U6.png)
 

@@ -45,6 +45,8 @@ public class MovementComponent extends EntityComponent
 	public MovementComponent(MovementComponent comp)
 	{
 		this();
+		
+		movement = (Movement) comp.movement.clone();
 	}
 	
 	@Override

@@ -1,0 +1,33 @@
+package Event;
+
+import Entity.Entity;
+import Game.Game;
+import Movement.Force;
+import Movement.MovementComponent;
+
+public class SpawnProjectile extends PointAbilityEvent
+{
+	private Entity ent;
+	
+	private double offset;
+	
+	private double speed;
+	
+	public SpawnProjectile(Game game) 
+	{
+		super(game);
+		
+		ent = new Entity();
+		
+		ent.add(new MovementComponent());	
+	
+		speed = 20;
+		offset = 20;
+	}
+
+	@Override
+	public void run() 
+	{
+		
+	}
+}
