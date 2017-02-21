@@ -1,0 +1,17 @@
+package Editor.comp;
+
+import javax.swing.JLabel;
+
+import Editor.DoubleField;
+
+public class VectorForm extends Form 
+{
+	private DoubleField xFld, yFld;
+	
+	public VectorForm()
+	{
+		JLabel xLbl = new JLabel("X"),
+			   yLbl = new JLabel("Y");
+		
+	}
+}

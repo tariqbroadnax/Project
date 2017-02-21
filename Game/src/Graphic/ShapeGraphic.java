@@ -2,18 +2,11 @@ package Graphic;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
-
-import Maths.Dimension2D;
-import Maths.Dimension2D.Double;
-
-import static java.lang.Math.floor;
-import static java.lang.Math.ceil;
+import java.io.IOException;
 
 public class ShapeGraphic extends Graphic
 {	
@@ -22,7 +15,7 @@ public class ShapeGraphic extends Graphic
 	private Paint paint;
 	private boolean filled;
 	
-	private BasicStroke stroke;
+	private transient BasicStroke stroke;
 	
 	public ShapeGraphic()
 	{
@@ -138,4 +131,11 @@ public class ShapeGraphic extends Graphic
 	public Object clone() {
 		return new ShapeGraphic(this);
 	}
+	
+	private void readObject(java.io.ObjectInputStream in)
+			throws IOException, ClassNotFoundException
+    {
+		in.defaultReadObject();
+		stroke = new BasicStroke(2.0f);
+    }
 }

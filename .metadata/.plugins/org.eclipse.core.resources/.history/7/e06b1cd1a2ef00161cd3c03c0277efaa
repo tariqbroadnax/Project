@@ -1,6 +1,0 @@
-package Editor;
-
-public class TileSettings 
-{
-	private double width, height;
-}

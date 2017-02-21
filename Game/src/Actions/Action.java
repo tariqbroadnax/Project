@@ -1,9 +1,11 @@
 package Actions;
 
+import java.io.Serializable;
+
 import Entity.Entity;
 import Game.Updatable;
 
-public interface Action extends Updatable
+public interface Action extends Updatable, Serializable
 {	
 	public void setActor(Entity actor);
 		

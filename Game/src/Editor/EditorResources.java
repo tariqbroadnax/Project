@@ -16,10 +16,13 @@ import Editor.actions.Redo;
 import Editor.actions.Undo;
 import Editor.selection.SelectionHandler;
 import Editor.tools.EraseTool;
+import Editor.tools.MoveTool;
 import Editor.tools.SelectTool;
 import Editor.tools.Stamp;
 import Editor.tools.Tool;
 import EditorGUI.UndoManager;
+import Entity.Entity;
+import Game.GameSave;
 import Game.Scene;
 import Graphic.Camera;
 import Tileset.Tileset;
@@ -28,14 +31,17 @@ import Utilities.ImagePool;
 public class EditorResources 
 {
 	private static String STATE_FILE_NAME = "editor_state.obj";
-	
+		
 	public ImagePool pool;
 	
 	public File file;
 	
+	private GameSave save;
+	
 	private boolean saved;
 	
 	public Scene scene;
+	public Entity player;
 	private Camera camera;	
 	
 	private EditorState state;
@@ -43,9 +49,8 @@ public class EditorResources
 	private List<SceneListener> listeners;
 	private List<ResourceListener> rlisteners;
 	
-	// these actions are shared between components
-	private Undo undo;
-	private Redo redo;
+	public static Undo undo;
+	public static Redo redo;
 	
 	private UndoManager undoManager;
 	
@@ -56,6 +61,7 @@ public class EditorResources
 	public final Stamp STAMP;
 	public final SelectTool SELECT_TOOL;
 	public final EraseTool ERASE_TOOL;
+	public final MoveTool MOVE_TOOL;
 	
 	private Tool tool;
 	
@@ -76,6 +82,8 @@ public class EditorResources
 		listeners = new ArrayList<SceneListener>();
 		rlisteners = new ArrayList<ResourceListener>();
 		
+		save = new GameSave();
+		
 		saved = true;
 		
 		fc = new JFileChooser();
@@ -90,7 +98,8 @@ public class EditorResources
 		STAMP = new Stamp(this);
 		SELECT_TOOL = new SelectTool(this);
 		ERASE_TOOL = new EraseTool(this);
-	
+		MOVE_TOOL = new MoveTool(this);
+		
 		editorAssets = new EditorAssets();
 		
 		snapSettings = new SnapSettings();
@@ -107,6 +116,8 @@ public class EditorResources
 		
 		if(!restoreState())
 			state = new EditorState();	
+		
+		camera.setZoom(0.8);
 	}
 	
 	public void _new()
@@ -212,7 +223,7 @@ public class EditorResources
 				new FileOutputStream(STATE_FILE_NAME)))
 		{
 			out.writeObject(state);
-			
+			out.writeObject(editorAssets);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
@@ -252,6 +263,7 @@ public class EditorResources
 				new FileInputStream(STATE_FILE_NAME)))
 		{	
 			state = (EditorState) in.readObject();
+			editorAssets = (EditorAssets) in.readObject();
 			return true;
 			
 		} catch (IOException | ClassNotFoundException e) {
@@ -320,5 +332,9 @@ public class EditorResources
 	
 	public SnapSettings getSnapSettings() {
 		return snapSettings;
+	}
+	
+	public GameSave getGameSave() {
+		return save;
 	}
 }

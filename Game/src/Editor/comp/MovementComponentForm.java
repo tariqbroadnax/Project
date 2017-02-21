@@ -49,7 +49,8 @@ public class MovementComponentForm extends Form
 	}
 
 	@Override
-	public void valueChanged() {
+	public void valueChanged() 
+	{
 		notifyListeners();
 	}
 }

@@ -1,0 +1,21 @@
+package Editor.actions;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
+import Editor.EditorResources;
+import Entity.Entity;
+
+public class SetPlayer extends AbstractAction
+{
+	private EditorResources resources;
+	
+	private Entity ent;
+	
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		
+	}
+	
+}

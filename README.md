@@ -6,5 +6,5 @@ Currently working on the editor.
 Update 2/13/17
 Currently debugging editor and filling in missing parts before moving forward. Thinking of removing ripped icons and making my own.
 
-![image](http://imgur.com/5pUl6U6.png)
+![image](http://imgur.com/zHAEg0a.png)
 

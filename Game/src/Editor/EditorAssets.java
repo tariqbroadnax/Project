@@ -1,16 +1,18 @@
 package Editor;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import Entity.Entity;
 
-public class EditorAssets 
+public class EditorAssets implements Serializable
 {
 	private List<Entity> entities;
 	
-	private List<EditorAssetListener> listeners;
+	private transient List<EditorAssetListener> listeners;
 	
 	public EditorAssets()
 	{
@@ -57,4 +59,12 @@ public class EditorAssets
 		for(EditorAssetListener listener : listeners)
 			listener.entityRemoved(ent);
 	}
+	
+	private void readObject(java.io.ObjectInputStream in)
+			throws IOException, ClassNotFoundException
+    {
+		in.defaultReadObject();
+		
+		listeners = new ArrayList<EditorAssetListener>();
+    }
 }

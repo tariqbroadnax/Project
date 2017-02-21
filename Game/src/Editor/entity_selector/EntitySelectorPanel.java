@@ -2,6 +2,7 @@ package Editor.entity_selector;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
@@ -107,12 +108,12 @@ public class EntitySelectorPanel extends JList<Entity>
 			
 			
 			if(isSelected)
-				preview.setBackground(Color.blue);
+				preview.setBackground(Color.lightGray);
 			else
 				preview.setBackground(Color.white);
 			
 			preview.setGraphic(graph);
-			
+						
 			return preview;
 		}
 	}
@@ -158,12 +159,15 @@ public class EntitySelectorPanel extends JList<Entity>
 	}
 	
 	@Override
-	public void selectionChanged() {
+	public void selectionChanged() 
+	{
 		repaint();
 	}
 	
 	@Override
-	public void selectionModified() {
+	public void selectionModified() 
+	{
+		setVisibleRowCount(-1);	
 		repaint();
 	}
 }

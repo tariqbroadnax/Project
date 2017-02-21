@@ -1,0 +1,17 @@
+package Editor.comp;
+
+public class RigidBodyForm extends Form
+{
+	private JButton addRectBtn, addCircBtn,
+					removeBtn;
+	
+	// add rect/circle
+	// remove
+	// view jlist<limb>
+	// limb form
+	
+	public RigidBodyForm()
+	{
+		
+	}
+}

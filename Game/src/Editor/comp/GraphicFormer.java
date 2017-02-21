@@ -48,10 +48,14 @@ public class GraphicFormer extends Form
 	
 	public void setValue(Graphic graph)
 	{
+		chooser.removeItemListener(this);
+		
 		if(graph != null)
 			chooser.setSelectedItem(graph.getClass());
 		
 		form.setValue(graph);
+		
+		chooser.addItemListener(this);
 	}
 	
 	public Graphic getValue() {

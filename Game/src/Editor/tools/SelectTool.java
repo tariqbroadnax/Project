@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import Editor.EditorResources;
 import Editor.SnapSettings;
 import Editor.selection.SelectionHandler;
@@ -85,6 +87,9 @@ public class SelectTool implements Tool
 	@Override
 	public void mousePressed(MouseEvent e)
 	{				
+		if(!SwingUtilities.isLeftMouseButton(e))
+			return;
+		
 		Camera camera = resources.getCamera();
 		
 		Point mouseLoc = e.getPoint();
@@ -105,13 +110,14 @@ public class SelectTool implements Tool
 			
 			selection = handler.getSelection();
 			
-			loc = ent.getLoc();
+			loc = normLoc;
 			
 			startLocs.clear();
 			for(Object obj : selection)
 			{
 				Entity ent = (Entity) obj;
-				Point2D.Double loc = ent.getLoc();
+				Point2D.Double loc = (Point2D.Double) ent.getLoc()
+														 .clone();
 				
 				startLocs.add(loc);
 			}
@@ -139,7 +145,7 @@ public class SelectTool implements Tool
 			
 			double xOffset = -(loc.x - normLoc.x),
 				   yOffset = -(loc.y - normLoc.y);
-			
+						
 			List<Object> selection = resources.getSelectionHandler()
 											  .getSelection();
 			
@@ -155,16 +161,8 @@ public class SelectTool implements Tool
 				{
 					SnapSettings settings = resources.getSnapSettings();
 					
-					Dimension2D.Double graphSize = 
-							ent.get(GraphicsComponent.class)
-							   .getGraphic()
-							   .getSize();
-					
 					loc = settings.snapLoc(loc.x + xOffset,
 										   loc.y + yOffset);
-					
-					loc.x += graphSize.width/2;
-					loc.y += graphSize.height/2;
 					
 					ent.setLoc(loc);
 				}

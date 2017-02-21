@@ -16,6 +16,8 @@ public class ActionComponent extends EntityComponent
 		actions = new ArrayList<Action>();
 	}
 	
+	
+	static int i = 0;
 	@Override
 	public void update(Duration delta) 
 	{
@@ -27,14 +29,16 @@ public class ActionComponent extends EntityComponent
 				action.dispose();
 		}
 		
-		actions.removeIf(action -> action.isFinished());
+		actions.removeIf(action -> action.isFinished());		
 	}
 	
 	public void startAction(Action action) 
 	{			
 		action.setActor(parent);
 		
-		actions.add(action);
+		actions.add(action);		
+		
+		System.out.println(parent.toString2());
 	}
 	
 	public void stopAction(Action action) 
@@ -45,6 +49,6 @@ public class ActionComponent extends EntityComponent
 
 	@Override
 	protected EntityComponent _clone() {
-		return null;
+		return new ActionComponent();
 	}
 }

@@ -1,0 +1,22 @@
+package Editor.edit;
+
+import java.util.List;
+
+import javax.swing.undo.UndoableEdit;
+
+import Editor.EditorResources;
+import Entity.Entity;
+
+public class RemoveEntities implements UndoableEdit
+{
+	private EditorResources resources;
+	
+	private List<Entity> ents;
+	
+	private boolean alive;
+	
+	public RemoveEntities(List<Entity> ents, EditorResources resouces)
+	{
+		
+	}
+}

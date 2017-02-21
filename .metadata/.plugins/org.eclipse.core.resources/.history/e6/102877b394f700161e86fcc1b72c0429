@@ -1,0 +1,11 @@
+package Editor.tools;
+
+public class Tools 
+{
+	public final Stamp STAMP;
+	public final SelectTool SELECT_TOOL;
+	public final EraseTool ERASE_TOOL;
+	public final MoveTool MOVE_TOOL;
+	
+	
+}

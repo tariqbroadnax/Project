@@ -39,20 +39,24 @@ public class Animation extends Graphic
 			graphics.add((Graphic)graph.clone());
 
 		iter = new CircularIterator<Graphic>(graphics);	
+	
+		if(graphics.size() > 0)
+			curr = iter.next();
 	}
 		
 	public void update(Duration delta)
 	{		
 		elapsed += delta.toMillis();
 		
-		while(elapsed > delay)
+		while(elapsed > delay || delay == 0)
 		{
 			curr = iter.next();
 			elapsed -= delay;	
 		}
-	
+
 		for(Graphic graph : graphics)
 			graph.update(delta);
+		
 	}
 	
 	@Override
@@ -122,7 +126,8 @@ public class Animation extends Graphic
 	}
 	
 	@Override
-	public Rectangle2D.Double getBound() {	
+	public Rectangle2D.Double getBound() 
+	{	
 		if(curr == null)
 			return new Rectangle2D.Double();
 		else

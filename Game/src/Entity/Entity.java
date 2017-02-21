@@ -17,12 +17,12 @@ import Game.Scene;
 
 public class Entity
 	implements Serializable, Cloneable, Transferable
-{		
+{			
 	private String name;
 	
-	private int id;
-	
 	private Scene sceneLoc;
+	
+	private transient Entity cloneParent;
 	
 	protected Point2D.Double loc;
 
@@ -34,9 +34,7 @@ public class Entity
 	public Entity()
 	{		
 		name = "Unnamed";
-		
-		id = -1;
-		
+				
 		comps = new HashMap<Class<? extends EntityComponent>,
 							EntityComponent>();
 				
@@ -72,7 +70,8 @@ public class Entity
 		}
 		
 		name = model.name;
-		id = model.id;
+		
+		cloneParent = model;
 		
 		setLoc(model.loc);
 	}
@@ -175,11 +174,7 @@ public class Entity
 	public String getName() {
 		return name;
 	}
-	
-	public int getID() {
-		return id;
-	}
-	
+
 	public Point2D.Double getLoc() {
 		return loc;
 	}
@@ -227,7 +222,11 @@ public class Entity
 		
 		return new DataFlavor[]{entFlavor};
 	}
-
+	
+	public Entity getCloneParent() {
+		return cloneParent;
+	}
+	
 	@Override
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
 		return flavor.getClass().equals(Entity.class);

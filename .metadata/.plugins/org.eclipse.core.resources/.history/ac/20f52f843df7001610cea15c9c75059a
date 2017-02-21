@@ -1,0 +1,23 @@
+package Editor.tools;
+
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+import Editor.EditorResources;
+
+public class MoveTool implements Tool
+{
+	private EditorResources resources;
+	
+	private Point p;
+	
+	public MoveTool(EditorResources resources)
+	{
+		this.resources = resources;
+	}
+	
+	public void mousePressed(MouseEvent e)
+	{
+		
+	}
+}

@@ -2,32 +2,35 @@ package Editor;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.Document;
+import javax.swing.undo.UndoableEdit;
 
 import Editor.comp.ValueListener;
+import EditorGUI.MouseListener;
 import EditorGUI.SimpleDocumentListener;
+import EditorGUI.UndoManager;
+import Editor.actions.Actions;;
+
 
 public class DoubleField extends JTextField
 	implements SimpleDocumentListener, ActionListener,
-			   FocusListener
+			   FocusListener, UndoableEditListener,
+			   MouseListener
 {
 	private double val;
 	
@@ -36,6 +39,11 @@ public class DoubleField extends JTextField
 	private List<ValueListener> listeners;
 	
 	private String guess = "0.000001";
+	
+	private UndoManager manager;
+	
+	private JPopupMenu popup = new JPopupMenu();
+	
 	
 	public DoubleField()
 	{
@@ -58,10 +66,16 @@ public class DoubleField extends JTextField
 		
 		listeners = new ArrayList<ValueListener>();
 		
+		manager = new UndoManager();
+		
 		Document doc = getDocument();
+		
 		doc.addDocumentListener(this);
+		doc.addUndoableEditListener(this);
 		
 		addActionListener(this);
+		addFocusListener(this);
+		addMouseListener(this);
 		
 		setColumns(1); 
 		// prevents resizing when text changed
@@ -72,13 +86,22 @@ public class DoubleField extends JTextField
 		
 		setFont(font);
 		
+		popup.add(Actions.COPY);
+		popup.add(Actions.CUT);
+		popup.add(Actions.PASTE);
 	}
 	
 	public void setValue(double val)
 	{
+		Document doc = getDocument();
+		
+		doc.removeDocumentListener(this);
+		
 		this.val = val;
 		
 		setText(val + "");
+		
+		doc.addDocumentListener(this);
 	}
 	
 	public double getValue() {
@@ -107,6 +130,8 @@ public class DoubleField extends JTextField
 			setForeground(Color.black);
 			setUnderlined(false);
 			setValueWithText();
+			
+			notifyListeners();
 		}
 		else
 		{
@@ -130,7 +155,11 @@ public class DoubleField extends JTextField
 	}
 
 	@Override
-	public void focusGained(FocusEvent e) {}
+	public void focusGained(FocusEvent e) 
+	{
+		EditorResources.undo.setUndoManager(manager);
+		EditorResources.redo.setUndoManager(manager);
+	}
 
 	@Override
 	public void focusLost(FocusEvent e) 
@@ -180,5 +209,24 @@ public class DoubleField extends JTextField
 		font = font.deriveFont(attributes);
 	
 		setFont(font);
+	}
+
+	@Override
+	public void undoableEditHappened(UndoableEditEvent e) 
+	{
+		UndoableEdit edit = e.getEdit();
+		
+		manager.addEdit(edit);		
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{		
+		if(e.isPopupTrigger())
+		{
+			int x = e.getX(), y = e.getY();
+			
+			popup.show(this, x, y);
+		}
 	}
 }

@@ -1,0 +1,53 @@
+package Editor;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+
+import Utilities.GUIUtils;
+
+public class PlayScene extends AbstractAction
+{
+	public static final String PATH =
+			"jlfgr-1.0\\toolbarButtonGraphics\\media\\";
+	
+	public static final String smallIconFileName1 =
+			PATH + "Play16.gif",
+							   smallIconFileName2 =
+			PATH + "Pause16.gif";
+			
+	private EditorResources resources;
+	
+	private boolean playing = false;
+	
+	public PlayScene(EditorResources resources)
+	{
+		this.resources = resources;
+		
+		putValue(NAME, "Play");
+		
+		ImageIcon smallIcon = GUIUtils.ImageIcon(
+				smallIconFileName);
+		
+		putValue(SMALL_ICON, smallIcon);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		if(playing)
+		{
+			resources.stopPlayingScene();
+			putValue(NAME, "Play");
+		}
+		else
+		{
+			resources.startPlayingScene();
+			putValue(NAME, "Stop");
+		}
+		
+		playing = !playing;
+	}
+
+}

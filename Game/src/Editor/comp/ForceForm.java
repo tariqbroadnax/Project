@@ -53,7 +53,7 @@ public class ForceForm extends Form
 	}
 	
 	private void updateValues()
-	{
+	{		
 		double speed = speedFld.getValue(),
 			   dir = dirFld.getValue();
 		

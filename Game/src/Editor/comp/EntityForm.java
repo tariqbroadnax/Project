@@ -14,9 +14,11 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import Actions.ActionComponent;
 import Entity.Entity;
 import EntityComponent.GraphicsComponent;
 import EntityComponent.LifetimeComponent;
+import EntityComponent.RigidBodyComponent;
 import Movement.MovementComponent;
 
 public class EntityForm extends Form
@@ -39,6 +41,7 @@ public class EntityForm extends Form
 	
 	private MovementComponentForm moveCompForm;
 	private GraphicsComponentForm graphCompForm;
+	private RigidBodyComponentForm bodyCompForm;
 	
 	public EntityForm()
 	{
@@ -63,6 +66,7 @@ public class EntityForm extends Form
 	
 		moveCompForm = new MovementComponentForm();
 		graphCompForm = new GraphicsComponentForm();
+		bodyCompForm = new RigidBodyComponentForm();
 		
 		Border border = 
 				BorderFactory.createTitledBorder("Location");
@@ -124,6 +128,13 @@ public class EntityForm extends Form
 			moveCompForm.setMovementComponent(mcomp);
 		}
 		
+		if(ent.contains(RigidBodyComponent.class))
+		{
+			RigidBodyComponent rbcomp = ent.get(RigidBodyComponent.class);
+			
+			bodyCompForm.setRigidBodyComponent(rbcomp);
+		}
+		
 		updateCompArea();
 		
 		compBox.addActionListener(this);
@@ -147,6 +158,10 @@ public class EntityForm extends Form
 			ent.remove(MovementComponent.class);
 		else if(comp.equals("Lifetime"))
 			ent.remove(LifetimeComponent.class);
+		else if(comp.equals("Rigid Body"))
+			ent.remove(RigidBodyComponent.class);
+		else if(comp.equals("Action"))
+			ent.remove(ActionComponent.class);
 		
 		updateCompArea();
 	}
@@ -195,6 +210,15 @@ public class EntityForm extends Form
 			
 			moveCompForm.setMovementComponent(mcomp);
 		}
+		else if(comp.equals("Rigid Body"))
+		{
+			RigidBodyComponent rbcomp =
+					ent.get(RigidBodyComponent.class);
+			
+			currCompForm = bodyCompForm;
+			
+			bodyCompForm.setRigidBodyComponent(rbcomp);
+		}
 		
 		if(currCompForm != null)
 		{
@@ -206,19 +230,28 @@ public class EntityForm extends Form
 	
 	private void updateBox()
 	{
-		Vector<String> vector = new Vector<String>();
+		Vector<String> v = new Vector<String>();
 		
 		if(ent.contains(GraphicsComponent.class))
-			vector.add("Graphics");
+			v.add("Graphics");
 		if(ent.contains(MovementComponent.class))
-			vector.add("Movement");
+			v.add("Movement");
 		if(ent.contains(LifetimeComponent.class))
-			vector.add("Lifetime");
-		
+			v.add("Lifetime");
+		if(ent.contains(RigidBodyComponent.class))
+			v.add("Rigid Body");
+		if(ent.contains(ActionComponent.class))
+			v.add("Action");
+	
+		String selected = (String) compBox.getSelectedItem();
+	
 		compBox.removeAllItems();
 		
-		for(String str : vector)
+		for(String str : v)
 			compBox.addItem(str);
+		
+		if(v.contains(selected))
+			compBox.setSelectedItem(selected);
 	}
 	
 	private void updateValues() 

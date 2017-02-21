@@ -10,4 +10,5 @@ public interface Tool
 {
 	public default void paint(Graphics g){}
 	
+	public default void prepare(){}
 }

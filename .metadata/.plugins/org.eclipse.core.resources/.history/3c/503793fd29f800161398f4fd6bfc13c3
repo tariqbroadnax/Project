@@ -1,0 +1,21 @@
+package Editor.comp;
+
+import javax.swing.JButton;
+import javax.swing.JList;
+
+import EntityComponent.Limb;
+
+public class RigidBodyForm extends Form
+{
+	private JButton addRectBtn, addCircBtn,
+					removeBtn;
+	
+	private JList<Limb> list;
+	
+	private LimbForm limbForm;
+	
+	public RigidBodyForm()
+	{
+		
+	}
+}

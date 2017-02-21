@@ -1,12 +1,8 @@
 package Editor.comp;
 
-import java.awt.Color;
-
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
-import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -64,6 +60,7 @@ public class AnimationForm extends Form
 		removeBtn.addActionListener(e -> removeGraphic());
 	
 		former.addValueListener(this);
+		delayFld.addValueListener(this);
 
 		setValue(ani);		
 	}
@@ -76,14 +73,20 @@ public class AnimationForm extends Form
 		{
 			int index = aniList.getSelectedIndex();
 			
+			if(index == -1)
+			{
+				aniList.setSelectedIndex(0);
+				index = 0;
+			}
+			
 			Graphic graph = ani.getGraphic(index);
 			
 			former.setValue(graph);
 		}
 		
 		int delay = (int) ani.getDelay();
-		
-		ani.setDelay(delay);
+				
+		delayFld.setValue(delay);
 	}
 	
 	public void setValue(Animation ani) 
@@ -120,7 +123,9 @@ public class AnimationForm extends Form
 		aniList.setSelectedIndex(size);
 		
 		updateComponents();
-
+		
+		notifyListeners();
+		
 		repaint();		
 	}
 	
@@ -137,6 +142,8 @@ public class AnimationForm extends Form
 		
 		updateComponents();
 
+		notifyListeners();
+		
 		repaint();
 	}
 	

@@ -1,0 +1,16 @@
+package Editor.comp;
+
+import EntityComponent.Limb;
+
+public class LimbForm extends Form
+{
+	private Limb limb;
+
+	private Vector2DForm offsetForm;
+	
+	
+	public LimbForm()
+	{
+		
+	}
+}

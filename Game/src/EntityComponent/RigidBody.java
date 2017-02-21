@@ -1,145 +1,96 @@
 package EntityComponent;
 
 import static Utilities.ShapeUtilities.collides;
-import static Utilities.ShapeUtilities.moveShape;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
-import Maths.Circle2D;
-import Maths.Vector2D;
+import Graphic.Vector2D;
 import Utilities.Pack;
 
-public class RigidBody 
-	implements Cloneable, Serializable
-{
-	private Point2D.Double loc;
-	
-	private Collection<Vector2D.Double> shifts;
-	private Collection<RectangularShape> comps;
+public class RigidBody implements Cloneable, Serializable
+{	
+	private List<Limb> limbs;
 	
 	public RigidBody()
 	{
-		loc = new Point2D.Double();
-		
-		shifts = new LinkedList<Vector2D.Double>();
-		comps = new LinkedList<RectangularShape>();
+		limbs = new ArrayList<Limb>();
 	}
 	
 	public RigidBody(RigidBody body)
 	{
-		loc = new Point2D.Double(
-				body.loc.x, body.loc.y);
+		limbs = new ArrayList<Limb>();
 		
-		shifts = new LinkedList<Vector2D.Double>();
-		comps = new LinkedList<RectangularShape>();
-		
-		for(Vector2D.Double shift : body.shifts)
-			shifts.add(new Vector2D.Double(shift));
-		
-		for(RectangularShape comp : body.comps)
-			comps.add((RectangularShape)comp.clone());
-	}
-	
-	public void addComponent(
-			Vector2D.Double shift,
-			RectangularShape comp)
-	{
-		// moveShape(shift.getMoved(loc), comp);
-		shifts.add(shift);
-		comps.add(comp);
-	}
-	
-	public void addComponent(
-			RectangularShape comp)
-	{
-		addComponent(new Vector2D.Double(), comp);
-	}
-	
-	public void setLoc(Point2D.Double loc)
-	{
-		this.loc = loc;
-		
-		Iterator<Vector2D.Double> shiftsIter = shifts.iterator();
-		Iterator<RectangularShape> compsIter = comps.iterator();
-		
-		while(shiftsIter.hasNext())
+		for(Limb limb : body.limbs)
 		{
-			RectangularShape comp = compsIter.next();
-			
-			Vector2D.Double shift = new Vector2D.Double( 
-					shiftsIter.next());
-			
-			shift.x -= comp.getWidth() / 2;
-			shift.y -= comp.getHeight() / 2;
-						
-			Point2D.Double newLoc = shift.getMoved(loc);
-			
-			moveShape(newLoc, comp);
+			limb = (Limb) limb.clone();
+			 
+			limbs.add(limb);
 		}
 	}
 	
-	public Point2D.Double getCenter()
+	public void updateLimbs(Point2D.Double pt)
 	{
-		if(comps.size() == 0)
-			return loc;
+		for(Limb limb : limbs)
+		{
+			Vector2D.Double offset = limb.getOffset();
+			
+			RectangularShape shape = limb.getShape();
+			
+			double width = shape.getWidth(),
+				   height = shape.getHeight();
+			
+			shape.setFrame(pt.x - width/2 + offset.x,
+						   pt.y - height/2 + offset.y,
+						   width, height);
+		}
+	}
+	
+	// returns first collision found 
+	public Pack<RectangularShape, RectangularShape> collidesWith(RigidBody rigidBody)
+	{
+		for(Limb limb1 : limbs)
+		{
+			RectangularShape shape1 = limb1.getShape();
+			
+			for(Limb limb2 : rigidBody.limbs)
+			{
+				RectangularShape shape2 = limb2.getShape();
+				
+				if(collides(shape1, shape2))
+					return new Pack<RectangularShape, RectangularShape>(
+									shape1, shape2);
+			}
+		}
 		
+		return null;
+	}
+	
+	public Point2D.Double center()
+	{
 		double xs = 0, ys = 0;
 		
 		int size = 0;
 		
-		for(RectangularShape comp : comps)
+		for(Limb limb : limbs)
 		{
-			xs += comp.getCenterX();
-			ys += comp.getCenterY();
+			RectangularShape shape = limb.getShape();
+			
+			xs += shape.getCenterX();
+			ys += shape.getCenterY();
 			size++;
 		}
 		
 		return new Point2D.Double(xs / size, ys / size);
 	}
-	
-	// returns first collision found 
-	public Pack<RectangularShape, RectangularShape> 
-			collidesWith(RigidBody rigidBody)
-	{
-		for(RectangularShape myComp : comps)
-		{
-			for(RectangularShape otherComp : rigidBody.getComponents())
-				if(collides(myComp, otherComp))
-					return new Pack<RectangularShape, RectangularShape>(
-									myComp, otherComp);	
-		}
-		
-		return null;
-	}
-	
-	public Pack<RectangularShape, RectangularShape> 
-		collidesWith(Circle2D.Double circ)
-	{
-		for(RectangularShape myComp : comps)
-		{
-			if(myComp instanceof Circle2D.Double) {
-				//System.out.println(collides(myComp, circ) + " " + circ + " " + myComp);
-			}
-			
-			if(collides(myComp, circ))
-			{
-				return new Pack<RectangularShape, RectangularShape>(
-									myComp, circ);	
-			}
-		}
-		
-		return null;
-	}
-	
+
 	public Rectangle2D.Double union()
 	{
-		if(comps.size() == 0)
+		if(limbs.size() == 0)
 			return null;
 		
 		double minX = Double.POSITIVE_INFINITY,
@@ -147,12 +98,14 @@ public class RigidBody
 			   maxX = Double.NEGATIVE_INFINITY,
 			   maxY = maxX;
 		
-		for(RectangularShape comp : comps)
+		for(Limb limb : limbs)
 		{
-			double minX2 = comp.getMinX(),
-				   minY2 = comp.getMinY(),
-				   maxX2 = comp.getMaxX(),
-				   maxY2 = comp.getMaxY();
+			RectangularShape shape = limb.getShape();
+			
+			double minX2 = shape.getMinX(),
+				   minY2 = shape.getMinY(),
+				   maxX2 = shape.getMaxX(),
+				   maxY2 = shape.getMaxY();
 			
 			minX = minX < minX2 ? minX : minX2;
 			minY = minY < minY2 ? minY : minY2;
@@ -163,23 +116,19 @@ public class RigidBody
 		return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
 	}
 	
-	public Collection<RectangularShape> getComponents()
-	{
-		return comps;
+	public void addLimb(Limb limb) {
+		limbs.add(limb);
+	}
+
+	public void removeLimb(Limb limb) {
+		limbs.remove(limb);
+	}
+
+	public List<Limb> getLimbs() {
+		return limbs;
 	}
 	
-	public Object clone()
-	{
+	public Object clone() {
 		return new RigidBody(this);
-	}
-	
-	public String toString()
-	{
-		String str = super.toString();
-		
-		for(RectangularShape comp : comps)
-			str += "\n" + comp.toString();
-		
-		return str;
 	}
 }

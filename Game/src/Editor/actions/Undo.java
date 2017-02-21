@@ -46,7 +46,6 @@ public class Undo extends AbstractAction
 				"control Z");
 		putValue(ACCELERATOR_KEY, keyStroke);
 		putValue(SMALL_ICON, smallIcon);
-		putValue(LARGE_ICON_KEY, largeIcon);	
 	
 		setEnabled(false);
 	}
@@ -54,12 +53,18 @@ public class Undo extends AbstractAction
 	public void setUndoManager(
 			UndoManager undoManager)
 	{
+		if(this.undoManager != null)
+			this.undoManager.removeUndoListener(this);
+		
 		this.undoManager = undoManager;
 		
 		if(undoManager == null)
 			setEnabled(false);
 		else
+		{
+			undoManager.addUndoListener(this);
 			checkAndEnable();
+		}		
 	}
 
 	@Override

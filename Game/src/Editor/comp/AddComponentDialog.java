@@ -10,9 +10,11 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
+import Actions.ActionComponent;
 import Entity.Entity;
 import EntityComponent.GraphicsComponent;
 import EntityComponent.LifetimeComponent;
+import EntityComponent.RigidBodyComponent;
 import Movement.MovementComponent;
 
 public class AddComponentDialog extends JDialog
@@ -69,11 +71,18 @@ public class AddComponentDialog extends JDialog
 		
 		if(!ent.contains(LifetimeComponent.class))
 			comps.add("Lifetime");
+		
+		if(!ent.contains(RigidBodyComponent.class))
+			comps.add("Rigid Body");
+		
+		if(!ent.contains(ActionComponent.class))
+			comps.add("Action");
 	}
 	
 	private void addComponents()
 	{
 		int[] indices = compList.getSelectedIndices();
+		
 		for(int i = 0; i < indices.length; i++)
 		{
 			String str = comps.get(indices[i]);
@@ -88,6 +97,12 @@ public class AddComponentDialog extends JDialog
 				break;
 			case "Lifetime":
 				ent.add(new LifetimeComponent());
+				break;
+			case "Rigid Body":
+				ent.add(new RigidBodyComponent());
+				break;
+			case "Action":
+				ent.add(new ActionComponent());
 				break;
 			}
 		}

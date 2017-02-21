@@ -32,6 +32,8 @@ public class UI
 	
 	private GLayeredPane layers;
 	
+	private MouseController mouseControl;
+	
 	public UI(Scene scene, Updater updater, Entity player,
 			  int viewMode)
 	{			
@@ -61,8 +63,7 @@ public class UI
 		
 		camera.setFocus(player.getLoc());
 		
-		MouseController mouseControl = new MouseController(
-				player, camera, buffer);
+		mouseControl = new MouseController(player, camera, buffer);
 		
 		panel.addMouseListener(mouseControl);
 		frame.addMouseListener(mouseControl);
@@ -74,6 +75,15 @@ public class UI
 		setViewMode(viewMode);
 		
 		layers.addAndSetLayer(hud, 1);
+	}
+	
+	public void setPlayer(Entity player)
+	{
+		if(player != null)
+		{
+			camera.setFocus(player.getLoc());
+			mouseControl.setPlayer(player);
+		}
 	}
 	
 	public void setScene(Scene scene)
@@ -104,8 +114,8 @@ public class UI
 		if(viewMode == FRAME_MODE)
 			frame.setVisible(visible);
 		
-		hud.getDialogueArea()
-		   .setDialogue(new Dialogue());
+//		hud.getDialogueArea()
+//			 .setDialogue(new Dialogue());
 	}
 	
 	public HUD getHUD() {

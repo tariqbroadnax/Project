@@ -8,7 +8,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 public class Vector2D
-	implements Serializable
+	implements Serializable, Cloneable
 {
 	public static class Double extends Vector2D
 	{
@@ -72,6 +72,10 @@ public class Vector2D
 		public Vector2D.Double getUnit()
 		{
 			return direction(angle());
+		}
+		
+		public Object clone() {
+			return new Vector2D.Double(this);
 		}
 		
 		public String toString()

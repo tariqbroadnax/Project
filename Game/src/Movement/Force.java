@@ -1,7 +1,9 @@
 package Movement;
 
+import java.io.Serializable;
+
 public class Force
-	implements Cloneable
+	implements Cloneable, Serializable
 {
 	private double speed, dir;
 	

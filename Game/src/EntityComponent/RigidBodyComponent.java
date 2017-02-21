@@ -1,7 +1,6 @@
 package EntityComponent;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.time.Duration;
 import java.util.HashMap;
@@ -27,9 +26,6 @@ public class RigidBodyComponent extends EntityComponent
 		
 		body = new RigidBody();
 		
-		// FIXME remove this
-		body.addComponent(new Rectangle2D.Double(0, 0, 10, 10));
-	
 		map = new HashMap<CollisionResponse,
 						  List<CollisionFilter>>();
 	
@@ -42,7 +38,7 @@ public class RigidBodyComponent extends EntityComponent
 	{
 		super();
 		
-		body = (RigidBody)comp.body.clone();
+		body = (RigidBody) comp.body.clone();
 		
 		map = new HashMap<CollisionResponse,
 				  List<CollisionFilter>>();
@@ -67,16 +63,8 @@ public class RigidBodyComponent extends EntityComponent
 		if(enabled)
 		{
 			Point2D.Double parentLoc = parent.getLoc();
-			body.setLoc(parentLoc);
-		}
-	}
-	
-	public void update()
-	{
-		if(enabled)
-		{
-			Point2D.Double parentLoc = parent.getLoc();
-			body.setLoc(parentLoc);
+			
+			body.updateLimbs(parentLoc);
 		}
 	}
 	
@@ -104,7 +92,9 @@ public class RigidBodyComponent extends EntityComponent
 	public void checkForAndHandleCollision(RigidBodyComponent comp)
 	{
 		if(!enabled) return;
-		
+	
+		System.out.println("checking 4 collision");
+
 		RigidBody otherBody = comp.getRigidBody();
 		
 		Pack<RectangularShape, RectangularShape> collision =
@@ -118,6 +108,8 @@ public class RigidBodyComponent extends EntityComponent
 			Pack<RectangularShape, RectangularShape> collision,
 			RigidBodyComponent collided)
 	{		
+		System.out.println("collision!!");
+		
 		CollisionEvent e = new CollisionEvent(
 				parent, collided.parent,
 				collision.head, collision.tail);

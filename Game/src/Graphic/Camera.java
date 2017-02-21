@@ -48,7 +48,7 @@ public class Camera
 		
 		displaySize = new Dimension(400, 400);
 		
-		zoom = 1;
+		zoom = 0.8;
 	}
 
 	public void transformGraphics(Graphics2D g2d)
@@ -65,11 +65,33 @@ public class Camera
 	}
 
 	public boolean shows(Rectangle2D.Double normalBound)
-	{
-		Rectangle2D.Double normalViewBound = 
-						   normalViewBound();
+	{	
+		Rectangle2D.Double normScrBound = normalScreenBound();
 		
-		return Maths.overlaps(normalBound, normalViewBound);
+		
+		return Maths.overlaps(normalBound, normScrBound);
+	}
+	
+	public Rectangle2D.Double normalScreenBound()
+	{
+		Dimension2D.Double normScrSize = normalSize(screenSize);
+		
+		Rectangle2D.Double bound = new Rectangle2D.Double(
+				focus.x - normScrSize.width/2,
+				focus.y - normScrSize.height/2,
+				normScrSize.width, normScrSize.height);
+		
+		return bound;
+	}
+	
+	public Rectangle screenBound()
+	{
+		Point2D.Double focus = focusOnScreen();
+		
+		return new Rectangle(
+				(int)(focus.x - screenSize.width/2.0),
+				(int)(focus.y - screenSize.height/2.0),
+				screenSize.width, screenSize.height);
 	}
 	
 	public Dimension viewSize()
@@ -91,7 +113,7 @@ public class Camera
 							screenSize.height : maxHeight);
 		else
 			viewSize = screenSize;
-					
+		
 		return viewSize;
 	}
 	
@@ -99,8 +121,8 @@ public class Camera
 	{
 		Dimension viewSize = viewSize();
 		
-		double normW = 100.0 * screenSize.width / viewSize.width,
-			   normH = 100.0 * screenSize.height / viewSize.height;
+		double normW = 100.0 * screenSize.width / viewSize.width / zoom,
+			   normH = 100.0 * screenSize.height / viewSize.height / zoom;
 		
 		return new Dimension2D.Double(normW, normH);
 	}
@@ -123,14 +145,14 @@ public class Camera
 	{
 		Dimension viewSize = viewSize();
 
-		return width * viewSize.width / 100;
+		return width * viewSize.width / 100.0;
 	}
 	
 	public double screenHeight(double height)
 	{
 		Dimension viewSize = viewSize();
 
-		return height * viewSize.height / 100;
+		return height * viewSize.height / 100.0;
 	}
 	
 	public Dimension2D.Double sizeOnScreen2D(
@@ -139,7 +161,7 @@ public class Camera
 		Dimension viewSize = viewSize();
 
 		return new Dimension2D.Double(
-				width * viewSize.width / 100.0,
+				width * viewSize.width / 100.0 ,
 				height * viewSize.height / 100.0);
 	}
 	
@@ -342,53 +364,54 @@ public class Camera
 		Dimension viewSize = viewSize();
 
 		return new Dimension2D.Double(
-				100 * size.width / viewSize.width,
-				100 * size.height / viewSize.height);
+				100 * size.width / viewSize.width / zoom,
+				100 * size.height / viewSize.height / zoom);
 	}
 	
 	public double normalWidth(double width)
 	{
-		Dimension viewSize = viewSize();
+		Dimension2D.Double normViewSize = normalViewSize();
 		
-		return 100 * width / viewSize.width;
+		return 100 * width / normViewSize.width;
 	}
 	
 	public double normalHeight(double height)
 	{
-		Dimension viewSize = viewSize();
+		Dimension2D.Double normViewSize = normalViewSize();
 		
-		return 100 * height / viewSize.height;
+		return 100 * height / normViewSize.height;
 	}
 	
 	public Vector2D.Double normalVector(int x, int y)
 	{
-		Dimension viewSize = viewSize();
+		Dimension2D.Double normViewSize = normalViewSize();
 
 		return new Vector2D.Double(
-				100 * x / viewSize.width,
-				100 * y / viewSize.height);
+				100 * x / normViewSize.width,
+				100 * y / normViewSize.height);
 	}
 
 	public Rectangle2D.Double normalViewBound()
 	{
-		Dimension2D.Double normalScreenSize = 
-				normalSize(screenSize);
+		Dimension2D.Double normViewSize = normalViewSize();
 		
 		return new Rectangle2D.Double(
-				focus.x - normalScreenSize.width/2,
-				focus.y - normalScreenSize.height/2,
-				normalScreenSize.width,
-				normalScreenSize.height);
+				focus.x - normViewSize.width/2,
+				focus.y - normViewSize.height/2,
+				normViewSize.width,
+				normViewSize.height);
 	}
 	
 	public Rectangle2D.Double viewBound()
 	{
 		Point2D.Double focus = focusOnScreen();
 		
+		Dimension view = viewSize();
+		
 		return new Rectangle2D.Double(
-				focus.x - screenSize.width/2,
-				focus.y - screenSize.height/2,
-				screenSize.width, screenSize.height);
+				focus.x - view.width/2,
+				focus.y - view.height/2,
+				view.width, view.height);
 	}
 	
 	private void formatTransform(
@@ -399,11 +422,11 @@ public class Camera
 		
 		transform.translate(
 				-focusOnScreen.x, -focusOnScreen.y);
-	
-		transform.scale(zoom, zoom);
 
 		transform.translate(
 				screenSize.width/2, screenSize.height/2);		
+
+		transform.scale(zoom, zoom);
 	}
 	
 	private Point2D.Double focusOnScreen()
@@ -411,12 +434,16 @@ public class Camera
 		Dimension viewSize = viewSize();
 		
 		return new Point2D.Double(
-				focus.x * viewSize.width / 100,
-				focus.y * viewSize.height / 100);
+				zoom * focus.x * viewSize.width / 100,
+				zoom * focus.y * viewSize.height / 100);
 	}
 
 	public void setZoom(double zoom) {
 		this.zoom = zoom;
+	}
+	
+	public double getZoom() {
+		return zoom;
 	}
 	
 	public void setDisplaySize(Dimension displaySize)
@@ -463,10 +490,10 @@ public class Camera
 	
 	public void setFocusTL(double x, double y)
 	{
-		Dimension2D.Double normViewSize = normalViewSize();
+		Rectangle2D.Double bound = normalScreenBound();
 		
-		setFocus(x + normViewSize.width/2,
-				 y + normViewSize.height/2);
+		setFocus(x + bound.width/2,
+				 y + bound.height/2);
 	}
 	
 	public void moveFocus(Vector2D.Double shift)

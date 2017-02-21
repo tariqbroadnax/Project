@@ -1,6 +1,0 @@
-package EntityComponent;
-
-public class TestBehaviour extends Behaviour
-{
-
-}

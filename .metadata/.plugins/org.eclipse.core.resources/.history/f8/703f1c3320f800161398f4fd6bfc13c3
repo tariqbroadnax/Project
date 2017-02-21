@@ -1,0 +1,11 @@
+package EntityComponent;
+
+import Graphic.Vector2D;
+
+public class Component 
+{
+	private Vector2D.Double offset;
+	private RectanglularShape shape;
+	
+	
+}

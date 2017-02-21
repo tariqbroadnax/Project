@@ -1,0 +1,9 @@
+package Editor.comp;
+
+public class RigidBodyForm extends Form
+{
+	public RigidBodyForm()
+	{
+		
+	}
+}

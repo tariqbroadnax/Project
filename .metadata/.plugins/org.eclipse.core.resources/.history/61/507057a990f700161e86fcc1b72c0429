@@ -1,0 +1,71 @@
+package Editor;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+import Editor.comp.Guage;
+import Editor.entity_selector.EntitySelector;
+
+public class Editor
+{	
+	/*private EditorFrame frame;
+	
+	private MultiSplitPane pane;
+	
+	private SceneEditorPane sceneEditor;
+	private TilesetPane tilePane;
+	private EntityContainer entityContainer;
+	
+	private SceneExplorer explorer;
+	private Inspector inspector;
+	
+	private GUIResources resources;
+	*/
+	
+	public static final EditorResources resources = new EditorResources();
+	
+	private EditorFrame frame;
+	private EditorMenuBar menuBar;
+	private Selector selector;
+	
+	public Editor()	
+	{
+		frame = new EditorFrame(resources);
+		selector = new Selector(resources);
+		menuBar = new EditorMenuBar(selector);
+
+		ScenePanel scenePnl = new ScenePanel(resources);
+		
+		MultiSplitPane pane = new MultiSplitPane();
+
+		JPanel right = new JPanel();
+		JTabbedPane toolPane = new JTabbedPane(),
+					editPane = new JTabbedPane();
+		
+		right.setLayout(new GridLayout(0, 2));
+		right.add(toolPane);
+		right.add(editPane);
+		
+		toolPane.add("Entities", new EntitySelector(resources));
+		toolPane.add("Tilesets", selector);
+		
+		editPane.add("Inspector", new Inspector(resources));
+		
+		pane.setCenterComponent(scenePnl);
+		pane.setRightComponent(right);
+	
+		JPanel pnl = new JPanel();
+		ToolBar toolbar = new ToolBar(resources);
+		
+		pnl.setLayout(new BorderLayout());
+		
+		pnl.add(toolbar, BorderLayout.NORTH);
+		pnl.add(pane, BorderLayout.CENTER);
+		
+		frame.add(pnl);
+		frame.setVisible(true);		
+	}
+}

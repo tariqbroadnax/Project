@@ -2,6 +2,7 @@ package Editor.comp;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -80,6 +81,15 @@ public class MovementForm extends Form
 	{
 		this.movement = movement;
 	
+		if(movement.getForces().size() == 0)
+			form.setVisible(false);
+		else
+		{
+			Force force = list.getSelectedValue();
+			
+			form.setForce(force);
+			form.setVisible(true);
+		}
 		updateFields();
 	}
 	
@@ -144,13 +154,18 @@ public class MovementForm extends Form
 		
 		movement.setEnabled(enabled);
 		
-		int index = list.getSelectedIndex();
+		List<Force> forces = movement.getForces();
 		
-		Force force = list.getSelectedValue();
+		if(!forces.isEmpty())
+		{
+			int index = list.getSelectedIndex();
+			
+			Force force = list.getSelectedValue();
+			
+			movement.getForces()
+					.set(index, force);
+		}
 		
-		movement.getForces()
-				.set(index, force);
-	
 		repaint();
 	}
 	
@@ -185,7 +200,7 @@ public class MovementForm extends Form
 	
 	@Override
 	public void valueChanged(ListSelectionEvent e) 
-	{
+	{			
 		Force force = list.getSelectedValue();
 		
 		if(force != null)

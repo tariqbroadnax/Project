@@ -1,0 +1,105 @@
+package Editor.edit;
+
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JComponent;
+import javax.swing.TransferHandler;
+
+import Editor.EditorResources;
+import Editor.selection.SelectionHandler;
+import Entity.Entity;
+
+public class SceneEditorTransferHandler extends TransferHandler
+{
+	public EditorResources resources;
+	
+	public SceneEditorTransferHandler(EditorResources resources)
+	{
+		this.resources = resources;
+	}
+	
+	@Override
+	public boolean canImport(JComponent comp, DataFlavor[] flavors)
+	{
+		for(DataFlavor flavor : flavors)
+		{
+			Class<?> c = flavor.getRepresentationClass();
+			
+			if(c.equals(Entity.class))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean canImport(TransferHandler.TransferSupport support)
+	{
+		return canImport(null, support.getDataFlavors());
+	}
+	
+	public boolean importData(TransferHandler.TransferSupport support)
+	{
+		if(support.)
+		
+		EntitySelection selection = (EntitySelection) support.getTransferable();
+
+		if(selection.sceneSelection())
+		{
+			for(Entity e : selection.get())
+			{
+				
+			}
+		}
+		else
+		{
+			
+		}
+	}
+	
+	@Override
+	public Transferable createTransferable(JComponent c)
+	{
+		SelectionHandler handler = resources.getSelectionHandler();
+		
+		List<Object> objs = handler.getSelection();
+		
+		List<Entity> ents = new ArrayList<Entity>(objs.size());
+		
+		for(Object obj : objs)
+			ents.add((Entity) obj);
+		
+		EntitySelection selection = new EntitySelection(ents, false);
+		
+		return selection;
+	}
+	
+	@Override
+	public void exportDone(JComponent c, Transferable t, int action)
+	{
+		if(action == MOVE)
+		{
+			SelectionHandler handler = resources.getSelectionHandler();
+			
+			List<Object> objs = handler.getSelection();
+			
+			for(Object obj : objs)
+			{
+				Entity ent = (Entity) obj;
+				
+				resources.scene.removeEntityNow(ent);
+			}
+			
+			handler.removeSelection();
+		}
+	}
+	
+	@Override
+	public int getSourceActions(JComponent c) {
+	     return COPY_OR_MOVE;
+	}
+}

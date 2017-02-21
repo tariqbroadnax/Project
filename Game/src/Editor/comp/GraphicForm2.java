@@ -1,9 +1,5 @@
 package Editor.comp;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JPanel;
-
 import Graphic.Animation;
 import Graphic.Graphic;
 import Graphic.LineGraphic;

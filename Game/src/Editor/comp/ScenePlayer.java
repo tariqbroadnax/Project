@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import Editor.ComponentListener;
 import Editor.EditorResources;
 import Editor.SceneListener;
+import Entity.Entity;
 import GUI.UI;
 import Game.Game;
 import Game.Scene;
@@ -54,10 +55,22 @@ public class ScenePlayer extends JPanel
 	public void start()
 	{
 		Scene scene = (Scene) resources.scene.clone();
-
+		
+		
+		Entity player = null;
+		for(Entity ent : scene.getEntities())
+		{
+			if(ent.getCloneParent() == resources.player)
+				player = ent;
+		}
+		
 		game.setScene(scene);	
 		
+		game.setPlayer(player);
+		
 		game.start();		
+		
+		System.out.println("Scene Playing");
 	}
 	
 	public void stop()

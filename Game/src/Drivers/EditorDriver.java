@@ -1,11 +1,11 @@
 package Drivers;
 
-import Editor.EditorGUI;
+import Editor.Editor;
 
 public class EditorDriver 
 {
 	public static void main(String[] args)
 	{
-		EditorGUI editor = new EditorGUI();
+		Editor editor = new Editor();
 	}
 }

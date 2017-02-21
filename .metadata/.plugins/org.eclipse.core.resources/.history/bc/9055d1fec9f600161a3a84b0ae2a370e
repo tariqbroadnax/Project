@@ -1,0 +1,26 @@
+package Editor.comp;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JTextField;
+
+public class TextField extends JTextField
+{
+	private List<ValueListener> listeners;
+	
+	public TextField()
+	{
+		listeners = new ArrayList<ValueListener>();
+	}
+
+	public void addValueListener(ValueListener list) {
+		listeners.add(list);
+	}
+	
+	public void removeValueListener(ValueListener list) {
+		listeners.remove(list);
+	}
+	
+	
+}

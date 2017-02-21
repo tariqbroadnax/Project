@@ -4,26 +4,19 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.border.Border;
-import javax.swing.event.DocumentEvent;
 
 import Graphic.TextGraphic;
 
 public class TextGraphicForm extends Form
-	implements ValueListener, ActionListener,
-			   FocusListener
+	implements ValueListener, ActionListener
 {
-	private JTextField txtFld;
+	private TextField txtFld;
 	
 	private Dimension2DForm charSizeForm;
 	
@@ -51,7 +44,7 @@ public class TextGraphicForm extends Form
 		Border charSizeBorder = 
 				BorderFactory.createTitledBorder("Character Size");
 		
-		txtFld = new JTextField();
+		txtFld = new TextField();
 		charSizeForm = new Dimension2DForm();
 		colorFld = new ColorField();
 		
@@ -76,8 +69,7 @@ public class TextGraphicForm extends Form
 		addComponent(italicLbl, 0, 5, 1);
 		addComponent(italicBox, 1, 5, 1);
 		
-		txtFld.addFocusListener(this);
-		txtFld.addActionListener(this);
+		txtFld.addValueListener(this);
 		charSizeForm.addValueListener(this);
 		colorFld.addValueListener(this);
 		fontNameBox.addActionListener(this);
@@ -90,7 +82,7 @@ public class TextGraphicForm extends Form
 	public void setTextGraphic(TextGraphic graph)
 	{
 		this.graph = graph;
-	
+			
 		updateFields();
 	}
 	
@@ -99,7 +91,7 @@ public class TextGraphicForm extends Form
 	}	
 	
 	private void updateValues()
-	{
+	{				
 		String text = txtFld.getText();
 		
 		double charWidth = charSizeForm.getWidthValue(),
@@ -131,7 +123,7 @@ public class TextGraphicForm extends Form
 	}
 	
 	public void updateFields()
-	{
+	{		
 		fontNameBox.removeActionListener(this);
 		
 		String text = graph.getText();
@@ -174,18 +166,4 @@ public class TextGraphicForm extends Form
 		updateValues();
 		notifyListeners();
 	}
-	
-	@Override
-	public void focusGained(FocusEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void focusLost(FocusEvent arg0) 
-	{
-		updateValues();
-		notifyListeners();	
-	}
-	
 }

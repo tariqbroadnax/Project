@@ -1,0 +1,8 @@
+package Editor.comp;
+
+import EntityComponent.RigidBody;
+
+public class RigidBodyComponentForm extends RigidBody
+{
+
+}

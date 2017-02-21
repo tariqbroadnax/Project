@@ -1,0 +1,7 @@
+package Game;
+
+public class GameSave 
+{
+	public Scene scene;
+	public Entity player;
+}

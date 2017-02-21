@@ -29,7 +29,8 @@ public class ToggleTiledModeButton extends JToggleButton
 		
 		boolean tiledMode = resources.tiledMode();
 		setSelected(tiledMode);
-
+		
+		addActionListener(this);
 	}
 	
 	@Override
@@ -37,7 +38,7 @@ public class ToggleTiledModeButton extends JToggleButton
 	{
 		boolean tiledMode = resources.tiledMode();
 		
-		resources.setTiledMode(!tiledMode);
+		resources.setTiledMode(!tiledMode);	
 	}
 	
 	@Override

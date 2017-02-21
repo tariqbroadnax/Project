@@ -22,6 +22,7 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 
@@ -38,6 +39,7 @@ import Graphic.Camera;
 import Graphic.GraphicsContext;
 import Graphic.ShapeGraphic;
 import Maths.Vector2D;
+import Editor.actions.Actions;
 
 public class SceneEditor extends JPanel
 	implements MouseListener, MouseMotionListener, MouseWheelListener,
@@ -57,6 +59,8 @@ public class SceneEditor extends JPanel
 
 	private List<ActionSupportListener> lists;
 	
+	private JPopupMenu popup;
+	
 	public SceneEditor(EditorResources resources)
 	{
 		this.resources = resources;
@@ -68,6 +72,8 @@ public class SceneEditor extends JPanel
 		focus = new Point2D.Double();
 		
 		lists = new ArrayList<ActionSupportListener>();
+	
+		popup = new JPopupMenu();
 		
 		addMouseListener(currTool);
 		addMouseMotionListener(currTool);
@@ -96,9 +102,13 @@ public class SceneEditor extends JPanel
 		setTransferHandler(new SceneEditorTransferHandler(resources));
 		
 		ActionMap map = getActionMap();
+		Action copy = TransferHandler.getCopyAction();
 		
-		 map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
-	                TransferHandler.getCopyAction());
+		map.put(copy.getValue(Action.NAME), copy);
+		
+		popup.add(Actions.COPY);
+		popup.add(Actions.CUT);
+		popup.add(Actions.PASTE);
 	}
 	
 	public void paintComponent(Graphics g)
@@ -166,6 +176,8 @@ public class SceneEditor extends JPanel
 		addMouseMotionListener(newTool);
 		
 		currTool = newTool;
+		
+		currTool.prepare();
 	}
 	
 	protected void addImpl(
@@ -211,6 +223,13 @@ public class SceneEditor extends JPanel
 	public void mouseReleased(MouseEvent e) 
 	{
 		repaint();
+		
+		if(e.isPopupTrigger())
+		{
+			int x = e.getX(), y = e.getY();
+			
+			popup.show(this, x, y);
+		}
 	}
 
 	private void slide()
@@ -285,6 +304,7 @@ public class SceneEditor extends JPanel
 
 	@Override
 	public void sceneChanged() {
+		
 		repaint();
 	}
 
@@ -301,7 +321,10 @@ public class SceneEditor extends JPanel
 	}
 
 	@Override
-	public void focusLost(FocusEvent e) {}
+	public void focusLost(FocusEvent e) 
+	{
+		
+	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) 
@@ -311,7 +334,7 @@ public class SceneEditor extends JPanel
 		Camera camera = resources.getCamera();
 		
 		camera.moveFocus(0, rotation * 5);
-		
+
 		resources.notifyOfSceneChange();
 	}
 	
@@ -341,7 +364,8 @@ public class SceneEditor extends JPanel
 	@Override
 	public boolean actionSupported(Action action) 
 	{
-		if(action.equals(TransferHandler.getCopyAction()))
+		if(action.equals(TransferHandler.getCopyAction()) ||
+		   action.equals(TransferHandler.getCutAction()))
 		{
 			SelectionHandler handler = resources.getSelectionHandler();
 			

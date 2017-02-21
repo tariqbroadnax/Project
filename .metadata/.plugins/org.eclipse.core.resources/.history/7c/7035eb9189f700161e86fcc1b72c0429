@@ -1,0 +1,9 @@
+package Editor.actions;
+
+public class Actions 
+{
+	public static Copy copy = new Copy();
+	public static Cut cut = new Cut();
+	public static Paste paste = new Paste();
+	
+}

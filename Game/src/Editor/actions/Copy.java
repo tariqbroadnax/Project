@@ -10,9 +10,16 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JRootPane;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.JTextComponent;
 
 import Editor.ActionSupportListener;
 import Editor.ActionSupportNotifier;
@@ -20,7 +27,8 @@ import Utilities.GUIUtils;
 
 public class Copy extends AbstractAction 
 	implements PropertyChangeListener,
-			   ActionSupportListener
+			   ActionSupportListener,
+			   CaretListener
 {
 	public static final String PATH =
 			"jlfgr-1.0\\toolbarButtonGraphics\\general\\";
@@ -36,6 +44,7 @@ public class Copy extends AbstractAction
 	private JComponent focusOwner;
 	
 	private ActionSupportNotifier notifier;
+	private JTextComponent textComp;
 	
 	public Copy()
 	{
@@ -60,6 +69,7 @@ public class Copy extends AbstractAction
 		
 		KeyStroke keyStroke = 
 				KeyStroke.getKeyStroke("control C");
+		
 		putValue(ACCELERATOR_KEY, keyStroke);
 		putValue(SMALL_ICON, smallIcon);
 		putValue(LARGE_ICON_KEY, smallIcon);
@@ -73,27 +83,51 @@ public class Copy extends AbstractAction
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		System.out.println(focusOwner + "\n" + e.getSource());
-		THCopy.actionPerformed(new ActionEvent(focusOwner,
-											   ActionEvent.ACTION_PERFORMED,
-											   null));
+	public void actionPerformed(ActionEvent e) 
+	{
+		e = new ActionEvent(focusOwner,
+				   			ActionEvent.ACTION_PERFORMED,
+				   			null);
+		
+		if(notifier != null)
+			THCopy.actionPerformed(e);
+		else
+			DEKCopy.actionPerformed(e);
+		System.out.println("Copy!!!");
 	}
 
-	@Override
-	public void propertyChange(PropertyChangeEvent e) 
+	private void removeListeners()
 	{
 		if(notifier != null)
 		{
 			notifier.removeActionSupportListener(this);
 			notifier = null;
 		}
-		
+		else if(textComp != null)
+		{
+			textComp.removeCaretListener(this);
+			textComp = null;
+		}
+	}
+	
+	@Override
+	public void propertyChange(PropertyChangeEvent e) 
+	{
 		Object o = e.getNewValue();
 		
 		if (o instanceof JComponent)
 		{
-			focusOwner = (JComponent) o;
+			JComponent focusOwner = (JComponent) o;
+			
+			if(focusOwner instanceof JMenuItem ||
+			   focusOwner instanceof JRootPane ||
+			   focusOwner.getParent() instanceof JToolBar ||
+			   focusOwner instanceof JPopupMenu)
+				return;
+			
+			this.focusOwner = focusOwner;
+									
+			removeListeners();
 			
 			if(focusOwner instanceof ActionSupportNotifier)
 			{
@@ -103,24 +137,41 @@ public class Copy extends AbstractAction
 			
 				checkAndEnabled();
 			}
+			else if(focusOwner instanceof JTextComponent)
+			{
+				textComp = (JTextComponent) focusOwner;
+				
+				textComp.addCaretListener(this);
+			
+				checkAndEnabled();
+			}
+			else
+				setEnabled(false);
 		}
-		else
-		{
-			focusOwner = null;
-			setEnabled(false);
-		}
+		
 	}
 	
 	private void checkAndEnabled()
 	{		
-		boolean enabled = notifier.actionSupported(THCopy);
+		boolean enabled;
 		
+		if(textComp != null)
+			enabled = textComp.getSelectedText() != null;
+		else
+			enabled = notifier.actionSupported(THCopy);
+	
 		setEnabled(enabled);
 	}
 
 	@Override
 	public void actionSupportChanged(
 			ActionSupportNotifier src) 
+	{
+		checkAndEnabled();
+	}
+
+	@Override
+	public void caretUpdate(CaretEvent e) 
 	{
 		checkAndEnabled();
 	}

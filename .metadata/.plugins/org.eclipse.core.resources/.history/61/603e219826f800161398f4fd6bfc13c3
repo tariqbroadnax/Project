@@ -1,0 +1,15 @@
+package Editor.comp;
+
+import java.awt.geom.Rectangle2D;
+
+import Editor.DoubleField;
+
+public class Rectangle2DForm extends Form
+	implements ValueListener
+{
+	private DoubleField xFld, yFld, wFld, hFld;
+	
+	private Rectangle2D.Double rect;
+	
+	
+}

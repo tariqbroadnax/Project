@@ -1,0 +1,14 @@
+package Editor.comp;
+
+public class RigidBodyForm extends Form
+{
+	// add rect/circle
+	// remove
+	// view jlist<limb>
+	// limb editor
+	
+	public RigidBodyForm()
+	{
+		
+	}
+}

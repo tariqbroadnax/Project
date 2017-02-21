@@ -53,7 +53,7 @@ public class Stamp implements Tool
 			if(obj instanceof Entity)
 			{
 				Entity ent = (Entity) obj;
-				
+		
 				if(resources.tiledMode())
 					updateToTileLoc(ent, normLoc);
 			

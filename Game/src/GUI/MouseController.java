@@ -34,14 +34,27 @@ public class MouseController implements MouseListener
 		move = null;
 	}
 	
+	public void setPlayer(Entity player)
+	{
+		this.player = player;
+		
+		move = null;
+	}
+	
 	private void startNewMovement()
 	{
-		move = new Move();
-		
-		move.setSpeed(30);
-
-		player.get(ActionComponent.class)
-			  .startAction(move);
+		if(player.contains(ActionComponent.class))
+		{
+			move = new Move();
+			
+			move.setSpeed(30);
+	
+			player.get(ActionComponent.class)
+				  .startAction(move);
+		}
+		else
+			System.out.println(
+					"Mouse Controller: Player does not contain Action Component");
 	}
 	
 	private void makePlayerMoveToLoc(Point2D.Double loc)
@@ -49,11 +62,12 @@ public class MouseController implements MouseListener
 		if(move == null || move.isFinished())
 			startNewMovement();
 		
-		move.setTarget(loc.x, loc.y);
+		if(move != null)
+			move.setTarget(loc.x, loc.y);
 	}
 	
 	public void mousePressed(MouseEvent e)
-	{
+	{		
 		Point loc = e.getPoint();
 		
 		Point2D.Double normLoc = camera.normalLocation(loc);

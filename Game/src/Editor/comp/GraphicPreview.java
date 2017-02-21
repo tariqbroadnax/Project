@@ -18,7 +18,7 @@ public class GraphicPreview extends JPanel
 	
 	private final int MAX_SIDE_LEN = 100;
 	
-	private int zoom;
+	private double zoom;
 	
 	public GraphicPreview()
 	{
@@ -37,10 +37,10 @@ public class GraphicPreview extends JPanel
 		if(prefSize.width > MAX_SIDE_LEN ||
 		   prefSize.height > MAX_SIDE_LEN)
 		{
-			int zoom = prefSize.width > prefSize.height ?
-					MAX_SIDE_LEN / prefSize.width :
-					MAX_SIDE_LEN / prefSize.height;
-			
+			zoom = prefSize.width > prefSize.height ?
+					MAX_SIDE_LEN * 1.0 / prefSize.width :
+					MAX_SIDE_LEN * 1.0 / prefSize.height;
+		
 			prefSize.width *= zoom;
 			prefSize.height *= zoom;
 		}
@@ -67,7 +67,7 @@ public class GraphicPreview extends JPanel
 		
 		Dimension2D.Double normSize = camera.normalSize(size);
 		
-		camera.setFocusTL(graphLoc.x  - normSize.width/2,
+		camera.setFocusTL(graphLoc.x - normSize.width/2,
 						  graphLoc.y - normSize.height/2);
 		
 		GraphicsContext gc = new GraphicsContext(g, camera);

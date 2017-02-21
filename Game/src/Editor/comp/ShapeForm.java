@@ -5,8 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JComboBox;
 

@@ -22,6 +22,13 @@ public class EraseTool implements Tool
 	}
 	
 	@Override
+	public void prepare()
+	{
+		resources.getSelectionHandler()
+				 .removeSelection();
+	}
+	
+	@Override
 	public void mousePressed(MouseEvent e)
 	{
 		Camera camera = resources.getCamera();

@@ -1,0 +1,28 @@
+package Editor.comp;
+
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
+
+import EntityComponent.RigidBody;
+import EntityComponent.RigidBodyComponent;
+
+public class RigidBodyComponentForm extends Form	
+{
+	private RigidBodyComponent comp;
+	
+	private RigidBodyForm bodyForm;
+	
+	public RigidBodyComponentForm()
+	{
+		this(new RigidBodyComponent());
+	}
+	
+	public RigidBodyComponentForm(RigidBodyComponent comp)
+	{
+		Border bodyBorder = 
+				BorderFactory.createTitledBorder("Rigid Body");
+		
+		
+		
+	}
+}

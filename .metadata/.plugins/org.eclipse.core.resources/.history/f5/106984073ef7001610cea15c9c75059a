@@ -1,0 +1,23 @@
+package Editor.tools;
+
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+
+import Editor.EditorResources;
+
+public class MoveTool implements Tool
+{
+	private EditorResources resources;
+	
+	private Point2D.Double start, focus;
+	
+	public MoveTool(EditorResources resources)
+	{
+		this.resources = resources;
+	}
+	
+	public void mousePressed(MouseEvent e)
+	{
+		
+	}
+}
