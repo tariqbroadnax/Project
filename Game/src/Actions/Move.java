@@ -7,21 +7,21 @@ import Entity.Entity;
 import Movement.Force;
 import Movement.MovementComponent;
 
-public class Move implements Action
+public class Move extends Action
 {
+	// rename to approach
+	
 	private Entity actor;
 	
 	private Force force;
 	
 	private Point2D.Double target;
-	
-	private boolean finished;
-	
+		
 	private double tolerance;
 	
 	public Move()
 	{
-		this(0, 0, 0);
+		this(10, 0, 0);
 	}
 	
 	public Move(double speed, double targetX, double targetY)
@@ -32,7 +32,7 @@ public class Move implements Action
 		
 		force.setSpeed(speed);
 	
-		tolerance = 0.25;
+		tolerance = 0;
 		
 		finished = false;
 	}
@@ -40,26 +40,38 @@ public class Move implements Action
 	@Override
 	public void update(Duration delta) 
 	{
-		if(finished) return;
-		
 		Point2D.Double src = actor.getLoc();
 			
 		double distSq = src.distanceSq(target);
 				
-		if(distSq > tolerance)
+		if(distSq > tolerance * tolerance)
 		{
+			force.setSpeed(50);
+			
 			double dir = Math.atan2(target.y - src.y,
 									target.x - src.x);
-			
+						
 			force.setDirection(dir);
 		}
 		else
-			finished = true;
+			force.setSpeed(0);
 	}
-
+	
 	@Override
-	public void dispose() 
+	public void start()
 	{
+		super.start();
+		
+		actor.get(MovementComponent.class)
+		 	 .getMovement()
+		 	 .addForce(force);	
+	}
+	
+	@Override
+	public void stop() 
+	{
+		super.stop();
+		
 		if(actor != null)
 			actor.get(MovementComponent.class)
 				 .getMovement()
@@ -69,14 +81,8 @@ public class Move implements Action
 	@Override
 	public void setActor(Entity actor) 
 	{
-		dispose(); // prev actor
-		
 		this.actor = actor;
-	
-		actor.get(MovementComponent.class)
-		 	 .getMovement()
-		 	 .addForce(force);
-		
+
 		finished = false;
 	}
 	
@@ -88,12 +94,11 @@ public class Move implements Action
 		target.x = x; target.y = y;
 	}
 	
+	public void setTarget(Point2D.Double target) {
+		setTarget(target.x, target.y);
+	}
+	
 	public void setTolerance(double tolerance) {
 		this.tolerance = tolerance;
-	}
-
-	@Override
-	public boolean isFinished() {
-		return finished;
 	}
 }

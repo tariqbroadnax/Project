@@ -3,16 +3,16 @@ package Modifiers;
 import java.io.Serializable;
 
 import Entity.Entity;
-import Game.Updatable;
 
-public abstract class Effect 
-	implements Updatable, Serializable
+public abstract class Effect implements Serializable, Cloneable
 {
 	protected Entity src, target;
-			
-	public abstract void start();
 	
-	public abstract void stop();
+	public Effect() {}
+	public Effect(Effect effect)
+	{
+		effect.setSource(src);
+	}
 	
 	public void setSource(Entity src) {
 		this.src = src;
@@ -22,18 +22,9 @@ public abstract class Effect
 		this.target = target;
 	}
 	
-	public abstract boolean canBeApplied(Entity target);
-	
-	public abstract boolean isFinished();
-	
-	public Object clone()
-	{
-		Effect effect = _clone();
-		
-		effect.setSource(src);
-		
-		return effect;
+	public boolean canBeApplied(Entity target) {
+		return true;
 	}
 	
-	protected abstract Effect _clone();
+	public abstract Object clone();
 }

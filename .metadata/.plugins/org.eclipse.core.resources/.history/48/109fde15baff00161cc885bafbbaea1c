@@ -1,0 +1,24 @@
+package Modifiers;
+
+public class RemoveEffect extends InstantEffect
+{
+	private Class<? extends Effect> target;
+	
+	public RemoveEffect(){}
+	
+	public RemoveEffect(RemoveEffect effect)
+	{
+		target = effect.target;
+	}
+	
+	@Override
+	public void apply() 
+	{
+		
+	}
+
+	@Override
+	public Object clone() {
+		return new RemoveEffect(this);
+	}
+}

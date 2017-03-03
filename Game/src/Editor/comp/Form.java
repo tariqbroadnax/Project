@@ -11,7 +11,7 @@ import javax.swing.JTextField;
 
 public class Form extends JPanel
 {
-	private GridBagConstraints gbc;
+	protected GridBagConstraints gbc;
 	
 	private List<ValueListener> listeners;
 

@@ -7,20 +7,16 @@ import java.awt.geom.Rectangle2D.Double;
 
 import Graphic.Graphic;
 import Graphic.GraphicsContext;
+import Graphic.ShapeGraphic;
 import Maths.Dimension2D;
 
 public class CastingIndicator extends Graphic
 {
 	private ActiveAbility ability;
-	
-	private Rectangle2D.Double back, front;
-	
+		
 	public CastingIndicator()
 	{
 		ability = null;
-		
-		back = new Rectangle2D.Double();
-		front = new Rectangle2D.Double();
 	}
 	
 	@Override
@@ -34,24 +30,16 @@ public class CastingIndicator extends Graphic
 				ability.getCastTime();
 		
 		ratio = ratio > 1 ? 1 : ratio;
-				
-		Point2D.Double drawloc = 
-				gc.camera.screenLocation(loc.x - 10, loc.y);
-		
-		Dimension2D.Double size =
-				gc.camera.sizeOnScreen(20, 2);
 	
-		back.x = front.x = drawloc.x;
-		back.y = front.y = drawloc.y;
-		back.width = size.width;
-		front.width = size.width * ratio;
-		back.height = front.height = size.height;
+		ShapeGraphic graph = new ShapeGraphic();
+	
+		Rectangle2D.Double rect = new Rectangle2D.Double(
+				loc.x - 7.5, loc.y - 1.25, 15 * ratio, 2.5);
 		
-		gc.g2d.setColor(Color.BLACK);
-		gc.g2d.fill(back);
+		graph.setShape(rect);
+		graph.setPaint(Color.blue);
 		
-		gc.g2d.setColor(Color.GREEN);
-		gc.g2d.fill(front);
+		graph.paint(gc);
 	}
 	
 	public void setActiveAbility(

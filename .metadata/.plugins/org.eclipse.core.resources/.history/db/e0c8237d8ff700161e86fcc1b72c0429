@@ -1,6 +1,0 @@
-package Editor.actions;
-
-public class SetPlayer implements EditorResources
-{
-	
-}

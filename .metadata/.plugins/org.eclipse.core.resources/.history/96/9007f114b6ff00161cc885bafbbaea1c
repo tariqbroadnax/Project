@@ -1,0 +1,38 @@
+package Modifiers;
+
+import EntityComponent.CombatComponent;
+
+public class EvasionDisable extends InstantEffect
+{
+	private boolean blockDisabled,
+					dodgeDisabled;
+
+	public EvasionDisable()
+	{
+		blockDisabled = dodgeDisabled = true;
+	}
+	
+	public EvasionDisable(EvasionDisable effect)
+	{
+		blockDisabled = effect.blockDisabled;
+		dodgeDisabled = effect.dodgeDisabled;
+	}
+	
+	@Override
+	public void apply() 
+	{
+		CombatComponent comp = target.get(CombatComponent.class);
+		
+		if(blockDisabled)
+			comp.setBlockEnabled(false);
+		if(dodgeDisabled)
+			comp.setDodgeEnabled(false);
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+					
+}

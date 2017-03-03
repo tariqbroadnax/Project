@@ -1,0 +1,26 @@
+package Class;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Class 
+{
+	private String name;
+	
+	private List<Job> jobs;
+	
+	public Class()
+	{
+		name = "Class";
+		
+		jobs = new ArrayList<Job>();
+	}
+	
+	public void addJob(Job job) {
+		jobs.add(job);
+	}
+	
+	public void removeJob(Job job) {
+		jobs.remove(job);
+	}
+}

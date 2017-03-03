@@ -1,0 +1,14 @@
+package Modifiers;
+
+import Game.Updatable;
+
+public abstract class GradualEffect extends UpdatableEffect
+{
+	public GradualEffect() {
+		super();
+	}
+	
+	public GradualEffect(Effect effect) {
+		super(effect);
+	}
+}

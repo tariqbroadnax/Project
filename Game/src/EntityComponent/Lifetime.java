@@ -6,7 +6,7 @@ import java.time.Duration;
 import Game.Updatable;
 
 public class Lifetime 
-implements Updatable, Serializable
+implements Updatable, Serializable, Cloneable
 {
 	public static final long FOREVER = -1;
 	
@@ -53,8 +53,17 @@ implements Updatable, Serializable
 		this.remaining = remaining;
 	}
 	
+	public void reset()
+	{
+		elapsed = 0;
+	}
+	
 	public long getRemaining()
 	{
 		return remaining;
+	}
+	
+	public Object clone() {
+		return new Lifetime(this);
 	}
 }

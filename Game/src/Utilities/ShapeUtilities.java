@@ -114,7 +114,7 @@ public class ShapeUtilities
 	public static boolean collides(
 			Rectangle2D.Double rect, Rectangle2D.Double rect2)
 	{		
-		return rect.x < rect2.x + rect.width &&
+		return rect.x < rect2.x + rect2.width &&
 			   rect.x + rect.width > rect2.x &&
 			   rect.y < rect2.y + rect2.height &&
 			   rect.y + rect.height > rect2.y;

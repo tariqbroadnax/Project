@@ -9,7 +9,7 @@ public class Force
 	
 	public Force() 
 	{
-		speed = 10; dir = 0;
+		speed = -1; dir = 0;
 	}
 	
 	public Force(double speed, double dir)
@@ -23,7 +23,7 @@ public class Force
 		speed = force.speed;
 		dir = force.dir;
 	}
-	
+
 	public double dx(double t) {	
 		return speed * Math.cos(dir) * t;
 	}

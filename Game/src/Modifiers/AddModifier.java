@@ -1,7 +1,6 @@
 package Modifiers;
 
-public class AddModifier 
-	extends Modifier
+public class AddModifier extends Modifier
 {
 	public AddModifier()
 	{
@@ -21,5 +20,10 @@ public class AddModifier
 	@Override
 	public double modify(double val) {
 		return val + factor;
+	}
+
+	@Override
+	public Object clone() {
+		return new AddModifier(this);
 	}
 }

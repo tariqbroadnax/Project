@@ -1,0 +1,61 @@
+package Editor;
+
+import java.awt.Dimension;
+
+import javax.swing.AbstractListModel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+
+import Editor.tile.OpenTileset;
+import Editor.tile.TileSelector;
+import Tileset.Tileset;
+
+public class Selector extends JPanel
+{	
+	private JList<Tileset> list;
+	
+	private TileSelector selector;
+
+	public Selector(EditorResources resources)
+	{
+		JToolBar toolbar = new JToolBar();
+		
+		selector = new TileSelector();
+		
+		list = new JList<Tileset>();
+
+		toolbar.add(new OpenTileset(selector));
+		
+		MyModel model = new MyModel();
+		
+		list.setModel(model);
+		
+		Dimension prefSize = new Dimension(200, 600);
+		
+		add(toolbar);
+		add(list);
+		add(selector);
+			
+		setPreferredSize(prefSize);
+	}
+
+	private class MyModel extends AbstractListModel<Tileset>
+	{
+		@Override
+		public Tileset getElementAt(int index) 
+		{
+			return Editor.RESOURCES.getEditorAssets()
+			   					   .getTilesets()
+			   					   .get(index);
+		}
+
+		@Override
+		public int getSize() 
+		{
+			return Editor.RESOURCES.getEditorAssets()
+								   .getTilesets()
+								   .size();
+		}	
+	}
+}

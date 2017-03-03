@@ -1,0 +1,16 @@
+package Item;
+
+import Entity.Entity;
+import TestEntity.PetItem;
+
+public class Equipment 
+{
+	private Entity src;
+	
+	private PetItem petItem;
+	
+	public void setPetItem(PetItem item)
+	{
+		
+	}
+}

@@ -1,6 +1,5 @@
 package EntityComponent;
 
-public enum BodyType
-{
-	STRUCTURE, BEING, ABILITY;
+public enum BodyType {
+	NONE, STATIC, DYNAMIC;
 }

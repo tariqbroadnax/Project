@@ -152,7 +152,7 @@ public class RowHeading extends JPanel
 		
 		selectedRows.clear();
 		
-		for(int row = 0; row < tm.rows; row++)
+		for(int row = 0; row < tm.rows(); row++)
 		{
 			List<TMCell> cells = tm.getRowCells(row);
 			

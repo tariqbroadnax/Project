@@ -1,0 +1,39 @@
+package Modifiers;
+
+import java.io.Serializable;
+
+import Entity.Entity;
+import Game.Updatable;
+
+public abstract class Effect implements Serializable, Cloneable
+{
+	protected Entity src, target;
+	
+	public Effect(Effect effect)
+	{
+		effect.setSource(src);
+	}
+	
+	public void setSource(Entity src) {
+		this.src = src;
+	}
+	
+	public boolean canBeApplied(Entity target) {
+		return true;
+	}
+	
+	public boolean isFinished() {
+		return true;
+	}
+	
+	public Object clone()
+	{
+		Effect effect = _clone();
+		
+		effect.setSource(src);
+		
+		return effect;
+	}
+	
+	protected abstract Effect _clone();
+}

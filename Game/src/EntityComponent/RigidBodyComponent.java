@@ -4,10 +4,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.RectangularShape;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
+import CollisionResponses.Repel;
 import Entity.Entity;
 import Game.RigidBodyIndicator;
 import Utilities.Pack;
@@ -16,19 +18,22 @@ public class RigidBodyComponent extends EntityComponent
 {
 	private RigidBody body;
 		
-	private Map<CollisionResponse, List<CollisionFilter>> map;
+	private Set<CollisionResponse> responses;
 	
 	private RigidBodyIndicator indicator;
+	
+	private BodyType type;
 	
 	public RigidBodyComponent()
 	{
 		super();
-		
+				
 		body = new RigidBody();
 		
-		map = new HashMap<CollisionResponse,
-						  List<CollisionFilter>>();
-	
+		responses = new HashSet<CollisionResponse>();
+		
+		type = BodyType.DYNAMIC;
+
 		indicator = new RigidBodyIndicator();
 		
 		indicator.setRigidBody(body);
@@ -40,17 +45,14 @@ public class RigidBodyComponent extends EntityComponent
 		
 		body = (RigidBody) comp.body.clone();
 		
-		map = new HashMap<CollisionResponse,
-				  List<CollisionFilter>>();
+		responses = new HashSet<CollisionResponse>();
 
-		for(CollisionResponse response : comp.map.keySet())
+		for(CollisionResponse response : comp.responses)
 		{
-			List<CollisionFilter> filters = comp.map.get(response),
-								  clones = new LinkedList<CollisionFilter>();
-			
-			for(CollisionFilter filter : filters)
-				clones.add((CollisionFilter)filter.clone());
+			responses.add((CollisionResponse) response.clone());
 		}
+		
+		type = comp.type;
 		
 		indicator = new RigidBodyIndicator();
 		
@@ -61,40 +63,31 @@ public class RigidBodyComponent extends EntityComponent
 	public void update(Duration delta)
 	{
 		if(enabled)
-		{
-			Point2D.Double parentLoc = parent.getLoc();
-			
-			body.updateLimbs(parentLoc);
-		}
+			updateLimbs();
 	}
 	
-	public void add(CollisionResponse response,
-					CollisionFilter... filters)
+	public void updateLimbs()
 	{
-		map.put(response, new LinkedList<CollisionFilter>());
+		Point2D.Double parentLoc = parent.getLoc();
+		
+		body.updateLimbs(parentLoc);
+	}
 	
-		for(CollisionFilter filter : filters)
-			put(response, filter);
+	public void add(CollisionResponse response)
+	{
+		responses.add(response);
 	}
 	
 	public void remove(CollisionResponse response)
 	{
-		map.remove(response);
+		responses.remove(response);
 	}
-	
-	public void put(CollisionResponse response,
-					CollisionFilter filter)
-	{
-		map.get(response)
-		   .add(filter);
-	}
+
 	
 	public void checkForAndHandleCollision(RigidBodyComponent comp)
 	{
 		if(!enabled) return;
 	
-		System.out.println("checking 4 collision");
-
 		RigidBody otherBody = comp.getRigidBody();
 		
 		Pack<RectangularShape, RectangularShape> collision =
@@ -103,40 +96,33 @@ public class RigidBodyComponent extends EntityComponent
 		if(collision != null)
 			handleCollision(collision, comp);
 	}
+
+	private void resolveCollision(
+			RigidBodyComponent collided, CollisionEvent e)
+	{
+		if(type == BodyType.NONE || 
+		   collided.type == BodyType.NONE ||
+		   collided.type == BodyType.STATIC)
+			return;
+				
+		new Repel().collisionOccurred(e);
+	}
 	
 	private void handleCollision(
 			Pack<RectangularShape, RectangularShape> collision,
 			RigidBodyComponent collided)
 	{		
-		System.out.println("collision!!");
-		
 		CollisionEvent e = new CollisionEvent(
 				parent, collided.parent,
 				collision.head, collision.tail);
+				
+		resolveCollision(collided, e);
+	
+		for(CollisionResponse response : responses)
+			response.collisionOccurred(e);
 		
-		Entity target = collided.parent;
-		
-		for(CollisionResponse response : map.keySet())
-		{
-			List<CollisionFilter> filters = 
-					map.get(response);
-			
-			boolean valid = true;
-			
-			for(CollisionFilter filter : filters)
-			{
-				if(!filter.validCollision(target))
-				{
-					valid = false;
-					break;
-				}
-			}
-
-			if(valid)
-			{
-				response.collisionOccurred(e);
-			}
-		}
+		for(CollisionResponse response : collided.responses)
+			response.collisionOccurred(e);
 	}
 
 	public void setParent(Entity parent) 
@@ -153,9 +139,17 @@ public class RigidBodyComponent extends EntityComponent
 		this.body = body;
 		indicator.setRigidBody(body);
 	}
+	
+	public void setBodyType(BodyType type) {
+		this.type = type;
+	}
 
 	public RigidBody getRigidBody() {
 		return body;
+	}
+	
+	public BodyType getBodyType() {
+		return type;
 	}
 	
 	@Override

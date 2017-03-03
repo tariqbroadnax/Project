@@ -1,0 +1,36 @@
+package Party;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Entity.Entity;
+import EntityComponent.StatsComponent;
+import Modifiers.Modifier;
+import Stat.Stats;
+
+public class Party 
+{
+	private List<Entity> members;
+	
+	private Modifier expModifier;
+	
+	public Party()
+	{
+		members = new ArrayList<Entity>();
+	}
+	
+	public void addMember(Entity member) {
+		members.add(member);
+	}
+	
+	public void removeMember(Entity member) 
+	{
+		members.remove(member);
+		
+		Stats stats = member.get(StatsComponent.class)
+							.getStats();
+							
+		stats.remove
+	
+	}
+}

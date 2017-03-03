@@ -1,0 +1,20 @@
+package Behavior;
+
+import Actions.Action;
+import Entity.Entity;
+import Game.Updatable;
+
+public abstract class Behavior implements Updatable
+{
+	protected Entity src;
+	
+	public void setSrc(Entity src) {
+		this.src = src;
+	}
+	
+	public Entity getSrc() {
+		return src;
+	}
+	
+	public abstract Action getCurrentAction();
+}

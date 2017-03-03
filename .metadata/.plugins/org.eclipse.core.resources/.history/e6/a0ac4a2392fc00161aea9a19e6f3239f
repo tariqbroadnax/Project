@@ -1,0 +1,77 @@
+package Game;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.time.Duration;
+
+import Actions.ActionBuffer;
+import EditorGUI.MouseListener;
+import Entity.Entity;
+import Graphic.Camera;
+import Movement.Force;
+
+public class PlayerController implements KeyListener, MouseListener
+
+{
+	private Entity player;
+	
+	private Camera camera;
+	
+	private Force force;
+	
+	private ActionBuffer buffer;
+	
+	private enum VertDir {UP, DOWN, NONE}
+	private enum HorzDir {LEFT, RIGHT, NONE}
+	
+	private VertDir vert = VertDir.NONE;
+	private HorzDir horz = HorzDir.NONE;
+	
+	public PlayerController(
+			Entity player, Camera camera,
+			ActionBuffer buffer)
+	{
+		this.player = player;
+		
+		this.camera = camera;
+		
+		this.buffer = buffer;
+	}
+	
+	public void update(Duration delta)
+	{
+		
+	}
+	
+	public void mousePressed(KeyEvent e) {
+		
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getKeyChar() == 'w')
+			vert = VertDir.UP;
+		else if(e.getKeyChar() == 's')
+			vert = VertDir.DOWN;
+		else if(e.getKeyChar() == 'a')
+			horz = HorzDir.LEFT;
+		else if(e.getKeyChar() == 'd')
+			horz = HorzDir.RIGHT;
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(e.getKeyChar() == 'w' && vert == VertDir.UP ||
+		   e.getKeyChar() == 's' && vert == VertDir.DOWN)
+			vert = VertDir.NONE;
+		
+		if(e.getKeyChar() == 'a' && horz == HorzDir.LEFT ||
+		   e.getKeyChar() == 'd' && horz == HorzDir.RIGHT)
+			horfz = HorzDir.NONE;
+
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {}
+}

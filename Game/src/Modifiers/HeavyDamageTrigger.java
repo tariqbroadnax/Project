@@ -1,0 +1,114 @@
+package Modifiers;
+
+import java.time.Duration;
+import java.util.LinkedList;
+
+import Ability.ActiveAbility;
+import Entity.Entity;
+import EntityComponent.CombatComponent;
+import EntityComponent.CombatListener;
+import EntityComponent.StatsComponent;
+
+public class HeavyDamageTrigger extends Effect
+	implements CombatListener
+{
+	private final int MAX_DAMAGE_NODE = 4;
+	
+	private ActiveAbility ability;
+	
+	private long elapsed, resetDelay; 
+	
+	private double heavyDmgHpRatio;
+	
+	private LinkedList<Double> dmgs;
+	
+	private double dmg;
+	
+	public HeavyDamageTrigger()
+	{
+		ability = null;
+		
+		heavyDmgHpRatio = .15;
+		
+		dmgs = new LinkedList<Double>();
+		
+		elapsed = 0; resetDelay = 500;
+		dmg = 0;
+	}
+	
+	public HeavyDamageTrigger(HeavyDamageTrigger effect)
+	{
+		ability = (ActiveAbility) effect.ability.clone();
+		
+		heavyDmgHpRatio = effect.heavyDmgHpRatio;
+	
+		dmgs = new LinkedList<Double>();
+		
+		elapsed = 0; resetDelay = effect.resetDelay;
+		dmg = 0;
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		elapsed += delta.toMillis();
+		
+		while(elapsed > resetDelay)
+		{
+			elapsed -= resetDelay;
+			
+			dmgs.add(dmg);
+			
+			dmg = 0;
+			
+			if(dmgs.size() > MAX_DAMAGE_NODE)
+				dmgs.removeFirst();
+			
+			double totalDmg = 0;
+			for(Double dmg : dmgs)
+				totalDmg += dmg;
+			
+			double maxHealth = target.get(StatsComponent.class)
+									 .getStats()
+									 .getBaseMaxHealth();
+			
+			double ratio = totalDmg / maxHealth;
+			
+			if(ratio > heavyDmgHpRatio)
+				ability.cast();
+		}
+	}
+	
+	public void start()
+	{
+		src.get(CombatComponent.class)
+		   .addCombatListener(this);
+		
+		ability.setSrc(src);
+	}
+	
+	public void stop()
+	{
+		src.get(CombatComponent.class)
+		   .removeCombatListener(this);
+	}
+
+	@Override
+	public void entityAttacked(Entity ent, double damage) {
+		dmg += damage;
+	}
+	
+	public void setAbility(ActiveAbility ability) {
+		this.ability = ability;
+	}
+	
+	public void setHeavyDmgHpRatio(double heavyDmgHpRatio) {
+		this.heavyDmgHpRatio = heavyDmgHpRatio;
+	}
+	
+	@Override
+	protected Effect _clone() {
+		return new HeavyDamageTrigger(this);
+	}
+	
+}

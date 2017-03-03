@@ -1,0 +1,34 @@
+package Ability;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Movement.Force;
+
+public class DashAbility extends PointAbility
+{
+	private Force force;
+	
+	public DashAbility()
+	{
+		force = new Force(100, 0);
+	}
+	
+	public void activate()
+	{
+		super.activate();
+		
+		Point2D.Double src = this.src.getLoc();
+		
+		double angle = Math.atan2(target.y - src.y,
+								  target.x - src.x);
+		
+		force.setDirection(angle);
+	}
+	
+	public void update(Duration delta)
+	{
+		super.update(delta);
+		
+	}
+}

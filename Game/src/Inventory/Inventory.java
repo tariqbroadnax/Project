@@ -43,6 +43,14 @@ public class Inventory
 		equips.remove(equip);
 	}
 	
+	public void addItem(Item item) {
+		
+	}
+	
+	public void removeItem(Item item) {
+		
+	}
+	
 	public void addConsumableItem(
 			ConsumableItem consumable) 
 	{
@@ -68,6 +76,10 @@ public class Inventory
 				count++;
 		
 		return count;
+	}
+	
+	public int getQuantity(Item item) {
+		return -1;
 	}
 	
 	public void addInventoryListener(InventoryListener list) {

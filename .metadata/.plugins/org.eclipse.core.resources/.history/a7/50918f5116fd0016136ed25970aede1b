@@ -1,0 +1,8 @@
+package TestEntity;
+
+import Item.EquipItem;
+
+public class PetItem extends EquipItem
+{
+
+}

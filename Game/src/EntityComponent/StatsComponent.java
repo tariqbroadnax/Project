@@ -3,27 +3,16 @@ package EntityComponent;
 import java.time.Duration;
 
 import Entity.Entity;
-import Movement.Movement;
 import Movement.MovementComponent;
-import Stat.HealthIndicator;
 import Stat.Stats;
 
 public class StatsComponent extends EntityComponent
 {
 	private Stats stats;
 	
-	private Movement movement;
-	private Lifetime lifetime;
-	
-	private HealthIndicator indicator;
-	
 	public StatsComponent()
 	{
 		stats = new Stats();		
-		
-		indicator = new HealthIndicator();
-		
-		indicator.setStats(stats);
 	}
 	
 	public StatsComponent(StatsComponent comp)
@@ -34,32 +23,28 @@ public class StatsComponent extends EntityComponent
 	@Override
 	public void update(Duration delta)
 	{
-		double speed = stats.getSpeed();
-		
-		movement.setSpeed(speed);
-		
 		double health = stats.getHealth();
 		
-		if(health == 0)
-			lifetime.end();
+		if(health == 0 && parent.contains(LifetimeComponent.class))
+		{
+			parent.get(LifetimeComponent.class)
+			  	  .getLifetime()
+				  .end();			  
+		}
+		
+		double speed = stats.getSpeed();
+		
+		if(parent.contains(MovementComponent.class))
+		{
+			parent.get(MovementComponent.class)
+				  .getMovement()
+				  .setDefaultSpeed(speed);
+		}
 	}
 	
 	public void setParent(Entity parent)
 	{
 		super.setParent(parent);
-		
-		if(parent == null) 
-			return;
-		
-		movement = parent.get(MovementComponent.class)
-						 .getNormalMovement();
-	
-		lifetime = parent.get(LifetimeComponent.class)
-						 .getLifetime();
-	
-		parent.get(GraphicsComponent.class)
-			  .getDecorations()
-			  .add(indicator, 0, -17);
 	}
 	
 	public Stats getStats() {

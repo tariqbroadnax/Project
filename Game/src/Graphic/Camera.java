@@ -48,7 +48,7 @@ public class Camera
 		
 		displaySize = new Dimension(400, 400);
 		
-		zoom = 0.8;
+		zoom = 1;
 	}
 
 	public void transformGraphics(Graphics2D g2d)

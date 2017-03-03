@@ -1,0 +1,6 @@
+package Modifiers;
+
+public abstract class InstantEffect 
+{
+	public abstract void invoke();
+}

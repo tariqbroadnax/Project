@@ -8,7 +8,7 @@ public class SnapSettings
 	
 	public SnapSettings()
 	{
-		width = height = 10;
+		width = height = 5;
 	}
 	
 	public Point2D.Double snapLoc(double x, double y) 

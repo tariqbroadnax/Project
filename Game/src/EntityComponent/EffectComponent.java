@@ -50,6 +50,23 @@ public class EffectComponent extends EntityComponent
 		effect.setTarget(null);
 	}
 	
+	public void remove(Class<? extends Effect> c)
+	{
+		Effect target = null;
+		
+		for(Effect effect : effects)
+			if(effect.getClass().equals(c))
+				target = effect;
+		
+		if(target != null)
+			remove(target);
+	}
+	
+	public boolean contains(Effect effect) 
+	{
+		return effects.contains(effect);
+	}
+	
 	@Override
 	protected EntityComponent _clone() {
 		return new EffectComponent();

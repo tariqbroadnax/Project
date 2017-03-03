@@ -1,0 +1,50 @@
+package Quest;
+
+public abstract class Task 
+{
+	public Task()
+	{
+	}
+	
+	public void start()
+	{
+		if(started)
+			return;
+		
+		started = true; completed = false;		
+		
+		_start();
+	}
+	
+	protected abstract void _start();
+	
+	
+	public void stop()
+	{
+		started = false; completed = false;
+	
+		_stop();
+	}
+	
+	protected abstract void _stop();
+	
+	protected void complete()
+	{
+		completed = true;
+		
+		for(TaskListener list : taskLists)
+			list.taskCompleted();
+	}
+	
+	public boolean isCompleted() {
+		return completed;
+	}
+	
+	public void addTaskListener(TaskListener list) {
+		taskLists.add(list);
+	}
+	
+	public void removeTaskListener(TaskListener list) {
+		taskLists.remove(list);
+	}
+}

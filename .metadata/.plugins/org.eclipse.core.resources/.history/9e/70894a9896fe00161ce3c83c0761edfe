@@ -1,0 +1,23 @@
+package Shop;
+
+import java.util.Set;
+
+import Item.Item;
+
+public class Shop 
+{
+	private Set<Item> items;
+	
+	public Shop()
+	{
+		
+	}
+	
+	public void addItem(Item item) {
+		items.add(item);
+	}
+	
+	public void removeItem(Item item) {
+		items.remove(item);
+	}
+}

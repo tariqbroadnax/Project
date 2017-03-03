@@ -1,70 +1,58 @@
 package Quest;
 
-import Ability.AbilityListener;
 import Entity.Entity;
-import EntityComponent.AbilityComponent;
+import EntityComponent.CombatComponent;
+import EntityComponent.CombatListener;
 
 public class KillTask extends Task
-	implements AbilityListener
+	implements CombatListener
 {
-	private int id, curr, target;
-	
-	private Entity ent;
+	private Entity targetEnt;
 
+	private int curr, target;
+	
 	public KillTask()
 	{
-		id = -1;
+		targetEnt = null;
 		curr = 0;
 		target = 5;
 	}
 	
-	@Override
-	public void start(Entity ent) 
+	public KillTask(KillTask task)
 	{
-		this.ent = ent;
-		
-		ent.get(AbilityComponent.class)
-		   .addAbilityListener(this);
+		targetEnt = task.targetEnt;
+		curr = 0;
+		target = task.target;
+	}
+
+	@Override
+	public void start() 
+	{
+		tasker.get(CombatComponent.class)
+			  .addCombatListener(this);
 	}
 	
-	public void setTargetID(int id) {
-		this.id = id;
+	@Override
+	public void stop()
+	{
+		tasker.get(CombatComponent.class)
+		  	  .removeCombatListener(this);
 	}
-	
-	public void setTargetKillCount(int target) {
-		this.target = target;
+
+	@Override
+	public boolean isFinished() {
+		return curr >= target;
 	}
-	
-	public int getTargetID() {
-		return id;
+
+	@Override
+	public Object clone() {
+		return new KillTask(this);
 	}
-	
-	public int getTargetKillCount() {
-		return target;
-	}
-	
-	public int getCurrentKillCount() {
-		return curr;
-	}
-	
+
 	@Override
 	public void entityKilled(Entity ent) 
 	{
-		if(ent.getID() == id)
-		{
-			curr++;
-			
-			// DEBUG ---
-			System.out.println("Progress: " + curr + "/" + target);
-			// ---------
-			
-			if(curr == target)
-			{
-				taskCompleted();
-				
-				this.ent.get(AbilityComponent.class)
-				   		.removeAbilityListener(this);
-			}
-		}
+		if(ent == targetEnt)
+			target++;
 	}
 }

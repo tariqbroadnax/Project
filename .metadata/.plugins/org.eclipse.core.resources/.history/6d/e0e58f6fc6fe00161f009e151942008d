@@ -1,0 +1,26 @@
+package EntityComponent;
+
+import java.time.Duration;
+
+import Entity.Entity;
+
+public class CombatComponent extends EntityComponent
+{
+
+	
+	@Override
+	public void update(Duration delta) {
+		
+	}
+	
+	public void notifyOfKill(Entity killed)
+	{
+		
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		return null;
+	}
+
+}

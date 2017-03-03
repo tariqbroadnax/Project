@@ -1,0 +1,19 @@
+package EntityComponent;
+
+import java.time.Duration;
+
+public class CombatComponent extends EntityComponent
+{
+
+	@Override
+	public void update(Duration delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		return null;
+	}
+
+}

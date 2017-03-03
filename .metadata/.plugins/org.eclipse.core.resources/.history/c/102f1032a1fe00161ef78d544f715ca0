@@ -1,0 +1,30 @@
+package Item;
+
+import Entity.Entity;
+import Inventory.Inventory;
+import Inventory.InventoryComponent;
+import TestEntity.PetItem;
+
+public class Equipment 
+{
+	private Entity src;
+	
+	private PetItem petItem;
+	
+	public void setPetItem(PetItem petItem)
+	{
+		if(this.petItem != null)
+		{
+			Inventory inventory = src.get(InventoryComponent.class)
+									 .getInventory();
+			
+			inventory.addEquipItem(this.petItem);
+			
+			this.petItem.unequip(src);
+		}
+		
+		this.petItem = petItem;
+		
+		petItem.equip(src);
+	}
+}

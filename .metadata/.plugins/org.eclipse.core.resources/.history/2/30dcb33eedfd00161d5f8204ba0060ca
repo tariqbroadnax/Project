@@ -1,0 +1,44 @@
+package Behavior;
+
+import java.time.Duration;
+
+import Actions.Follow;
+import Entity.Entity;
+import TestEntity.Pet;
+
+public class PetBehavior extends Behavior
+{
+	private Follow follow;
+	
+	public PetBehavior()
+	{
+		follow = new Follow();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		Pet pet = (Pet) src;
+	
+		Entity owner = pet.getOwner();
+	
+		
+		if(owner == null)
+		{
+			if(follow.isActing())
+				follow.stop();
+		}
+		else
+		{
+			if(!follow.isActing())
+			{
+				follow.setTarget(owner);
+				follow.start();
+			}
+			
+			follow.update(delta);
+		}
+	}
+	
+	
+}

@@ -1,0 +1,92 @@
+package Inventory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Item.ConsumableItem;
+import Item.EquipItem;
+import Item.Item;
+
+public class Inventory 
+{
+	private List<EquipItem> equips;
+	
+	private List<ConsumableItem> consumables;
+	
+	private List<InventoryListener> lists;
+	
+	public Inventory()
+	{
+		equips = new ArrayList<EquipItem>();
+		
+		consumables = new ArrayList<ConsumableItem>();
+	
+		lists = new ArrayList<InventoryListener>();
+	}
+	
+	private void itemAdded() 
+	{
+		List<InventoryListener> copy = new ArrayList<InventoryListener>(lists);
+	
+		for(InventoryListener list : copy)
+			list.itemAdded();
+	}
+	
+	public void addEquipItem(EquipItem equip) 
+	{
+		equips.add(equip);	
+		
+		itemAdded();
+	}
+
+	public void removeEquipItem(EquipItem equip) {
+		equips.remove(equip);
+	}
+	
+	public void addItem(Item item) {
+		
+	}
+	
+	public void removeItem(Item item) {
+		
+	}
+	
+	public void addConsumableItem(
+			ConsumableItem consumable) 
+	{
+		consumables.add(consumable);
+	
+		itemAdded();
+	}
+	
+	public void removeConsumableItem(ConsumableItem consumable) {
+		consumables.remove(consumable);
+	}
+	
+	public int itemCount(int id) 
+	{
+		int count = 0;
+		
+		for(Item item : equips)
+			if(item.getID() == id)
+				count++;
+		
+		for(Item item : consumables)
+			if(item.getID() == id)
+				count++;
+		
+		return count;
+	}
+	
+	public int quantity(Item item) {
+		return -1;
+	}
+	
+	public void addInventoryListener(InventoryListener list) {
+		lists.add(list);
+	}
+	
+	public void removeInventoryListener(InventoryListener list) {
+		lists.remove(list);
+	}
+}

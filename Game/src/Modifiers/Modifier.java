@@ -1,7 +1,7 @@
 package Modifiers;
 
-public abstract class Modifier
-	implements Comparable<Modifier>
+public abstract class Modifier implements Comparable<Modifier>, 
+	Cloneable
 {
 	protected double factor;
 	
@@ -16,6 +16,8 @@ public abstract class Modifier
 	}
 	
 	public abstract double modify(double val);
+	
+	public abstract Object clone();
 	
 	public int compareTo(Modifier mod)
 	{

@@ -1,0 +1,9 @@
+package Ability;
+
+public class TeleportAbility extends PointAbility
+{
+	public TeleportAbility()
+	{
+		
+	}
+}

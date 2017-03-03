@@ -7,10 +7,13 @@ import java.util.Collections;
 import java.util.List;
 
 import Entity.Entity;
+import Tileset.Tileset;
 
 public class EditorAssets implements Serializable
 {
 	private List<Entity> entities;
+	
+	private List<Tileset> tilesets;
 	
 	private transient List<EditorAssetListener> listeners;
 	
@@ -18,6 +21,8 @@ public class EditorAssets implements Serializable
 	{
 		entities = new ArrayList<Entity>();
 	
+		tilesets = new ArrayList<Tileset>();
+		
 		listeners = new ArrayList<EditorAssetListener>();
 	}
 	
@@ -28,15 +33,29 @@ public class EditorAssets implements Serializable
 		notifyListenersEntityAdded(ent);
 	}
 	
-	public void addEditorAssetListener(
-			EditorAssetListener listener) {
-		listeners.add(listener);
+	public void addTileset(Tileset tileset)
+	{
+		tilesets.add(tileset);
 	}
 	
 	public void removeEntity(Entity ent) 
 	{
 		if(entities.remove(ent))
 			notifyListenersEntityRemoved(ent);
+	}
+	
+	public void removeTileset(Tileset tileset)
+	{
+		tilesets.remove(tileset);
+	}
+	
+	public List<Tileset> getTilesets() {
+		return tilesets;
+	}
+	
+	public void addEditorAssetListener(
+			EditorAssetListener listener) {
+		listeners.add(listener);
 	}
 	
 	public void removeEditorAssetListener(

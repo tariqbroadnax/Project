@@ -43,7 +43,7 @@ public class TileMapDialog extends JDialog
 	
 	private EditorResources resources;
 	
-	public TileMapDialog(EditorResources resources)
+	public TileMapDialog(TileSelector selector)
 	{		
 		this.resources = resources;
 				

@@ -1,0 +1,73 @@
+package Actions;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Entity.Entity;
+import Movement.Force;
+
+public class Follow extends Action 
+{
+	private double maxDistSq;
+	
+	private Entity target;
+	
+	private Move move;
+	
+	private double prevDistSq;
+	
+	private Force force;
+	
+	public Follow()
+	{
+		move = new Move();
+		maxDistSq = 15;
+	}
+	
+	public void update(Duration delta)
+	{
+		double distSq = actorTargetDistSq();
+	
+		if(distSq > maxDistSq)
+		{
+			if(prevDistSq < maxDistSq)
+			{
+				
+			}
+			
+		}
+		else
+		{
+			if(move.isActing())
+				move.stop();
+		}
+	}
+	
+	public void stop()
+	{
+		super.stop();
+		
+		if(move.isActing())
+			move.stop();
+	}
+	
+	public void setActor(Entity actor)
+	{
+		super.setActor(actor);
+		
+		move.setActor(actor);
+	}
+	
+	public void setTarget(Entity target)
+	{
+		this.target = target;
+	}
+	
+	private double actorTargetDistSq()
+	{
+		Point2D.Double actorLoc = actor.getLoc(),
+					   targetLoc = target.getLoc();
+		
+		return actorLoc.distanceSq(targetLoc);
+	}
+}

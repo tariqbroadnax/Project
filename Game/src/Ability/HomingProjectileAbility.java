@@ -3,10 +3,10 @@ package Ability;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
+import Behaviour.BehaviourComponent;
 import Behaviour.FollowBehaviour;
 import Entity.AbilityEntity;
 import Entity.Entity;
-import EntityComponent.BehaviourComponent;
 import EntityComponent.GraphicsComponent;
 import EntityComponent.RigidBody;
 import EntityComponent.RigidBodyComponent;

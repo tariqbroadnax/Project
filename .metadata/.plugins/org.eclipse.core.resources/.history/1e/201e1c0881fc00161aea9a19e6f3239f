@@ -1,0 +1,16 @@
+package Game;
+
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RoomFilter 
+{
+	private List<Rectangle2D.Double> rooms;
+	
+	public RoomFilter()
+	{
+		rooms = new ArrayList<Rectangle2D.Double>();
+	}
+	
+}

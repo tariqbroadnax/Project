@@ -52,7 +52,7 @@ public class Repel implements CollisionResponse
 		smallestShift.move(collider.getLoc());
 		
 		collider.get(RigidBodyComponent.class)
-				.update();
+				.updateLimbs();
 	}
 	
 	private Vector2D.Double findUpShift(

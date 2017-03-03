@@ -27,6 +27,8 @@ public class Painter
 	
 	private GPanel panel;
 	
+	private boolean enabled = true;
+	
 	public Painter(Window window, Camera camera)
 	{
 		this.window = window;
@@ -139,6 +141,11 @@ public class Painter
 		int index = paintables.indexOf(p);
 		
 		paintables.set(index, p2);
+	}
+	
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
 	}
 	
 	public void clear() {

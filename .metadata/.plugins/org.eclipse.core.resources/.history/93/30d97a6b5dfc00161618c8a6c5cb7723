@@ -1,0 +1,23 @@
+package GUI;
+
+import java.awt.Graphics;
+import java.io.File;
+
+import javax.swing.JPanel;
+
+public class LoadScreen extends JPanel
+{
+	private File file = new File(
+			"C:\\Users\\Tariq Broadnax\\Pictures\\thumb-1920-769587.png");
+	
+	
+	public LoadScreen()
+	{
+		
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		
+	}
+}

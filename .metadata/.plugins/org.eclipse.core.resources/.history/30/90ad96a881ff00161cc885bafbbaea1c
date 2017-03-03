@@ -1,0 +1,25 @@
+package Modifiers;
+
+import java.io.Serializable;
+
+public class Span implements Serializable, Cloneable 
+{
+	private long len, elapsed;
+	
+	public Span()
+	{
+		
+	}
+	
+	public void setLength(long len) {
+		this.len = len;
+	}
+	
+	public boolean isFinished() {
+		return elapsed >= len;
+	}
+	
+	public void reset() {
+		elapsed = 0;;
+	}
+}

@@ -1,0 +1,29 @@
+package Quest;
+
+import Entity.Entity;
+
+public class ItemTask extends Task 
+{
+	@Override
+	public void start(Entity tasker) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void finish(Entity tasker)
+	{
+		
+	}
+	
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

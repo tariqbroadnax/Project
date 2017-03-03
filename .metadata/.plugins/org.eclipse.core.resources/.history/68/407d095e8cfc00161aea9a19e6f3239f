@@ -1,0 +1,42 @@
+package Ability;
+
+import java.awt.geom.Point2D;
+
+import Entity.Entity;
+import Movement.Force;
+
+public class ProjectileAbility extends PointAbility
+{
+	private Entity projectile;
+
+	private Force force;
+	
+	private double offset;
+	
+	public ProjectileAbility()
+	{
+		projectile = new Entity();
+		
+		force = new Force();
+		
+		offset = 5;
+	}
+	
+	public void activate()
+	{
+		super.activate();	
+		
+		Point2D.Double src = getSrc().getLoc();
+		
+		double angle = Math.atan2(target.y - src.y, 
+								  target.x - src.x);
+		
+		double x = src.x + Math.cos(angle) * offset,
+			   y = src.y + Math.sin(angle) * offset;
+		
+	}
+	
+	public Entity getProjectile() {
+		return projectile;
+	}
+}

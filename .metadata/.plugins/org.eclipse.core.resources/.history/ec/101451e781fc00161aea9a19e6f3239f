@@ -1,0 +1,44 @@
+package Game;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import Graphic.GraphicsContext;
+
+public class RoomFilter 
+{
+	private List<Rectangle2D.Double> rooms;
+	
+	private Scene scene;
+	
+	public RoomFilter(Scene scene)
+	{
+		this.scene = scene;
+		
+		rooms = new ArrayList<Rectangle2D.Double>();
+	}
+	
+	public void addRoom(Rectangle2D.Double room)
+	{
+		rooms.add(room);
+	}
+	
+	public void paint(GraphicsContext gc)
+	{
+		Point2D.Double playerLoc = scene.getGame()
+										.getPlayer()
+										.getLoc();
+		
+		Rectangle2D.Double currRoom;
+		for(Rectangle2D.Double room : rooms)
+			if(room.contains(playerLoc))
+			{
+				currRoom = room;
+				break;
+			}
+		
+		
+	}
+}

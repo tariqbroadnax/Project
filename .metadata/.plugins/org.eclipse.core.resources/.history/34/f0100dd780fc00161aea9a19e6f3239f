@@ -1,0 +1,10 @@
+package Game;
+
+import java.awt.geom.Rectangle2D;
+import java.util.List;
+
+public class ZoneFilter 
+{
+	private List<Rectangle2D.Double> zones;
+	
+}

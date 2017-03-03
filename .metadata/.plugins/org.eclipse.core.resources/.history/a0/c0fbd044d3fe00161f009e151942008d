@@ -1,0 +1,72 @@
+package Modifiers;
+
+import java.time.Duration;
+import java.util.LinkedList;
+
+import Ability.ActiveAbility;
+import Entity.Entity;
+import EntityComponent.CombatListener;
+
+public class HeavyDamageTrigger extends Effect
+	implements CombatListener
+{
+	private final int MAX_DAMAGE_NODE = 4;
+	
+	private ActiveAbility ability;
+	
+	private long elapsed, resetDelay; 
+	
+	private double heavyDmgHpRatio;
+	
+	private LinkedList<Double> dmgs;
+	
+	private double dmg;
+	
+	public HeavyDamageTrigger()
+	{
+		ability = null;
+		
+		heavyDmgHpRatio = .15;
+		
+		dmgs = new LinkedList<Double>();
+	}
+	
+	public HeavyDamageTrigger(HeavyDamageTrigger effect)
+	{
+		ability = (ActiveAbility) effect.ability.clone();
+		
+		heavyDmgHpRatio = effect.heavyDmgHpRatio;
+	
+		dmgs = new LinkedList<Double>();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		elapsed += delta.toMillis();
+		
+		while(elapsed > resetDelay)
+		{
+			elapsed -= resetDelay;
+			
+			dmgs.add(dmg);
+			
+			dmg = 0;
+			
+			if(dmgs.size() > MAX_DAMAGE_NODE)
+				dmgs.removeFirst();
+		}
+	}
+
+	@Override
+	public void entityAttacked(Entity ent, double damage)
+	{
+		dmg += damage;
+	}
+	
+	@Override
+	protected Effect _clone() {
+		return new HeavyDamageTrigger(this);
+	}
+	
+}

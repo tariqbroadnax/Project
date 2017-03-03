@@ -1,0 +1,15 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Entity.Entity;
+
+public abstract class TickEffect extends Effect
+{
+
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+}

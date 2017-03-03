@@ -1,0 +1,25 @@
+package Ability;
+
+import Entity.Entity;
+import Movement.Force;
+
+public class ProjectileAbility extends PointAbility
+{
+	private Entity projectile;
+
+	private Force force;
+	
+	public ProjectileAbility()
+	{
+		
+	}
+	
+	public void activate()
+	{
+		super.activate();	
+	}
+	
+	public Entity getProjectile() {
+		return projectile;
+	}
+}

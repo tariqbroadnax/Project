@@ -1,0 +1,59 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import EntityComponent.Lifetime;
+
+public abstract class TickEffect extends Effect
+{
+	private Span nextTick, lifespan;
+	
+	private InstantEffect effect;
+	
+	public TickEffect()
+	{
+		ticktime = new Lifetime(250);
+		lifetime = new Lifetime(1000);
+	}
+	
+	public TickEffect(TickEffect effect)
+	{
+		ticktime = (Lifetime) ticktime.clone();
+		lifetime = (Lifetime) lifetime.clone();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		nextTick.update(delta);
+		lifespan.update(delta);
+		
+		if(ticktime.isLifeOver())
+		{
+			apply();
+
+			ticktime.reset();
+		}
+	}
+	
+	@Override
+	public boolean isFinished() {
+		return lifespan.isFinished();
+	}
+	
+	public void setTickDelay(long delay) {
+		nextTick.setLength(delay);
+	}
+	
+	public void setLifetimeLength(long len) {
+		lifespan.setLength(len);
+	}
+	
+	public long getTickDelay() {
+		return nextTick.getLength();
+	}
+	
+	public long getLifespanLength() {
+		return lifespan.getLength();
+	}
+}

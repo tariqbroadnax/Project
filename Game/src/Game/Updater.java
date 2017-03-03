@@ -17,7 +17,8 @@ public class Updater implements Runnable
 					  		 LESS = -1;
 	
 	private boolean running = false,
-					playing = false;
+					playing = false,
+					updating = false;
 	
 	private Collection<Updatable> updatables;
 	
@@ -73,7 +74,7 @@ public class Updater implements Runnable
 	public void stop()
 	{
 		running = false;
-		
+			
 		thread = new Thread(this);
 	}
 	
@@ -96,8 +97,12 @@ public class Updater implements Runnable
 		{
 			start = System.nanoTime();
 			
+			updating = true;
+			
 			if(playing)
 				updateAll();
+						
+			updating = false;
 			
 			end = System.nanoTime();
 			
@@ -106,7 +111,7 @@ public class Updater implements Runnable
 			findSleep();
 			sleep();
 			maintainActualFrequency();
-		}
+		}		
 	}
 	
 	private void updateAll()
@@ -117,8 +122,10 @@ public class Updater implements Runnable
 				Duration.ofNanos(now - lastUpdate);
 				
 		for(Updatable u : updatables)
+		{
 			u.update(delta);
-		
+		}
+
 		lastUpdate = now;
 	}
 	
@@ -225,5 +232,9 @@ public class Updater implements Runnable
 	public double getActualFrequency()
 	{
 		return actualFrequency;
+	}
+	
+	public boolean isUpdating() {
+		return updating;
 	}
 }

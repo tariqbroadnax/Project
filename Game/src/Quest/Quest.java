@@ -1,104 +1,48 @@
 package Quest;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import Entity.Entity;
-
-public class Quest implements TaskListener
+public class Quest implements Serializable, Cloneable
 {
 	private String name, description;
 	
-	private boolean satisfied;
+	private boolean repeatable;
 	
 	private List<Requirement> reqs;
 	private List<Task> tasks;
 	private List<Reward> rewards;
-	
-	private List<QuestListener> lists;
-	
-	private boolean started = false;
-
-	private Entity quester;
 
 	public Quest()
 	{
+		name = "NAME";
+		description = "DESCRIPTION";
+	
+		repeatable = false;
+		
 		reqs = new ArrayList<Requirement>();
 		tasks = new ArrayList<Task>();
 		rewards = new ArrayList<Reward>();		
-		
-		lists = new ArrayList<QuestListener>();
-	
-		satisfied = true;
 	}
 	
-	protected boolean satisfies(Entity ent) 
+	public Quest(Quest quest)
 	{
-		for(Requirement req : reqs)
-			if(!req.isSatisfied(ent))
-				return false;
+		this();
 		
-		return satisfied;
-	}
-	
-	public boolean start()
-	{
-		if(started || !satisfies(quester))
-			return false;
+		name = quest.name;
+		description = quest.description;
 		
-		started = true;
+		repeatable = quest.repeatable;
 		
-		for(Task task : tasks)
-		{
-			task.setTasker(quester);
-			task.start();
-		}
+		for(Requirement req : quest.reqs)
+			reqs.add((Requirement) req.clone());
 		
-		checkAndComplete();
+		for(Task task : quest.tasks)
+			tasks.add((Task) task.clone());
 		
-		return true;
-	}
-	
-	public void stop()
-	{
-		started = false;
-		
-		for(Task task : tasks)
-			task.stop();
-	}
-	
-	protected void checkAndComplete()
-	{
-		if(isCompleted())
-		{
-			started = false;
-			
-			for(Reward reward : rewards)
-				reward.give(quester);
-			
-			for(QuestListener list : lists)
-				list.questCompleted(this);
-		}
-	}
-	
-	public boolean isCompleted()
-	{
-		for(Task task : tasks)
-			if(!task.isCompleted())
-				return false;
-		return true;
-	}
-	
-	public void setQuester(Entity quester) 
-	{
-		if(started)
-		{
-			stop();
-			this.quester = quester;
-			start();
-		}
-		else
-			this.quester = quester;
+		for(Reward reward : quest.rewards)
+			rewards.add((Reward) reward.clone());
 	}
 	
 	public void setName(String name) {
@@ -109,12 +53,20 @@ public class Quest implements TaskListener
 		this.description = description;
 	}
 	
+	public void setRepeatable(boolean repeatable) {
+		this.repeatable = repeatable;
+	}
+	
 	public String getName() {
 		return name;
 	}
 	
 	public String getDescription() {
 		return description;
+	}
+	
+	public boolean isRepeatable() {
+		return repeatable;
 	}
 	
 	public void addRequirement(Requirement req) {
@@ -125,25 +77,12 @@ public class Quest implements TaskListener
 		reqs.remove(req);
 	}
 	
-	public void addTask(Task task) 
-	{
+	public void addTask(Task task) {
 		tasks.add(task);
-	
-		task.addTaskListener(this);
-	
-		if(started)
-			task.stop();
 	}
 	
-	public void removeTask(Task task) 
-	{
-		if(tasks.remove(task))
-		{		
-			task.removeTaskListener(this);
-			
-			if(started) 
-				task.stop();
-		}
+	public void removeTask(Task task) {
+		tasks.remove(task);
 	}
 	
 	public void addReward(Reward reward) {
@@ -154,12 +93,18 @@ public class Quest implements TaskListener
 		rewards.remove(reward);
 	}
 	
-	public void setSatisified(boolean satisfied) {
-		this.satisfied = satisfied;
+	public List<Requirement> getRequirements() {
+		return reqs;
 	}
 	
-	@Override
-	public void taskCompleted() {
-		checkAndComplete();
+	public List<Task> getTasks() {
+		return tasks;
+	}
+	
+	public List<Reward> getRewards() {
+		return rewards;
+	}
+	public Object clone() {
+		return new Quest(this);
 	}
 }

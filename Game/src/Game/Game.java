@@ -1,23 +1,31 @@
 package Game;
 
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.time.Duration;
 
+import Ability.DashAbility;
 import Ability.PointAbility;
 import Actions.ActionComponent;
+import Behavior.BehaviorComponent;
 import Entity.Entity;
 import EntityComponent.AbilityComponent;
-import EntityComponent.BehaviourComponent;
 import EntityComponent.GraphicsComponent;
-import EntityComponent.TestBehaviour;
-import Event.SpawnProjectile;
+import EntityComponent.Limb;
+import EntityComponent.RigidBodyComponent;
+import EntityComponent.StatsComponent;
 import GUI.UI;
 import Inventory.InventoryComponent;
 import Movement.MovementComponent;
 import Quest.QuestComponent;
+import TestEntity.Pet;
 import Utilities.Scheduler;
 
 public class Game
-{
+{	
 	private Scene scene;
 
 	private Entity player;
@@ -41,28 +49,30 @@ public class Game
 		
 		player = new Entity();
 		
+		player.add(new GraphicsComponent(),
+				   new MovementComponent(),
+				   new AbilityComponent(),
+				   new InventoryComponent(),
+				   new QuestComponent(),
+				   new StatsComponent(),
+				   new RigidBodyComponent());
+		
 		ui = new UI(scene, updater, player,
 					UI.FRAME_MODE);
 		
 		audioPlayer = new AudioPlayer();
 		// TESTING
 		
-		player.add(new GraphicsComponent(),
-				   new MovementComponent(),
-				   new AbilityComponent(),
-				   new ActionComponent(),
-				   new InventoryComponent(),
-				   new QuestComponent());
+		scene.setGame(this);
 		
-		SpawnProjectile event = new SpawnProjectile(this);
+		PointAbility ability = new DashAbility();
+	
+		player.get(AbilityComponent.class)
+			  .addPointAbility(ability);
 		
-		PointAbility ability = new PointAbility();
-		
-		ability.addPointAbilityEvent(event);
-		
-		AbilityComponent comp = player.get(AbilityComponent.class);
-
-		comp.addPointAbility(ability);
+		player.get(RigidBodyComponent.class)
+			  .getRigidBody()
+			  .addLimb(new Limb(new Rectangle2D.Double(0,0,10,10)));
 		
 		scene.addEntityNow(player);
 	
@@ -70,19 +80,30 @@ public class Game
 		
 		npc.add(new GraphicsComponent(),
 				new MovementComponent(),
-				new BehaviourComponent());
+				new BehaviorComponent(),
+				new RigidBodyComponent());
 		
+		npc.get(RigidBodyComponent.class)
+		   .getRigidBody()
+		   .addLimb(new Limb(new Rectangle2D.Double(0,0,10,10)));
+	
 		npc.setLoc(0, -50);
-		npc.get(BehaviourComponent.class)
-		   .addBehaviour(new TestBehaviour());
+//		npc.get(BehaviourComponent.class)
+//		   .addBehaviour(new TestBehaviour());
+//		
+		Pet pet = new Pet();
+		
+		pet.setOwner(player);
+		pet.setLoc(0, -50);
 		
 		scene.addEntity(npc);
-//		
+		scene.addEntity(pet);
+		
 //		try {
 //			File file = new File("C:\\Users\\Tariq Broadnax\\Downloads\\Deep.wav");
 //			System.out.println(file.exists());
 //			Clip clip = AudioSystem.getClip();
-//			
+//			                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 //			for(javax.sound.sampled.AudioFileFormat.Type type : AudioSystem.getAudioFileTypes())	
 //				System.out.println(type.getExtension());
 //			
@@ -93,7 +114,13 @@ public class Game
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-//		
+		
+		CheatCode code = new CheatCode();
+		
+		ui.getFrame()
+		  .addKeyListener(code);
+		
+		updater.addUpdatable(code);
 	}
 	
 	public void setPlayer(Entity player)
@@ -112,7 +139,52 @@ public class Game
 	public void setScene(Scene scene)
 	{
 		this.scene = scene;
+		
 		ui.setScene(scene);
+		
+		scene.setGame(this);
+	}
+	
+	public void changeScene(
+			String fileName, Point2D.Double playerLoc)
+	{
+		updater.stop();
+			
+		new Thread(()->_changeScene(fileName, playerLoc)).start();
+	}
+	
+	private void _changeScene(
+			String fileName, Point2D.Double playerLoc)
+	{
+		while(updater.isUpdating()){}
+		
+		try (ObjectInputStream in = 
+				new ObjectInputStream(
+				new FileInputStream(fileName)))
+		{	
+			ui.showLoadScreen();
+			
+			scene.removeEntity(player);
+			
+			Scene scene = (Scene) in.readObject();
+		
+			setScene(scene);
+			
+			scene.addEntity(player);
+			
+			player.setLoc(playerLoc);
+			
+			if(player.contains(MovementComponent.class))
+				player.get(ActionComponent.class)
+					  .stopAll();
+			
+			ui.showScene();
+			
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		updater.start();
 	}
 	
 	public void start()
@@ -137,5 +209,9 @@ public class Game
 	
 	public UI getUI() {
 		return ui;
+	}
+	
+	public Scheduler getScheduler() {
+		return scheduler;
 	}
 }

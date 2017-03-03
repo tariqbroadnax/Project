@@ -5,16 +5,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
 public class ImagePool 
 {
-	private Map<File, Node> map;
+	public static final ImagePool instance = new ImagePool();
 	
-	public ImagePool()
+	private Map<String, Node> map;
+	
+	private ImagePool()
 	{
-		map = new HashMap<File, Node>();
+		map = new HashMap<String, Node>();
 	}
 	
 	public void request(File file)
@@ -22,7 +25,9 @@ public class ImagePool
 		if(file == null)
 			return;
 		
-		if(!map.containsKey(file))
+		String path = file.getAbsolutePath();
+		
+		if(!map.containsKey(path))
 		{
 			Node node = new Node();
 			
@@ -30,31 +35,40 @@ public class ImagePool
 				node.img = ImageIO.read(file);
 			} catch(IOException e) {}
 			
-			map.put(file, node);
+			map.put(path, node);
 		}
 		
-		Node node = map.get(file);
+		Node node = map.get(path);
 		
 		node.requests++;
 	}
 	
 	public void release(File file)
 	{
-		if(file == null || !map.containsKey(file))
+		if(file == null) return;
+		
+		String path = file.getAbsolutePath();
+
+		if(!map.containsKey(path))
 			return;
 	
-		Node node = map.get(file);
+		Node node = map.get(path);
 		
 		node.requests--;
-	
+
 		if(node.requests == 0)
+		{
 			map.remove(file);
+		}
 	}
 	
 	public BufferedImage getImage(File file) 
 	{
-		if(file != null && map.containsKey(file))
-			return map.get(file).img;
+		String path = file.getAbsolutePath();
+		
+		if(map.containsKey(path))
+			return map.get(path).img;
+		
 		return null;
 	}
 	

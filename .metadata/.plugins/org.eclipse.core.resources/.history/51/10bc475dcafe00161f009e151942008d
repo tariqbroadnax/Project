@@ -1,0 +1,119 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Entity.Entity;
+import EntityComponent.CombatComponent;
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public class Damage extends Effect
+{
+	private double flatAmount;
+	private int ticks, maxTicks;
+	
+	private long elapsed;
+	
+	public Damage()
+	{
+		this(1, 1);		
+	}
+	
+	public Damage(double flatAmount, int ticks)
+	{
+		setFlatAmount(flatAmount);
+		setMaxTicks(ticks);
+		ticks = 0;
+		elapsed = 0;
+	}
+	
+	public Damage(Damage damage)
+	{
+		flatAmount = damage.flatAmount;
+		ticks = 0;
+		maxTicks = damage.maxTicks;
+		elapsed = 0;
+	}
+
+	@Override
+	public void start() 
+	{
+		apply();
+		ticks++;
+	}
+
+	@Override
+	public void stop() {}
+	
+	public void apply()
+	{
+		double damage = flatAmount;
+		
+		double critRate = src.get(StatsComponent.class)
+							 .getStats()
+							 .getCritRate();
+		
+		if(Math.random() > critRate) 
+			damage *= 2;
+		
+		Stats stats = target.get(StatsComponent.class)
+							.getStats();
+
+		stats.damage(damage);
+		
+		CombatComponent srcCombComp = src.get(CombatComponent.class),
+						tarCombComp = target.get(CombatComponent.class);
+		
+		if(stats.getHealth() == 0)
+		{
+			src.get(CombatComponent.class)
+			   .notifyOfKill(target);
+		}
+	}
+
+	@Override
+	public void update(Duration delta) 
+	{
+		elapsed += delta.toMillis();
+		
+		if(elapsed >= 500)
+		{
+			apply();
+			ticks++;
+			elapsed = 0;
+		}
+	}
+	
+	public void setFlatAmount(double flatAmount) 
+	{
+		if(flatAmount < 0)
+			throw new IllegalArgumentException();
+
+		this.flatAmount = flatAmount;
+	}
+
+	public void setMaxTicks(int maxTicks) 
+	{
+		if(maxTicks < 1)
+			throw new IllegalArgumentException();
+		
+		this.maxTicks = maxTicks;
+	}
+
+	@Override
+	public boolean isFinished() {
+		return ticks == maxTicks;
+	}
+
+	@Override
+	protected Effect _clone() {
+		return new Damage(this);
+	}
+
+	// FIXME
+	@Override
+	public boolean canBeApplied(Entity target) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+}

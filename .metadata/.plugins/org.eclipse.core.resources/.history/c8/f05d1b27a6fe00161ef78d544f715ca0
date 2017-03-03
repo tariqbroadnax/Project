@@ -1,0 +1,23 @@
+package Quest;
+
+import Entity.Entity;
+
+public class LevelRequirement implements Requirement
+{
+	private int minLvl, maxLvl;
+	
+	@Override
+	public boolean isSatisfied(Entity ent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	public void setMinLevel(int minLvl) {
+		this.minLvl = minLvl;
+	}
+	
+	public void setMaxLevel(int maxLvl) {
+		this.maxLvl = maxLvl;
+	}
+
+}

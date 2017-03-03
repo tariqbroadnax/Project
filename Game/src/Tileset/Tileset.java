@@ -9,6 +9,8 @@ import java.io.Serializable;
 
 import javax.imageio.ImageIO;
 
+import Graphic.ImagePool;
+
 public class Tileset 
 	implements Serializable
 {
@@ -20,10 +22,14 @@ public class Tileset
 	
 	public Tileset(File file, int rows, int cols)
 	{
+		file = file.getAbsoluteFile();
+		
 		this.file = file;
 		this.rows = rows; this.cols = cols;
-	
-		tiles = new Tile[cols][rows];
+
+		ImagePool.instance.request(file);
+		
+		tiles = new Tile[cols][rows];		
 	
 		initTiles();
 	}
@@ -36,6 +42,8 @@ public class Tileset
 		cols = tileset.cols;
 		
 		tiles = tileset.tiles;
+	
+		ImagePool.instance.request(file);
 	}
 	
 	public Tileset(String fileName, int rows, int cols)
@@ -47,12 +55,11 @@ public class Tileset
 	{
 		for(int row = 0; row < rows; row++)
 			for(int col = 0; col < cols; col++)
-				tiles[col][row] = new Tile(file, row, col);
-
+				tiles[col][row] = new Tile(this, row, col);
 	}
 	
 	public Tile get(int row, int col)
-	{
+	{		
 		return tiles[col][row];
 	}
 	
@@ -104,6 +111,15 @@ public class Tileset
 		rows = in.readInt();
 		cols = in.readInt();
 		tiles = new Tile[cols][rows];
+		
+		ImagePool.instance.request(file);
+		
 		initTiles();
     }
+	
+	protected void finalize() throws Throwable
+	{
+		ImagePool.instance.release(file);
+		super.finalize();
+	}
 }

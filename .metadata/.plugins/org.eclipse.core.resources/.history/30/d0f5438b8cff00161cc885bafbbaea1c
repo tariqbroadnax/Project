@@ -1,0 +1,68 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Entity.Entity;
+import EntityComponent.CombatComponent;
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public class Damage extends InstantEffect
+{
+	private double flatAmount, scaleAmount;
+	
+	public Damage()
+	{
+		this(1, 1);		
+	}
+	
+	public Damage(double flatAmount, double scaleAmount)
+	{
+		setFlatAmount(flatAmount);
+		setMaxTicks(ticks);
+		ticks = 0;
+		elapsed = 0;
+	}
+	
+	public Damage(Damage damage)
+	{
+		flatAmount = damage.flatAmount;
+		ticks = 0;
+		maxTicks = damage.maxTicks;
+		elapsed = 0;
+	}
+	
+	public void apply()
+	{
+		double damage = flatAmount;
+		
+		double critRate = src.get(StatsComponent.class)
+							 .getStats()
+							 .getCritRate();
+		
+		if(Math.random() > critRate) 
+			damage *= 2;
+		
+		Stats stats = target.get(StatsComponent.class)
+							.getStats();
+
+		stats.damage(damage);
+		
+		CombatComponent srcCombComp = src.get(CombatComponent.class),
+						tarCombComp = target.get(CombatComponent.class);
+		
+		srcCombComp.notifyOfAttack(target);
+		tarCombComp.notifyOfBeingAttacked(src);
+		
+		if(stats.getHealth() == 0)
+			srcCombComp.notifyOfKill(target);
+	}
+	
+	public void setFlatAmount(double flatAmount) 
+	{
+		if(flatAmount < 0)
+			throw new IllegalArgumentException();
+
+		this.flatAmount = flatAmount;
+	}
+}

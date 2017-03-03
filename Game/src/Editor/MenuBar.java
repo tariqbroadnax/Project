@@ -57,7 +57,7 @@ public class MenuBar extends JMenuBar
 		editMenu.addSeparator();
 		editMenu.add(new OpenSnapSettings(resources));
 		
-		insertMenu.add(new InsertTileMap(resources));
+		//insertMenu.add(new InsertTileMap(resources));
 	
 		toolMenu.add(new SetSelectTool(resources));
 		toolMenu.add(new SetStampTool(resources));

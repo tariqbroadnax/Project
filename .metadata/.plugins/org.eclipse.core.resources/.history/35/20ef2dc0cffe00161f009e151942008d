@@ -1,0 +1,67 @@
+package Modifiers;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+import Entity.Entity;
+import EntityComponent.CombatListener;
+import EntityComponent.EffectComponent;
+
+public class Bleed extends Effect
+	implements CombatListener
+{
+	private double rate;
+	
+	private Damage dot;
+
+	private List<Damage> dots;
+	
+	public Bleed()
+	{
+		rate = .15;
+		
+		dot = new Damage();
+		
+		dots = new ArrayList<Damage>();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		dots.removeIf(d -> d.isFinished());
+	}
+	
+	@Override
+	public void entityAttacked(Entity ent)
+	{
+		if(Math.random() < rate)
+		{
+			EffectComponent comp = ent.get(EffectComponent.class);
+			
+			boolean hasDot = false;
+			for(Damage dot : dots)
+			{
+				if(comp.contains(dot))
+				{
+					hasDot = true;
+					dot.reset();
+				}
+			}
+			
+			if(!hasDot)
+			{
+				Damage dot = (Damage) this.dot.clone();
+				
+				comp.add(dot);
+				dots.add(dot);
+			}
+		}
+	}
+
+	@Override
+	protected Effect _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

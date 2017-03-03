@@ -1,0 +1,8 @@
+package Quest;
+
+import Dialogue.Dialogue;
+
+public class DialogueTask extends Dialogue
+{
+	private Dialogue d;
+}

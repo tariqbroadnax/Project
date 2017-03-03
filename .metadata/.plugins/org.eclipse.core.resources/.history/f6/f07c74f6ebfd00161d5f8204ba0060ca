@@ -1,0 +1,21 @@
+package Behavior;
+
+import java.time.Duration;
+
+import Actions.Follow;
+
+public class PetBehavior extends Behavior
+{
+	private Follow follow;
+	
+	public PetBehavior()
+	{
+		follow = new Follow();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		follow.update(delta);
+	}
+}

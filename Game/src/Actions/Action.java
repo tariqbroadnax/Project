@@ -5,11 +5,30 @@ import java.io.Serializable;
 import Entity.Entity;
 import Game.Updatable;
 
-public interface Action extends Updatable, Serializable
+public abstract class Action implements Updatable, Serializable
 {	
-	public void setActor(Entity actor);
-		
-	public void dispose();
+	protected Entity actor;
 	
-	public boolean isFinished();
+	protected boolean acting;
+	
+	public Action()
+	{
+		acting = false;
+	}
+	
+	public void setActor(Entity actor) {
+		this.actor = actor;
+	}
+	
+	public void start() {
+		acting = true;
+	}
+		
+	public void stop() {
+		acting = false;
+	}
+
+	public boolean isActing() {
+		return acting;
+	}
 }

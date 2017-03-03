@@ -1,0 +1,41 @@
+package Game;
+
+import java.awt.event.KeyEvent;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CheatCode implements Updatable, KeyListener
+{
+	private List<Integer> keyCodes;
+	
+	private int i;
+	
+	private long idleQuota, elapsed;
+	
+	public CheatCode()
+	{
+		keyCodes = new ArrayList<Integer>();
+		
+		idleQuota = 500;
+		
+		elapsed = i = 0;
+	}
+	
+	public void update(Duration delta)
+	{
+		elapsed += delta.toMillis();
+		
+		if(elapsed > idleQuota)
+			elapsed = i = 0;
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) 
+	{
+		if(!keyCodes.isEmpty())
+		{
+			
+		}
+	}
+}

@@ -12,7 +12,6 @@ import Ability.CastingIndicator;
 import Ability.PassiveAbility;
 import Ability.PointAbility;
 import Entity.Entity;
-import Modifiers.Root;
 
 public class AbilityComponent extends EntityComponent
 {
@@ -28,6 +27,8 @@ public class AbilityComponent extends EntityComponent
 	
 	private CastingIndicator indicator;
 	
+	private List<Class<? extends ActiveAbility>> disabledAbilities;
+	
 	public AbilityComponent()
 	{
 		super();
@@ -39,6 +40,10 @@ public class AbilityComponent extends EntityComponent
 		lists = new ArrayList<AbilityListener>();
 		
 		castingAbility = null;
+		
+		indicator = new CastingIndicator();
+		
+		disabledAbilities = new ArrayList<Class<? extends ActiveAbility>>();
 	}
 	
 	public AbilityComponent(AbilityComponent comp)
@@ -55,11 +60,21 @@ public class AbilityComponent extends EntityComponent
 		if(castingAbility != null)
 		{
 			if(!castingAbility.isCasting())
+			{
 				castingAbility = null;
-			else
-				castingAbility.update(delta);
+			
+				if(parent.contains(GraphicsComponent.class))
+					parent.get(GraphicsComponent.class)
+						  .getDecorations()
+						  .remove(indicator);
+			}
 		}
 		
+		
+		for(ActiveAbility ability : actives)
+			ability.update(delta);
+		for(ActiveAbility ability : points)
+			ability.update(delta);
 	}
 	
 	public void castActiveAbility(int i) 
@@ -76,6 +91,15 @@ public class AbilityComponent extends EntityComponent
 			castingAbility = ability;
 			
 			ability.cast();
+			
+			if(parent.contains(GraphicsComponent.class))
+			{
+				parent.get(GraphicsComponent.class)
+					  .getDecorations()
+					  .add(indicator, 0, -10);
+				
+				indicator.setActiveAbility(ability);	
+			}
 		}
 	}
 	
@@ -200,5 +224,15 @@ public class AbilityComponent extends EntityComponent
 			str += '\n' + active.toString();
 		
 		return str;
+	}
+
+	public void addDisabledAbility(Class<? extends ActiveAbility> c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void removeDisabledAbility(Class<? extends ActiveAbility> c) {
+		// TODO Auto-generated method stub
+		
 	}
 }

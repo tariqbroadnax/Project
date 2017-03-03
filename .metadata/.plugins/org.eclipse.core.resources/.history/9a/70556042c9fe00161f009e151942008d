@@ -1,0 +1,7 @@
+package EntityComponent;
+
+import Entity.Entity;
+
+public interface CombatListener {
+	public void entityKilled(Entity ent);
+}

@@ -9,15 +9,12 @@ import Game.Updatable;
 import Modifiers.Effect;
 
 public abstract class Ability
-implements Serializable, Updatable, Cloneable
+	implements Serializable, Updatable, Cloneable
 {	
 	protected Entity src;
 	
-	protected List<Effect> effects;
-	
 	public Ability()
 	{
-		effects = new LinkedList<Effect>();
 	}
 	
 	public void setSrc(Entity src) {
@@ -26,14 +23,6 @@ implements Serializable, Updatable, Cloneable
 	
 	public Entity getSrc() {
 		return src;
-	}
-
-	public void addEffect(Effect effect) { 
-		effects.add(effect);
-	}
-	
-	public void removeEffect(Effect effect) {
-		effects.remove(effect);
 	}
 	
 	public abstract Object clone();

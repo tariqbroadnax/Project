@@ -1,0 +1,17 @@
+package Actions;
+
+import java.time.Duration;
+
+import Entity.Entity;
+
+public class Follow 
+{
+	private int maxRange;
+	
+	private Entity src, target;
+	
+	public void update(Duration delta)
+	{
+		
+	}
+}

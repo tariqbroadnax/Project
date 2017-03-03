@@ -1,0 +1,98 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Entity.Entity;
+import EntityComponent.Lifetime;
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public class StatEffect extends InstantEffect
+{
+	private Stat stat;
+	
+	private Modifier mod;
+	
+	public StatEffect()
+	{
+		stat = Stat.SPEED;
+		
+		mod = new AddModifier(50);
+	}
+	
+	public StatEffect(StatEffect effect)
+	{
+		stat = effect.stat;
+		
+		mod = (Modifier) effect.mod.clone();
+	}
+
+	@Override
+	public void apply() 
+	{
+		Stats stats = src.get(StatsComponent.class)
+						 .getStats();
+		
+		switch(stat)
+		{
+			case HEALTH: stats.addHealthModifier(mod);
+						 break;
+			case SPEED: stats.addSpeedModifier(mod);
+						 break;
+		}
+	}
+
+	@Override
+	public void unapply() 
+	{
+		Stats stats = src.get(StatsComponent.class)
+				 .getStats();
+
+		switch(stat)
+		{
+			case HEALTH: stats.removeHealthModifier(mod);
+						 break;
+			case SPEED: stats.removeSpeedModifier(mod);
+						 break;
+		}
+	}
+
+	@Override
+	public boolean canBeApplied(Entity target) {
+		return target.contains(StatsComponent.class);
+	}
+
+	@Override
+	public boolean isFinished() {
+		return lifetime.isLifeOver();
+	}
+
+	@Override
+	protected Effect _clone() {
+		return new StatEffect(this);
+	}
+	
+	public void setStat(Stat stat) {
+		this.stat = stat;
+	}
+	
+	public void setModifier(Modifier mod) {
+		this.mod = mod;
+	}
+	
+	public void setLifetime(Lifetime lifetime) {
+		this.lifetime = lifetime;
+	}
+	
+	public Stat getStat() {
+		return stat;
+	}
+	
+	public Modifier getModifier() {
+		return mod;
+	}
+	
+	public Lifetime getLifetime() {
+		return lifetime;
+	}
+}

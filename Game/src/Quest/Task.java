@@ -1,72 +1,22 @@
 package Quest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
 import Entity.Entity;
 
-public abstract class Task 
+public abstract class Task implements Serializable, Cloneable
 {
-	private List<TaskListener> taskLists;
+	protected Entity tasker;	
 	
-	private boolean started, completed;
+	public abstract void start();
 	
-	protected Entity tasker;
+	public abstract boolean isFinished();
 	
-	public Task()
-	{
-		taskLists = new ArrayList<TaskListener>();
+	public void stop(){}
 	
-		started = false;
-		completed = false;
-	}
-	
-	public void start()
-	{
-		if(started || tasker == null)
-			return;
-		
-		started = true; completed = false;		
-		
-		_start();
-	}
-	
-	protected abstract void _start();
-	
-	public void setTasker(Entity tasker) 
-	{
-		if(started)
-			stop();
-			
+	public void setTasker(Entity tasker) {
 		this.tasker = tasker;
 	}
 	
-	public void stop()
-	{
-		started = false; completed = false;
-	
-		_stop();
-	}
-	
-	protected abstract void _stop();
-	
-	protected void complete()
-	{
-		completed = true;
-		
-		for(TaskListener list : taskLists)
-			list.taskCompleted();
-	}
-	
-	public boolean isCompleted() {
-		return completed;
-	}
-	
-	public void addTaskListener(TaskListener list) {
-		taskLists.add(list);
-	}
-	
-	public void removeTaskListener(TaskListener list) {
-		taskLists.remove(list);
-	}
+	public abstract Object clone();
 }

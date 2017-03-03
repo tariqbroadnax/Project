@@ -1,0 +1,5 @@
+package CollisionResponses;
+
+public class ChangeScene {
+
+}

@@ -1,0 +1,19 @@
+package Modifiers;
+
+import Game.Updatable;
+
+public abstract class GradualEffect extends Effect
+	implements Updatable
+{
+	private Span lifespan;
+
+	public GradualEffect() 
+	{
+		super();
+		lifespan = new Span(1000);
+	}
+	
+	public GradualEffect(Effect effect) {
+		super(effect);
+	}
+}

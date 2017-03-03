@@ -1,0 +1,17 @@
+package Quest;
+
+import java.io.Serializable;
+
+import Entity.Entity;
+
+public abstract class Task implements Serializable, Cloneable
+{
+	public Task()
+	{
+		
+	}
+	
+	public abstract void start(Entity tasker);
+	
+	public abstract boolean isFinished();
+}

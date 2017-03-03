@@ -1,0 +1,63 @@
+package Modifiers;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Actions.Action;
+
+public class ActionDisable extends InstantEffect
+{
+	private boolean allDisabled;
+	
+	private List<Class<? extends Action>> disabledActions;
+
+	public ActionDisable()
+	{
+		allDisabled = true;
+		
+		disabledActions = new ArrayList<Class<? extends Action>>();
+	}
+	
+	public ActionDisable(ActionDisable effect)
+	{
+		super(effect);
+		
+		allDisabled = effect.allDisabled;
+		
+		disabledActions = new ArrayList<Class<? extends Action>>();
+		
+		for(Class<? extends Action> c : effect.disabledActions)
+			disabledActions.add(c);
+	}
+	
+	@Override
+	public void apply() 
+	{
+		
+	}
+	
+	public void unapply() {
+		
+	}
+	
+	public void addDisabledAction(Class<? extends Action> action) {
+		disabledActions.add(action);
+	}
+	
+	public void removeDisabledAction(Class<? extends Action> action) {
+		disabledActions.remove(action);
+	}
+	
+	public void setAllDisabled(boolean allDisabled) {
+		this.allDisabled = allDisabled;
+	}
+	
+	public boolean isAllDisabled() {
+		return allDisabled;
+	}
+
+	@Override
+	public Object clone() {
+		return null;
+	}
+}

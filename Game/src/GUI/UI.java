@@ -1,11 +1,14 @@
 package GUI;
 
-import javax.swing.JFrame;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import Actions.ActionBuffer;
-import Dialogue.Dialogue;
 import Entity.Entity;
+import Game.PlayerController;
 import Game.Scene;
 import Game.Updater;
 import Graphic.Camera;
@@ -32,7 +35,9 @@ public class UI
 	
 	private GLayeredPane layers;
 	
-	private MouseController mouseControl;
+	//private MouseController mouseControl;
+	
+	private LoadScreen loadScreen;
 	
 	public UI(Scene scene, Updater updater, Entity player,
 			  int viewMode)
@@ -49,6 +54,8 @@ public class UI
 
 		panel = new GPanel();
 
+		loadScreen = new LoadScreen();
+		
 		if(viewMode == FRAME_MODE)
 			painter = new Painter(frame, camera);
 		else
@@ -63,11 +70,20 @@ public class UI
 		
 		camera.setFocus(player.getLoc());
 		
-		mouseControl = new MouseController(player, camera, buffer);
+//		mouseControl = new MouseController(player, camera, buffer);
+//		
+//		panel.addMouseListener(mouseControl);
+//		frame.addMouseListener(mouseControl);
+//	
+		PlayerController control = new PlayerController(
+				player, camera, updater);
+
+		panel.addMouseListener(control);
+		panel.addKeyListener(control);
+		frame.addMouseListener(control);
+		frame.addMouseMotionListener(control);
+		frame.addKeyListener(control);
 		
-		panel.addMouseListener(mouseControl);
-		frame.addMouseListener(mouseControl);
-	
 		frame.setContentPane(layers);
 		frame.getRootPane()
 			 .setOpaque(false);
@@ -75,6 +91,43 @@ public class UI
 		setViewMode(viewMode);
 		
 		layers.addAndSetLayer(hud, 1);
+		layers.addAndSetLayer(loadScreen, 2);
+		
+		loadScreen.setVisible(false);
+		
+	  try {
+          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+          ex.printStackTrace();
+      }
+	 
+	}
+	
+	public void showLoadScreen()
+	{
+		hud.setVisible(false);
+		loadScreen.setVisible(true);
+		loadScreen.fadeIn();
+		
+		try {
+			TimeUnit.MILLISECONDS.sleep(250);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void showScene()
+	{
+		loadScreen.fadeOut();
+		
+		try {
+			TimeUnit.MILLISECONDS.sleep(250);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		loadScreen.setVisible(false);
+		hud.setVisible(true);
 	}
 	
 	public void setPlayer(Entity player)
@@ -82,7 +135,7 @@ public class UI
 		if(player != null)
 		{
 			camera.setFocus(player.getLoc());
-			mouseControl.setPlayer(player);
+//			mouseControl.setPlayer(player);
 		}
 	}
 	
@@ -101,11 +154,13 @@ public class UI
 		{
 			painter.setToWindow(frame);
 			frame.setContentPane(layers);
+			frame.requestFocus();
 		}
 		else
 		{
 			painter.setToPanel(panel);
 			panel.add(layers);
+			panel.requestFocus();
 		}
 	}
 	
@@ -122,7 +177,7 @@ public class UI
 		return hud;
 	}
 	
-	public JFrame getFrame() {
+	public GFrame getFrame() {
 		return frame;
 	}
 	

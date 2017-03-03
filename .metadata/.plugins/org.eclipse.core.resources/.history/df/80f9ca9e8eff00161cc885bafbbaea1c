@@ -1,0 +1,24 @@
+package Modifiers;
+
+import java.time.Duration;
+
+public class TemporaryEffect extends GradualEffect
+{
+	
+	public TemporaryEffect()
+	{
+		lifespan = new Span(1000);
+	}
+	
+	@Override
+	public void update(Duration delta) {
+		
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

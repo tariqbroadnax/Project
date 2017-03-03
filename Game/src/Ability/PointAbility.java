@@ -1,28 +1,14 @@
 package Ability;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
-
-import Event.PointAbilityEvent;
 
 public class PointAbility extends TargetAbility
 {
 	protected Point2D.Double target;
-	
-	private List<PointAbilityEvent> events;
-	
+		
 	public PointAbility()
 	{
-		events = new ArrayList<PointAbilityEvent>();		
-	}
-	
-	protected void activate()
-	{
-		super.activate();
 		
-		for(PointAbilityEvent e : events)
-			e.run();
 	}
 	
 	public boolean canBeCast()
@@ -44,11 +30,5 @@ public class PointAbility extends TargetAbility
 	
 	public Point2D.Double getTarget() {
 		return target;
-	}
-	
-	public void addPointAbilityEvent(PointAbilityEvent e) 
-	{
-		events.add(e);
-		e.setPointAbility(this);
 	}
 }

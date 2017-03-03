@@ -1,0 +1,66 @@
+package Behavior;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import Entity.Entity;
+import EntityComponent.EntityComponent;
+
+public class BehaviorComponent extends EntityComponent
+{
+	private Collection<Behavior> behaviors;
+	
+	public BehaviorComponent() 
+	{
+		behaviors = new ArrayList<Behavior>();
+	}
+	
+	public BehaviorComponent(BehaviorComponent comp)
+	{
+		this();
+//		
+//		for(Behavior beh : comp.behaviors)
+//			behaviors.add((Behavior)beh.clone());
+	}
+	
+	@Override
+	public void update(Duration delta) {
+		for(Behavior b : behaviors)
+			b.update(delta);
+	}
+	
+	public void addBehavior(Behavior behavior) {
+		behaviors.add(behavior);
+		if(parent != null)
+			behavior.setSrc(parent);
+	}
+	
+	public void removeBehavior(Behavior behavior) {
+		behaviors.add(behavior);
+	}
+	
+	public <E extends Behavior> E getBehavior(
+			Class<E> c)
+	{
+		for(Behavior beh : behaviors)
+			if(beh.getClass().equals(c))
+				return (E) beh;
+		return null;
+	}
+	
+	public Collection<Behavior> getBehaviors() {
+		return behaviors;
+	}
+	
+	public void setParent(Entity parent) {
+		super.setParent(parent);
+		for(Behavior b : behaviors)
+			b.setSrc(parent);
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		return new BehaviorComponent(this);
+	}
+}

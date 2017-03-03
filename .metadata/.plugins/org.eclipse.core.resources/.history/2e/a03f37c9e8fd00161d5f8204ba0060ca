@@ -1,0 +1,12 @@
+package Behaviour;
+
+import java.time.Duration;
+
+public class PetBehaviour extends Behaviour
+{
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+}

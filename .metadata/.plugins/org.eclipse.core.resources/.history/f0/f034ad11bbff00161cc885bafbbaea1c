@@ -1,0 +1,6 @@
+package Modifiers;
+
+public enum ElementAttribute 
+{
+	FIRE, WATER, ELECTRICITY, WIND, EARTH, LIGHT, DARK
+}

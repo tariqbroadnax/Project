@@ -11,9 +11,9 @@ import Graphic.Graphic;
 import Graphic.GraphicsContext;
 
 public class ScenePainter 
-	implements Comparator<Graphic>, Serializable
+	implements Comparator<GraphicsComponent>, Serializable
 {
-	private PriorityQueue<Graphic> visibleGraphics;
+	private PriorityQueue<GraphicsComponent> comps;
 	
 	private Scene scene;
 	
@@ -21,44 +21,36 @@ public class ScenePainter
 	{
 		this.scene = scene;
 		
-		visibleGraphics = new PriorityQueue<Graphic>(this);
+		comps = new PriorityQueue<GraphicsComponent>(this);
 	}
 	
 	public void paint(GraphicsContext gc)
 	{				
-		for(Graphic graph : scene.getGraphics())
-		{
-			Rectangle2D.Double bound = graph.getBound();
-			
-			if(gc.camera.shows(bound))
-				visibleGraphics.add(graph);
-		}
-		
 		for(Entity e : scene.getEntities(GraphicsComponent.class))
 		{
 			GraphicsComponent comp = e.get(GraphicsComponent.class);
-			Graphic graph = comp.getGraphic();
 			
-			Rectangle2D.Double bound = graph.getBound();
-			
-			if(gc.camera.shows(bound))
-			{
-				comp.updateGraphicLocation();
-				visibleGraphics.add(graph);
-			}
+			comps.add(comp);
 		}
-	
-		while(!visibleGraphics.isEmpty())
-			visibleGraphics.poll().paint(gc);		
+		
+		while(!comps.isEmpty())
+		{	
+			GraphicsComponent comp = comps.poll();
+			
+			comp.paint(gc);
+		}
 	}
 	
 	
 	@Override
-	public int compare(Graphic graph, Graphic graph2) 
+	public int compare(GraphicsComponent comp1, GraphicsComponent comp2) 
 	{
+		Graphic graph = comp1.getGraphic(),
+				graph2 = comp2.getGraphic();
+		
 		int layer = graph.getLayer(),
 			layer2 = graph2.getLayer();
-		
+	
 		if(layer < layer2)
 			return -1;
 		else if(layer > layer2)

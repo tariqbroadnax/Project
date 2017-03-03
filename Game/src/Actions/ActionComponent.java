@@ -11,13 +11,15 @@ public class ActionComponent extends EntityComponent
 {
 	private List<Action> actions;
 	
+	private List<Class<? extends Action>> disabledActions;
+	
 	public ActionComponent()
 	{
 		actions = new ArrayList<Action>();
+		
+		disabledActions = new ArrayList<Class<? extends Action>>();
 	}
-	
-	
-	static int i = 0;
+		
 	@Override
 	public void update(Duration delta) 
 	{
@@ -34,11 +36,12 @@ public class ActionComponent extends EntityComponent
 	
 	public void startAction(Action action) 
 	{			
-		action.setActor(parent);
+		if(enabled && !disabledActions.contains(action.getClass()))
+		{
+			action.setActor(parent);
 		
-		actions.add(action);		
-		
-		System.out.println(parent.toString2());
+			actions.add(action);				
+		}
 	}
 	
 	public void stopAction(Action action) 
@@ -46,9 +49,30 @@ public class ActionComponent extends EntityComponent
 		if(actions.remove(action))
 			action.dispose();
 	}
+	
+	public void stopAll()
+	{
+		for(Action action : actions)
+			action.dispose();
+		
+		actions.clear();
+	}
+	
+	public boolean contains(Action action)
+	{
+		return actions.contains(action);
+	}
 
 	@Override
 	protected EntityComponent _clone() {
 		return new ActionComponent();
+	}
+
+	public void addDisabledAction(Class<? extends Action> c) {
+		disabledActions.add(c);
+	}
+
+	public void removeDisabledAction(Class<? extends Action> c) {
+		disabledActions.remove(c);
 	}
 }

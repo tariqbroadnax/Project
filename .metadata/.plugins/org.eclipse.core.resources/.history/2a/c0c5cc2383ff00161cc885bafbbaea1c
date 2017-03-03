@@ -1,0 +1,61 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import EntityComponent.Lifetime;
+
+public abstract class TickEffect extends GradualEffect
+{
+	private Span nextTick, lifespan;
+	
+	private InstantEffect effect;
+	
+	public TickEffect()
+	{
+		nextTick = new Span(250);
+		lifespan = new Span(1000);
+	}
+	
+	public TickEffect(TickEffect effect)
+	{
+		nextTick = (Span) effect.nextTick.clone();
+		lifespan = (Span) effect.lifespan.clone();
+	
+		effect = (InstantEffect) effect.effect.clone();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		nextTick.update(delta);
+		lifespan.update(delta);
+		
+		if(ticktime.isLifeOver())
+		{
+			apply();
+
+			ticktime.reset();
+		}
+	}
+	
+	@Override
+	public boolean isFinished() {
+		return lifespan.isFinished();
+	}
+	
+	public void setTickDelay(long delay) {
+		nextTick.setLength(delay);
+	}
+	
+	public void setLifetimeLength(long len) {
+		lifespan.setLength(len);
+	}
+	
+	public long getTickDelay() {
+		return nextTick.getLength();
+	}
+	
+	public long getLifespanLength() {
+		return lifespan.getLength();
+	}
+}

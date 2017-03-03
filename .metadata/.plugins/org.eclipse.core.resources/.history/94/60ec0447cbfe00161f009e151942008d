@@ -1,0 +1,67 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Entity.Entity;
+import EntityComponent.CombatComponent;
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public class HealOOC extends Effect
+{
+	private double amount;
+	
+	private long tickDelay, elapsed;
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		elapsed += delta.toMillis();
+		
+		boolean OOC = src.get(CombatComponent.class)
+						 .isOutOfCombat();
+		
+		if(OOC && elapsed > tickDelay)
+		{
+			Stats stats = target.get(StatsComponent.class)
+								.getStats();
+			
+			stats.heal(amount);
+			
+			elapsed = 0;
+		}
+		else
+			elapsed = 0;
+	}
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean canBeApplied(Entity target) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected Effect _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

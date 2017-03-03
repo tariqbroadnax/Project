@@ -1,0 +1,82 @@
+package Modifiers;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Ability.ActiveAbility;
+import Abilitys.Ability;
+import Abilitys.AbilityComponent;
+
+public class AbilityDisable extends InstantEffect
+{
+	private boolean allDisabled;
+	
+	private List<Class<? extends ActiveAbility>> disabledAbilities;
+
+	public AbilityDisable()
+	{
+		allDisabled = true;
+		
+		disabledAbilities = new ArrayList<Class<? extends ActiveAbility>>();
+	}
+	
+	public AbilityDisable(AbilityDisable effect)
+	{
+		super(effect);
+		
+		allDisabled = effect.allDisabled;
+		
+		disabledAbilitys = new ArrayList<Class<? extends ActiveAbility>>();
+		
+		for(Class<? extends Ability> c : effect.disabledAbilitys)
+			disabledAbilitys.add(c);
+	}
+	
+	@Override
+	public void apply() 
+	{
+		AbilityComponent comp = target.get(AbilityComponent.class);
+		
+		if(allDisabled)
+			comp.setEnabled(false);
+		else
+		{
+			for(Class<? extends Ability> c : disabledAbilitys)
+				comp.addDisabledAbility(c);
+		}
+	}
+	
+	public void unapply() 
+	{
+		AbilityComponent comp = target.get(AbilityComponent.class);
+
+		if(allDisabled)
+			comp.setEnabled(true);
+		else
+		{
+			for(Class<? extends Ability> c : disabledAbilitys)
+				comp.removeDisabledAbility(c);
+		}
+	}
+	
+	public void addDisabledAbility(Class<? extends Ability> action) {
+		disabledAbilitys.add(action);
+	}
+	
+	public void removeDisabledAbility(Class<? extends Ability> action) {
+		disabledAbilits.remove(action);
+	}
+	
+	public void setAllDisabled(boolean allDisabled) {
+		this.allDisabled = allDisabled;
+	}
+	
+	public boolean isAllDisabled() {
+		return allDisabled;
+	}
+
+	@Override
+	public Object clone() {
+		return new AbilityDisable(this);
+	}
+}

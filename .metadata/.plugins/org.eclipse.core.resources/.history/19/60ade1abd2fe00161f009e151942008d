@@ -1,0 +1,10 @@
+package EntityComponent;
+
+import Entity.Entity;
+
+public interface CombatListener 
+{
+	public default void entityAttacked(Entity ent){}
+	public default void entityAttacks(Entity ent){}
+	public default void entityKilled(Entity ent){}
+}

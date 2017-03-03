@@ -1,0 +1,94 @@
+package Modifiers;
+
+import EntityComponent.CombatComponent;
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public class Damage extends InstantEffect
+{
+	private double flatAmount, scaleAmount;
+	
+	private ElementAttribute attr;
+	
+	public Damage()
+	{
+		this(1, 1);		
+	}
+	
+	public Damage(double flatAmount, double scaleAmount)
+	{
+		this.flatAmount = flatAmount;
+		this.scaleAmount = scaleAmount;
+		
+		attr = ElementAttribute.NONE;
+	}
+	
+	public Damage(Damage damage)
+	{
+		super(damage);
+		
+		flatAmount = damage.flatAmount;
+		scaleAmount = damage.scaleAmount;
+		
+		attr = damage.attr;
+	}
+	
+	public void apply()
+	{
+		double damage = flatAmount;
+		
+		double critRate = src.get(StatsComponent.class)
+							 .getStats()
+							 .getCritRate();
+		
+		if(Math.random() > critRate) 
+			damage *= 2;
+		
+		Stats stats = target.get(StatsComponent.class)
+							.getStats();
+
+		stats.damage(damage);
+		
+		CombatComponent srcCombComp = src.get(CombatComponent.class),
+						tarCombComp = target.get(CombatComponent.class);
+		
+		srcCombComp.notifyOfAttack(target);
+		tarCombComp.notifyOfBeingAttacked(src);
+		
+		if(stats.getHealth() == 0)
+			srcCombComp.notifyOfKill(target);
+	}
+	
+	public void setFlatAmount(double flatAmount) 
+	{
+		if(flatAmount < 0)
+			throw new IllegalArgumentException();
+
+		this.flatAmount = flatAmount;
+	}
+	
+	public void setScaleAmount(double scaleAmount) {
+		this.scaleAmount = scaleAmount;
+	}
+	
+	public void setElementAttribute(ElementAttribute attr) {
+		this.attr = attr;
+	}
+	
+	public double getFlatAmount() {
+		return flatAmount;
+	}
+	
+	public double getScaleAmount() {
+		return scaleAmount;
+	}
+	
+	public ElementAttribute getElementAttribute() {
+		return attr;
+	}
+	
+	
+	public Object clone() {
+		return new Damage(this);
+	}
+}

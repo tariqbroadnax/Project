@@ -1,0 +1,29 @@
+package Actions;
+
+import java.io.Serializable;
+
+import Entity.Entity;
+import Game.Updatable;
+
+public abstract class Action implements Updatable, Serializable
+{	
+	protected Entity actor;
+	
+	private boolean acting;
+	
+	public Action()
+	{
+		acting = false;
+	}
+	
+	public void setActor(Entity actor)
+	{
+		
+	}
+	
+	public void start();
+		
+	public void stop();
+
+	public void is
+}

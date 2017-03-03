@@ -1,0 +1,30 @@
+package TestEntity;
+
+import Entity.Entity;
+import Item.EquipItem;
+
+public class PetItem extends EquipItem
+{
+	private Pet pet;
+	
+	public PetItem()
+	{
+		pet = new Pet();
+	}
+	
+	public void equip(Entity ent)
+	{
+		super.equip(ent);
+		
+		ent.getSceneLoc()
+		   .addEntity(ent);
+	}
+	
+	public void unequip(Entity ent)
+	{
+		super.unequip(ent);
+		
+		ent.getSceneLoc()
+		   .removeEntity(ent);
+	}
+}

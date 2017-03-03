@@ -1,0 +1,34 @@
+package Modifiers;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Ability.Ability;
+import Ability.ActiveAbility;
+
+public class DamageModifier 
+{
+	private Modifier mod;
+	
+	private List<Class<? extends ActiveAbility>> targets;
+	
+	public DamageModifier()
+	{
+		mod = new AddModifier(50);
+
+		targets = new ArrayList<Class<? extends ActiveAbility>>();
+	}
+	
+	public DamageModifier(DamageModifier effect)
+	{
+		mod = (Modifier) mod.clone();
+	}
+	
+	public boolean canModifyDamage(Ability ability)
+	{
+		if(targets.size() == 0)
+			return true;
+		else
+			return targets.contains(ability.getClass());
+	}
+}

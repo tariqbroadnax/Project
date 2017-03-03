@@ -1,0 +1,29 @@
+package Modifiers;
+
+public class CombatDisable extends InstantEffect
+{
+	private boolean blockDisabled,
+					dodgeDisabled;
+
+	public CombatDisable()
+	{
+		blockDisabled = dodgeDisabled = true;
+	}
+	
+	public CombatDisable(CombatDisable effect)
+	{
+		
+	}
+	
+	@Override
+	public void apply() {
+		
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+					
+}

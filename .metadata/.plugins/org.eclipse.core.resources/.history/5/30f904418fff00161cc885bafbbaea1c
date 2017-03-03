@@ -1,0 +1,43 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Game.Updatable;
+
+public abstract class GradualEffect extends Effect
+	implements Updatable
+{
+	private Span lifespan;
+
+	public GradualEffect() 
+	{
+		super();
+		
+		lifespan = new Span(1000);
+	}
+	
+	public GradualEffect(GradualEffect effect) 
+	{
+		super(effect);
+		
+		lifespan = (Span) effect.lifespan.clone();
+	}
+
+	@Override
+	public void update(Duration delta) {
+		lifespan.isFinished();
+	}
+	
+	public boolean isFinished() {
+		return lifespan.isFinished();
+	}
+	
+	public void setLifetimeLength(long len) {
+		lifespan.setLength(len);
+	}
+	
+	public long getLifespanLength() {
+		return lifespan.getLength();
+	}
+	
+}

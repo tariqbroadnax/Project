@@ -1,68 +1,66 @@
 package Modifiers;
 
-import java.time.Duration;
-
-import Entity.Entity;
+import EntityComponent.CombatComponent;
 import EntityComponent.StatsComponent;
 import Stat.Stats;
 
-public class Damage extends Effect
+public class Damage extends InstantEffect
 {
-	private double flatAmount;
-	private int ticks, maxTicks;
+	private double flatAmount, scaleAmount;
 	
-	private long elapsed;
+	private AttackAttribute atkAttr;
+
+	private ElementAttribute eleAttr;	
 	
 	public Damage()
 	{
-		this(1, 1);
+		this(1, 1);		
 	}
 	
-	public Damage(double flatAmount, int ticks)
+	public Damage(double flatAmount, double scaleAmount)
 	{
-		setFlatAmount(flatAmount);
-		setMaxTicks(ticks);
-		ticks = 0;
-		elapsed = 0;
+		this.flatAmount = flatAmount;
+		this.scaleAmount = scaleAmount;
+		
+		atkAttr = AttackAttribute.PHYSICAL;
+		eleAttr = ElementAttribute.NONE;
 	}
 	
 	public Damage(Damage damage)
 	{
+		super(damage);
+		
 		flatAmount = damage.flatAmount;
-		ticks = 0;
-		maxTicks = damage.maxTicks;
-		elapsed = 0;
+		scaleAmount = damage.scaleAmount;
+		
+		atkAttr = damage.atkAttr;
+		eleAttr = damage.eleAttr;
 	}
-
-	@Override
-	public void start() 
-	{
-		apply();
-		ticks++;
-	}
-
-	@Override
-	public void stop() {}
 	
 	public void apply()
 	{
-		Stats stats = target.get(StatsComponent.class)
-			    .getStats();
-
-		stats.applyDamage(flatAmount);
-	}
-
-	@Override
-	public void update(Duration delta) 
-	{
-		elapsed += delta.toMillis();
+		double damage = flatAmount;
 		
-		if(elapsed >= 500)
-		{
-			apply();
-			ticks++;
-			elapsed = 0;
-		}
+		double critRate = src.get(StatsComponent.class)
+							 .getStats()
+							 .getCritRate();
+		
+		if(Math.random() > critRate) 
+			damage *= 2;
+		
+		Stats stats = target.get(StatsComponent.class)
+							.getStats();
+
+		stats.damage(damage);
+		
+		CombatComponent srcCombComp = src.get(CombatComponent.class),
+						tarCombComp = target.get(CombatComponent.class);
+		
+		srcCombComp.notifyOfAttack(target);
+		tarCombComp.notifyOfBeingAttacked(src);
+		
+		if(stats.getHealth() == 0)
+			srcCombComp.notifyOfKill(target);
 	}
 	
 	public void setFlatAmount(double flatAmount) 
@@ -72,29 +70,36 @@ public class Damage extends Effect
 
 		this.flatAmount = flatAmount;
 	}
-
-	public void setMaxTicks(int maxTicks) 
-	{
-		if(maxTicks < 1)
-			throw new IllegalArgumentException();
-		
-		this.maxTicks = maxTicks;
+	
+	public void setScaleAmount(double scaleAmount) {
+		this.scaleAmount = scaleAmount;
 	}
-
-	@Override
-	public boolean isFinished() {
-		return ticks == maxTicks;
+	
+	public void setAttackAttribute(AttackAttribute atkAttr) {
+		this.atkAttr = atkAttr;
 	}
-
-	@Override
-	protected Effect _clone() {
+	
+	public void setElementAttribute(ElementAttribute eleAttr) {
+		this.eleAttr = eleAttr;
+	}
+	
+	public double getFlatAmount() {
+		return flatAmount;
+	}
+	
+	public double getScaleAmount() {
+		return scaleAmount;
+	}
+	
+	public AttackAttribute getAttackAttribute() {
+		return atkAttr;
+	}
+	
+	public ElementAttribute getElementAttribute() {
+		return eleAttr;
+	}
+	
+	public Object clone() {
 		return new Damage(this);
-	}
-
-	// FIXME
-	@Override
-	public boolean canBeApplied(Entity target) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

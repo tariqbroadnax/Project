@@ -1,92 +1,115 @@
 package Editor;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.ArrayList;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.List;
 
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.ListCellRenderer;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import Editor.tile.TileSelectorPanel;
+import Editor.tile.OpenTileset;
+import Editor.tile.TSModel;
+import Editor.tile.TileSelector;
 import Tileset.Tileset;
 
 public class Selector extends JPanel
+	implements ListSelectionListener
 {	
-	private JTabbedPane tabbedPane;
+	private JList<Tileset> list;
 	
-	private Dimension prefSize;
-	
-	private EditorResources resources;
-	
-	private List<TileSelectorPanel> tileSelectors;
-	
+	private TileSelector selector;
+
 	public Selector(EditorResources resources)
 	{
-		this.resources = resources;
+		JToolBar toolbar = new JToolBar();
 		
-		tabbedPane = new JTabbedPane();
+		selector = new TileSelector();
 		
-		prefSize = new Dimension(200, 600);
-		
-		tileSelectors = new ArrayList<TileSelectorPanel>();
-		
-		setLayout(new BorderLayout());
-		add(tabbedPane, BorderLayout.CENTER);
-	
-		setPreferredSize(prefSize);
-		
-		restoreTilesets();
-	}
-	
-	private void restoreTilesets()
-	{
-		List<Tileset> tilesets = resources.getState()
-			  	  .getOpenTilesets();
-		
-		for(Tileset ts : tilesets)
-			open(ts);
-	}
-	
-	public void open(Tileset tileset)
-	{
-		TileSelectorPanel selector = 
-				new TileSelectorPanel(resources, tileset);
+		list = new JList<Tileset>();
 
-		String fileName = tileset.getFile()
-								 .getName();
+		toolbar.add(new OpenTileset(list));
+		
+		toolbar.setFloatable(false);
+		
+		list.setModel(new TSModel());
+		list.setCellRenderer(new MyRenderer());
+		list.addListSelectionListener(this);
+		
+		setLayout(new GridBagLayout());
+		
+		GridBagConstraints gbc = new GridBagConstraints();
 
-		tabbedPane.add(fileName, selector);
-		tileSelectors.add(selector);
+		gbc.gridx = 0; gbc.gridy = 0;
+		gbc.weightx = 1; gbc.weighty = 0;
+		gbc.fill = gbc.NONE;
+		gbc.anchor = gbc.LINE_START;
 		
-		int i = tabbedPane.getTabCount() - 1;
-		SelectorTabComponent comp = 
-				new SelectorTabComponent(tabbedPane, this);
-		
-		tabbedPane.setTabComponentAt(i, comp);
-		
-		resources.getState()
-				 .notifyOfOpenTileset(tileset);
-	}
+		add(toolbar, gbc);
 	
-	public void close(Tileset tileset)
-	{
-		for(int i = 0; i < tabbedPane.getTabCount(); i++)
+		gbc.gridx = 0; gbc.gridy = 1;
+		gbc.weightx = 1; gbc.weighty = 1;
+		gbc.fill = gbc.BOTH;
+		gbc.anchor = gbc.LINE_START;
+		
+		add(new JScrollPane(list), gbc);
+		
+		gbc.gridx = 0; gbc.gridy = 2;
+		gbc.weightx = 1; gbc.weighty = 1;
+		gbc.fill = gbc.BOTH;
+		gbc.anchor = gbc.LINE_START;
+		
+		add(new JScrollPane(selector), gbc);	
+		
+		List<Tileset> tss = Editor.RESOURCES.getEditorAssets()
+								            .getTilesets();
+		
+		if(tss.size() > 0)
 		{
-			TileSelectorPanel tselector = tileSelectors.get(i);
+			Tileset ts = tss.get(0);
 			
-			if(tselector.getTileset() == tileset)
-			{
-				tabbedPane.remove(tselector);
-				tileSelectors.remove(tselector);
-				resources.getState()
-						 .notifyOfClosedTileset(tileset);
-			}
+			list.setSelectedValue(ts, true);
 		}
 	}
 	
-	public TileSelectorPanel getTileSelector(int i )
+	private class MyRenderer implements ListCellRenderer<Tileset>
 	{
-		return tileSelectors.get(i);
+		private JLabel label = new JLabel();
+		
+		@Override
+		public Component getListCellRendererComponent(
+				JList<? extends Tileset> list,
+				Tileset val, int index,
+				boolean isSelected, boolean focused) 
+		{
+			String fileName = val.getFile()
+								 .getName();
+			
+			label.setOpaque(true);
+			label.setText(fileName);
+			
+			if(isSelected)
+				label.setBackground(Color.pink);
+			else
+				label.setBackground(Color.white);
+			
+			return label;
+		}
+		
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) 
+	{
+		Tileset ts = list.getSelectedValue();
+		
+		selector.setTileset(ts);
 	}
 }

@@ -3,24 +3,17 @@ package GUI;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.time.Duration;
 
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
-import Game.Game;
 import Game.Updatable;
 import Game.Updater;
-import Graphic.Camera;
-import Graphic.Painter;
 
 public class GFrame extends JFrame
 	implements WindowListener, ComponentListener,
@@ -63,7 +56,7 @@ public class GFrame extends JFrame
 	
 	public void setFullScreen(boolean isFullScreen)
 	{
-		
+		device.setFullScreenWindow(isFullScreen ? this : null);
 	}
 
 	private void updateTitle()

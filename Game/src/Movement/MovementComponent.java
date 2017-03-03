@@ -3,8 +3,8 @@ package Movement;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import Entity.Entity;
 import EntityComponent.EntityComponent;
@@ -17,10 +17,9 @@ public class MovementComponent extends EntityComponent
 	
 	private boolean moving;
 	
-	private Collection<MovementListener> listeners;
+	private transient List<MovementListener> listeners;
 
-	private Point2D.Double prevLoc,
-						   parentLoc;
+	private Point2D.Double prevLoc, parentLoc;
 	
 	public MovementComponent()
 	{
@@ -63,23 +62,19 @@ public class MovementComponent extends EntityComponent
 	
 	private void notifyListeners()
 	{
-		if(!prevLoc.equals(parentLoc) &&
-		   !moving)
+		if(!prevLoc.equals(parentLoc) && !moving)
 		{
 			moving = true;
 			
 			for(MovementListener listener : listeners)
 				listener.movementStarted(this);
 		}
-		else if(prevLoc.equals(parentLoc) &&
-				moving)
+		else if(prevLoc.equals(parentLoc) && moving)
 		{
 			moving = false;
 						
 			for(MovementListener listener : listeners)
-			{
 				listener.movementStopped(this);
-			}
 		}
 		
 		if(moving)
@@ -91,11 +86,10 @@ public class MovementComponent extends EntityComponent
 			
 			dir = Cardinal.angleToCardinal(angle);
 		}
-		if(!prevDir.equals(dir) &&
-			moving)
+		if(!prevDir.equals(dir) && moving)
 		{
-			for(MovementListener listener : listeners)
-				listener.directionChanged(this);
+//			for(MovementListener listener : listeners)
+//				listener.directionChanged(this);
 		}
 	}
 	

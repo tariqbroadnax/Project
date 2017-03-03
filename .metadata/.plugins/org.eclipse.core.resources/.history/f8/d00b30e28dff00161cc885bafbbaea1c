@@ -1,0 +1,9 @@
+package Modifiers;
+
+import Game.Updatable;
+
+public abstract class UpdatableEffect extends Effect
+	implements Updatable
+{
+
+}

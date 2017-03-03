@@ -1,0 +1,28 @@
+package Ability;
+
+import java.time.Duration;
+
+import Movement.Force;
+
+public class DashAbility extends PointAbility
+{
+	private Force force;
+	
+	public DashAbility()
+	{
+		
+	}
+	
+	public void activate()
+	{
+		super.activate();
+		
+		
+	}
+	
+	public void update(Duration delta)
+	{
+		super.update(delta);
+		
+	}
+}

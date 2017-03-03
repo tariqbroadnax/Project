@@ -1,0 +1,8 @@
+package Modifiers;
+
+public class CombatDisable extends InstantEffect
+{
+	private boolean blockDisabled,
+					
+					
+}

@@ -1,10 +1,16 @@
 package Item;
 
+import java.io.File;
+
 public class Item
 {	
 	private int id;
 
 	private String name;
+
+	private int weight, value;
+	
+	private File icon;
 	
 	public Item()
 	{
@@ -19,11 +25,23 @@ public class Item
 		this.name = name;
 	}
 	
+	public void setIconFile(File icon) {
+		this.icon = icon;
+	}
+	
 	public int getID() {
 		return id;
 	}
 	
 	public String getName() {
 		return name;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+	
+	public File getIconFile() {
+		return icon;
 	}
 }

@@ -156,7 +156,7 @@ public class ColumnHeading extends JPanel
 		
 		selectedCols.clear();
 		
-		for(int row = 0; row < tm.rows; row++)
+		for(int row = 0; row < tm.rows(); row++)
 		{
 			List<TMCell> cells = tm.getColCells(row);
 			

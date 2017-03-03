@@ -1,0 +1,30 @@
+package Modifiers;
+
+public class EvasionDisable extends InstantEffect
+{
+	private boolean blockDisabled,
+					dodgeDisabled;
+
+	public EvasionDisable()
+	{
+		blockDisabled = dodgeDisabled = true;
+	}
+	
+	public EvasionDisable(EvasionDisable effect)
+	{
+		blockDisabled = effect.blockDisabled;
+		dodgeDisabled = effect.dodgeDisabled;
+	}
+	
+	@Override
+	public void apply() {
+		
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+					
+}

@@ -1,0 +1,19 @@
+package Modifiers;
+
+public class RemoveEffect extends InstantEffect
+{
+	private Class<? extends Effect> target;
+	
+	@Override
+	public void apply() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}

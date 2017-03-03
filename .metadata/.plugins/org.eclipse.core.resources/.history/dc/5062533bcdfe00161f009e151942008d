@@ -1,0 +1,18 @@
+package Modifiers;
+
+public class GoldOverTime extends TickEffect
+{
+	private int amount;
+	
+	@Override
+	protected void apply() {
+	
+	}
+
+	@Override
+	protected Effect _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

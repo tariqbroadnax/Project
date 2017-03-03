@@ -1,0 +1,19 @@
+package Ability;
+
+import java.time.Duration;
+
+public class DashAbility extends PointAbility
+{
+	public void activate()
+	{
+		super.activate();
+		
+		
+	}
+	
+	public void update(Duration delta)
+	{
+		super.update(delta);
+		
+	}
+}

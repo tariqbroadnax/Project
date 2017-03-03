@@ -1,0 +1,83 @@
+package Actions;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Entity.Entity;
+import Movement.Force;
+import Movement.MovementComponent;
+
+public class Follow extends Action 
+{
+	private double maxDistSq;
+	
+	private Entity target;
+		
+	private double prevDistSq;
+	
+	private Force force;
+	
+	public Follow()
+	{
+		maxDistSq = 15;
+	}
+	
+	public void update(Duration delta)
+	{
+		double distSq = actorTargetDistSq();
+	
+		if(distSq > maxDistSq)
+		{
+			if(prevDistSq < maxDistSq)
+			{
+				actor.get(MovementComponent.class)
+					 .getMovement()
+					 .addForce(force);
+			}		
+			
+			double angle = actorTargetAngle();
+			
+			force.setDirection(angle);
+		}
+		else if(prevDistSq > maxDistSq)
+		{
+			actor.get(MovementComponent.class)
+			 	 .getMovement()
+			 	 .removeForce(force);
+		}
+	}
+	
+	public void stop()
+	{
+		super.stop();
+	}
+	
+	public void setActor(Entity actor)
+	{
+		super.setActor(actor);
+		
+		move.setActor(actor);
+	}
+	
+	public void setTarget(Entity target)
+	{
+		this.target = target;
+	}
+	
+	private double actorTargetDistSq()
+	{
+		Point2D.Double actorLoc = actor.getLoc(),
+					   targetLoc = target.getLoc();
+		
+		return actorLoc.distanceSq(targetLoc);
+	}
+	
+	private double actorTargetAngle()
+	{
+		Point2D.Double actorLoc = actor.getLoc(),
+					   targetLoc = target.getLoc();
+		
+		return Math.atan2(targetLoc.y - actorLoc.y,
+						  targetLoc.x - actorLoc.x);
+	}
+}

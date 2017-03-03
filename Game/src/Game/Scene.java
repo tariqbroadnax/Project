@@ -27,9 +27,8 @@ import Graphic.Paintable;
 import Maths.Dimension2D;
 import Tileset.TileMap;
 
-public class Scene 
-	implements Updatable, Paintable, Serializable,
-			   Cloneable
+public class Scene implements Updatable, Paintable, 
+							  Serializable, Cloneable
 {	
 	private Map<Class<? extends EntityComponent>, List<Entity>> compMap;
 	
@@ -45,6 +44,8 @@ public class Scene
 	private List<Graphic> graphics;
 
 	private boolean gridVisible;
+
+	private Game game;
 	
 	// private LightMap lightMap;
 	// private TerrainMap terrMap;
@@ -119,12 +120,18 @@ public class Scene
 	{		
 		// System.out.println("painting");
 
-		//tileMap.paint(gc)
 		//lightMap.paint(gc);
 		
-		//tileMap.paint(gc);
+		tileMap.paint(gc);
 		drawGrid(gc);
 		painter.paint(gc);
+		
+		RoomFilter filter = new RoomFilter(this);
+		
+		filter.addRoom(new Rectangle2D.Double(-60, -60, 120, 120));
+		filter.addRoom(new Rectangle2D.Double(60, -60, 120, 120));
+		
+		filter.paint(gc);
 		
 		//rain.paint(gc);
 	}
@@ -237,10 +244,13 @@ public class Scene
 		{
 			if(entity.contains(GraphicsComponent.class))
 			{
+				GraphicsComponent comp = entity.get(GraphicsComponent.class);
+				
+				comp.updateGraphicLocation();
+				
 				Rectangle2D.Double graphicBound =
-						entity.get(GraphicsComponent.class)
-							  .getGraphic()
-							  .getBound();
+						comp.getGraphic()
+							.getBound();
 				
 				if(camera.shows(graphicBound))
 					visibleEntities.add(entity);
@@ -294,8 +304,9 @@ public class Scene
 	{
 		if(entity == null)
 			throw new NullPointerException();
-		
+	
 		addQ.add(entity);
+		entity.setSceneLoc(this);
 	}
 	
 	public void addEntityNow(Entity entity)
@@ -380,6 +391,16 @@ public class Scene
 				//new EntityDisposer(resources),
 				//new BehaviourManager(resources));
 	
+	}
+	
+	public void setGame(Game game)
+	{
+		this.game = game;
+	}
+	
+	public Game getGame() 
+	{
+		return game;
 	}
 	
 	public void setGridVisible(boolean gridVisible)

@@ -1,0 +1,39 @@
+package Quest;
+
+import Item.Item;
+
+public class ItemTask extends Task 
+{
+	private Item item;
+	
+	private int target;
+	
+	public ItemTask()
+	{
+		item = null;
+		
+		target = 5;
+	}
+	
+	@Override
+	public void start() {
+		
+	}
+
+	public void finish()
+	{
+		
+	}
+	
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

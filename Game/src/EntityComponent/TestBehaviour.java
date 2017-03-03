@@ -2,6 +2,7 @@ package EntityComponent;
 
 import java.time.Duration;
 
+import Behaviour.Behaviour;
 import Entity.Entity;
 import Movement.Force;
 import Movement.MovementComponent;

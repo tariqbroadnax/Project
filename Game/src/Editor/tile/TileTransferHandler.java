@@ -69,8 +69,8 @@ public class TileTransferHandler
 		int row = tm.row(normLoc.y),
 			col = tm.col(normLoc.x);
 		
-		if(0 <= row && row < tm.rows && 
-		   0 <= col && col < tm.cols)
+		if(0 <= row && row < tm.rows() && 
+		   0 <= col && col < tm.cols())
 		{
 			SetTile edit = new SetTile(resources, tm, tile, row,  col);
 			UndoManager undoManager = resources.getUndoManager();
@@ -90,8 +90,8 @@ public class TileTransferHandler
 		int row = tm.row(normLoc.y),
 			col = tm.col(normLoc.x);
 		
-		if(0 <= row && row < tm.rows && 
-		   0 <= col && col < tm.cols)
+		if(0 <= row && row < tm.rows() && 
+		   0 <= col && col < tm.cols())
 		{
 			RemoveTile edit = new RemoveTile(resources, tm, row,  col);
 			UndoManager undoManager = resources.getUndoManager();
@@ -111,8 +111,8 @@ public class TileTransferHandler
 		int row = tm.row(normLoc.y),
 			col = tm.col(normLoc.x);
 			
-			if(!(0 <= row && row < tm.rows && 
-			     0 <= col && col < tm.cols))
+			if(!(0 <= row && row < tm.rows() && 
+			     0 <= col && col < tm.cols()))
 				return;
 			
 			double x = tm.x(col), y = tm.y(row);

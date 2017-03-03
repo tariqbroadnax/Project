@@ -21,4 +21,9 @@ public class MultModifier extends Modifier
 	public double modify(double val) {
 		return factor * val;
 	}
+
+	@Override
+	public Object clone() {
+		return new MultModifier(this);
+	}
 }

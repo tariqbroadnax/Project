@@ -1,125 +1,125 @@
 package Tileset;
 
-import static java.lang.Math.min;
-
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import Graphic.Graphic;
 import Graphic.GraphicsContext;
 import Graphic.Sprite;
 import Maths.Dimension2D;
 
-public class TileMap extends Graphic
-	implements Serializable
+public class TileMap implements Serializable
 {
+	private Point2D.Double loc;
+	
 	private Dimension2D.Double tileSize;
 	
-	private Tile[][] map;
+	private Tile[][] tiles;
 	
-	public final int rows, cols;
-
 	public TileMap()
 	{
-		this(40, 40);
-	}
-	
-	public TileMap(int rows, int cols)
-	{
+		loc = new Point2D.Double();
+		
 		tileSize = new Dimension2D.Double(10, 10);
+				
+		tiles = new Tile[250][250];
 		
-		loc.x = -200;
-		loc.y = -200;
+		loc.x = loc.y = -1250; 
+
+		Tileset ts = new Tileset("gts.png", 1, 2);
 		
-		this.rows = rows; this.cols = cols;
-		
-		map = new Tile[cols][rows];
-		
-		Tile tile = new Tile("GrassTileSet.png", 0, 0);
-		
-		for(int row = 0; row < rows; row++)
-			for(int col = 0; col < cols; col++)
-				map[col][row] = tile;
+		for(int row = 0; row < 250; row++)
+			for(int col = 0; col < 250; col++)
+			{
+				set(row, col, ts.get(0, 0));
+			}
 	}
 	
 	public TileMap(TileMap tm)
 	{
-		tileSize = new Dimension2D.Double(
-				tm.tileSize.width, tm.tileSize.height);
+		loc = (Point2D.Double) tm.loc.clone();
 		
-		rows = tm.rows; cols = tm.cols;
+		tileSize = (Dimension2D.Double) tm.tileSize.clone();
 		
-		map = new Tile[cols][rows];
+		int rows = tm.rows(), 
+			cols = tm.cols();
+		
+		tiles = new Tile[cols][rows];
 
 		for(int row = 0; row < rows; row++)
 			for(int col = 0; col < cols; col++)
-				map[col][row] = tm.map[col][row];
+				tiles[col][row] = tm.tiles[col][row];
 	}
-
-	@Override
-	protected void _paint(GraphicsContext gc) 
+	
+	public void paint(GraphicsContext gc)
 	{
-		Rectangle2D.Double cameraBound =
-				gc.camera.normalViewBound();
+		Rectangle2D.Double normScrBound = gc.camera.normalScreenBound();
 		
-		int startRow = row(cameraBound.y),
-			startCol = col(cameraBound.x),
-			endRow = row(cameraBound.y + cameraBound.height) + 1,
-			endCol = col(cameraBound.x + cameraBound.width) + 1;
+		int startCol = col(normScrBound.x),
+			startRow = row(normScrBound.y),
+			endCol = col(normScrBound.x + normScrBound.width) + 1,
+			endRow = row(normScrBound.y + normScrBound.height) + 1;
 		
-		startRow = startRow < 0 ? 0 : startRow;
-		startCol = startCol < 0 ? 0 : startCol;
-		endRow = endRow > rows ? rows : endRow;
-		endCol = endCol > cols ? cols : endCol;
+		int rows = rows(), cols = cols();
 		
-	//	System.out.println(x(startCol) + " " + y(startRow));
+		startCol = startCol < 0 ? 0 : 
+				   startCol > cols ? cols - 1 : startCol;
+		endCol = endCol < 0 ? 1 :
+				 endCol >= cols ? cols : endCol;
+		startRow = startRow < 0 ? 0 :
+				   startRow > rows ? rows - 1 : startRow;
+		endRow = endRow < 0 ? 1 : 
+				 endRow > rows ? rows : endRow;
+				   
 		Sprite sprite = new Sprite();
 		
-		Tile tile = map[0][0];
-
-		sprite.setFile(tile.file.getAbsoluteFile());
-		sprite.setTileBound(0, 0, 16, 16);
 		sprite.setSize(tileSize.width, tileSize.height);
-				
+		
 		for(int row = startRow; row < endRow; row++)
 		{
 			for(int col = startCol; col < endCol; col++)
-			{
-				tile = map[col][row];
+			{	
+				Tile tile = tiles[col][row];
 				
-				if(tile == null) continue;
-				
-				double x = loc.x + col * tileSize.width,
-					   y = loc.y + row * tileSize.height;
-		
-				sprite.setLoc(x + tileSize.width / 2,
-							  y + tileSize.height / 2);
-				
-				sprite.paint(gc);
+				if(tile != null)
+				{
+					double x = x(col) + tileSize.width/2,
+						   y = y(row) + tileSize.height/2;
+										
+					sprite.setLoc(x, y);
+					sprite.setTile(tile);
+					
+					sprite.paint(gc);					
+				}
 			}
 		}
 	}
 	
-	public void set(int row, int col, Tile tile) {
-		map[col][row] = tile;
+	public int rows() {
+		return tiles[0].length;
 	}
 	
-	public Tile get(int row, int col) {
-		return map[col][row];
+	public int cols() {
+		return tiles.length;
 	}
-	
-	public void setFrame(int rows, int cols)
+
+	public void set(int row, int col, Tile tile) 
 	{
-		Tile[][] map = new Tile[cols][rows];
-		
-		for(int row = 0; row < min(rows,this.rows); row++)
-			for(int col = 0; col < min(col, this.cols); col++)
-				map[col][row] = this.map[col][row];
-		
-		this.map = map;
+		int rows = rows(), cols = cols();
+	
+		tiles[col][row] = tile;
+	}
+	
+	public Tile get(int row, int col) 
+	{
+		if(-1 < row && row < rows() &&
+		   -1 < col && col < cols())
+			return tiles[col][row];
+		else
+			return null;
 	}
 	
 	public void setTileSize(double twidth, double theight)
@@ -128,35 +128,26 @@ public class TileMap extends Graphic
 		tileSize.height = theight;
 	}
 	
-	public TMCell cellAtLoc(Point2D.Double normLoc)
-	{
-		int row = row(normLoc.y),
-			col = col(normLoc.x);
-		
-		if (0 <= row && row < rows && 
-		    0 <= col && col < cols)
-			return getCell(row, col);
-		else
-			return null;
-	}
-	
-	
 	public int row(double y)
 	{
 		y -= loc.y;
 		
-		if(y < 0) return -1;
-		else
-			return (int) Math.floor(y/tileSize.height);
+		int row = (int) Math.floor(y/tileSize.height);
+		
+		if(y < 0) row -= 1;
+		
+		return row;
 	}
 	
 	public int col(double x)
 	{
 		x -= loc.x;
 		
-		if(x < 0) return -1;
-		else
-			return (int) Math.floor(x/tileSize.width);	
+		int col = (int) Math.floor(x/tileSize.width);	
+		
+		if(x < 0) col -= 1;
+
+		return col;
 	}
 	
 	public double y(int row) {
@@ -167,72 +158,72 @@ public class TileMap extends Graphic
 		return loc.x + col * tileSize.width;
 	}
 	
+	private Point2D.Double tileLoc(int row, int col) {
+		return new Point2D.Double(x(col), y(row));
+	}
+
+	public TMCell cellAtLoc(Double loc) {
+		return new TMCell(this, row(loc.y), col(loc.x));
+	}
+	
+	public List<TMCell> getRowCells(int row) 
+	{
+		int cols = cols();
+		
+		ArrayList<TMCell> cells = new ArrayList<TMCell>(cols);
+		
+		for(int col = 0; col < cols; col++)
+		{
+			TMCell cell = new TMCell(this, row, col);
+			
+			cells.add(cell);
+		}
+		
+		return cells;
+	}
+	
+	public List<TMCell> getColCells(int col) 
+	{
+		int rows = rows();
+		
+		ArrayList<TMCell> cells = new ArrayList<TMCell>(rows);
+		
+		for(int row = 0; row < rows; row++)
+		{
+			TMCell cell = new TMCell(this, row, col);
+			
+			cells.add(cell);
+		}
+		
+		return cells;
+	}
+	
+	public List<TMCell> getCells() 
+	{
+		int rows = rows(), cols = cols();
+		
+		ArrayList<TMCell> cells = new ArrayList<TMCell>(rows * cols);
+
+		for(int row = 0; row < rows; row++)
+			for(int col = 0; col < cols; col++)
+			{
+				TMCell cell = new TMCell(this, row, col);
+				
+				cells.add(cell);
+			}
+		
+		return cells;
+	}
+	
 	public Dimension2D.Double tileSize() 
 	{
 		return new Dimension2D.Double(
 				tileSize.width, tileSize.height);
-	}
-	
-	@Override
-	public Rectangle2D.Double getBound() 
-	{
-		double width = tileSize.width * cols,
-			   height = tileSize.height * rows;
-		
-		return new Rectangle2D.Double(loc.x, loc.y, 								  width, height);
-	}
-	
-	public List<TMCell> getRowCells(int row)
-	{
-		List<TMCell> cells = new ArrayList<TMCell>();
-		
-		for(int col = 0; col < cols; col++)
-		{
-			TMCell cell = getCell(row, col);
-			
-			cells.add(cell);
-		}
-		
-		return cells;
-	}
-	
-	public List<TMCell> getColCells(int col)
-	{
-		List<TMCell> cells = new ArrayList<TMCell>();
-		
-		for(int row = 0; row < rows; row++)
-		{
-			TMCell cell = getCell(row, col);
-			
-			cells.add(cell);
-		}
-		
-		return cells;
-	}
-	
-	public List<TMCell> getCells()
-	{
-		List<TMCell> cells = new ArrayList<TMCell>();
-		
-		for(int row = 0; row < rows; row++)
-		{
-			for(int col = 0; col < cols; col++)
-			{
-				TMCell cell = getCell(row, col);
-				
-				cells.add(cell);
-			}
-		}
-		
-		return cells;
-	}
-	
-	public TMCell getCell(int row, int col) {
-		return new TMCell(this, row, col);
 	}
 
 	@Override
 	public Object clone() {
 		return new TileMap(this);
 	}
+
 }

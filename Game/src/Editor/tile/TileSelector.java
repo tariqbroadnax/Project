@@ -10,9 +10,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import Editor.EditorResources;
@@ -21,6 +19,7 @@ import Editor.selection.SelectionHandler;
 import EditorGUI.MouseListener;
 import EditorGUI.MouseMotionListener;
 import EditorGUI.UndoManager;
+import Graphic.ImagePool;
 import Tileset.TMCell;
 import Tileset.Tile;
 import Tileset.Tileset;
@@ -29,7 +28,7 @@ public class TileSelector extends JPanel
 	implements MouseListener, MouseMotionListener,
 	 		   FocusListener
 {
-	private EditorResources resources;
+	private EditorResources resources = Editor.Editor.RESOURCES;
 	
 	private Tileset tileset;
 	
@@ -41,45 +40,23 @@ public class TileSelector extends JPanel
 	
 	private Point hoverLoc;
 			
-	public TileSelector(
-			EditorResources resources,
-			Tileset tileset)
+	public TileSelector()
 	{
-		this.resources = resources;
-		this.tileset = tileset;	
-		
 		zoom = 0.75;
 		
 		gridVisible = true;
 		
-		try {
-			File file = tileset.getFile();
-			img = ImageIO.read(file);
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			img = null;
-		}
-		
-		int imgW = img.getWidth(),
-			imgH = img.getHeight();
-
-		resources.pool.importTileset(tileset, img);
-		
-		Dimension prefSize = 
-				new Dimension(imgW, imgH);
-		
-		setPreferredSize(prefSize);
-		
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		addFocusListener(this);
+		addFocusListener(this);		
 	}
 	
 	@Override
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
+		
+		if(tileset == null) return;
 
 		g = g.create();
 		Graphics2D g2d = (Graphics2D)g;
@@ -94,8 +71,9 @@ public class TileSelector extends JPanel
 		checkAndPaintHoveredTile(g2d);
 		checkAndPaintSelection(g2d);
 		
-		g2d.dispose();
+		g2d.dispose();				
 	}
+	
 	
 	private void paintGridLines(Graphics g)
 	{
@@ -246,46 +224,50 @@ public class TileSelector extends JPanel
 	
 	}
 	
-	private void updatePreferredSize()
+	public void setTileset(Tileset tileset)
 	{
-		int imgW = img.getWidth(),
-			imgH = img.getHeight();
+		this.tileset = tileset;
+
+		if(tileset != null)
+		{
+			File file = tileset.getFile();
 		
-		Dimension size = new Dimension(
-				(int) (zoom * imgW),
-				(int) (zoom * imgH));
-	
-		setPreferredSize(size);
-		revalidate();
+			img = ImagePool.instance.getImage(file);			
+		}
+		else
+			img = null;
+		
 		repaint();
 	}
-
-	public void zoomIn()
-	{
-		zoom *= 1.2;
-		updatePreferredSize();
-	}
-
-	public void zoomOut()
-	{
-		zoom /= 1.2;
-		updatePreferredSize();
-	}
 	
-	public void toggleGridLines()
+	public void setGridVisible(boolean gridVisible)
 	{
-		gridVisible = !gridVisible;
+		this.gridVisible = gridVisible;
+		
 		repaint();
 	}
-
-	public Tileset getTileset() {
-		return tileset;
+	
+	public void setZoom(double zoom)
+	{
+		this.zoom = zoom;
+		
+		repaint();
 	}
 	
+	public boolean isGridVisible() {
+		return gridVisible;
+	}
+	
+	public double getZoom() {
+		return zoom;
+	}
+
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
 		requestFocus();
+		
+		if(tileset == null) return;
 		
 		int x = (int)(e.getX() / zoom),
 			y = (int)(e.getY() / zoom);

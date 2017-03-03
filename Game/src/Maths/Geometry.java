@@ -17,5 +17,5 @@ public class Geometry
 		
 		return new Rectangle2D.Double(minX, minY, maxX - minX,
 												  maxY - minY);
-	}
+	}	
 }

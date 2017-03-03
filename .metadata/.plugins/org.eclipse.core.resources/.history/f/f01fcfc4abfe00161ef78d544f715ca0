@@ -1,0 +1,14 @@
+package Quest;
+
+import Entity.Entity;
+
+public class ChoiceReward implements Reward
+{
+
+	@Override
+	public void give(Entity ent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,47 @@
+package Stat;
+
+import java.util.TreeSet;
+
+import Modifiers.Modifier;
+
+public class Stats
+{
+	private double maxHealth, health;
+		
+	public Stats()
+	{
+		health = maxHealth = 100;
+	}
+	
+	public void addHealth(double val)
+	{
+		if(val < 0)
+			throw new IllegalArgumentException();
+		
+		double maxHealth = getMaxHealth();
+		health += val;
+		health = health > maxHealth ? maxHealth : health;
+	}
+	
+	public void applyDamage(double val)
+	{
+		if(val < 0)
+			throw new IllegalArgumentException();
+		
+		health -= val;
+		health = health < 0 ? 0 : health;
+	}
+	
+	public double getHealth() {
+		return health;
+	}
+
+	public double getMaxHealth() 
+	{
+		return maxHealth;
+	}
+	
+	public double getBaseMaxHealth() {
+		return maxHealth;
+	}
+}

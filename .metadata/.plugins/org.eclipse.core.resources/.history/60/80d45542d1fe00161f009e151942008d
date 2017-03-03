@@ -1,0 +1,24 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Ability.ActiveAbility;
+
+public class HeavyDamageTrigger extends Effect
+{
+	private double heavyDmgHpRatio;
+	
+	private ActiveAbility ability;
+	
+	@Override
+	public void update(Duration delta) {
+		
+	}
+
+	@Override
+	protected Effect _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}

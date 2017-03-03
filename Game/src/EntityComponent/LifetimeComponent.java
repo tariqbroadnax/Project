@@ -2,6 +2,8 @@ package EntityComponent;
 
 import java.time.Duration;
 
+import Entity.Entity;
+
 public class LifetimeComponent extends EntityComponent
 {
 	private Lifetime lifetime;
@@ -23,8 +25,15 @@ public class LifetimeComponent extends EntityComponent
 		
 		if(lifetime.isLifeOver())
 		{
-			parent.getSceneLoc()
-				  .removeEntity(parent);
+			Entity player = parent.getSceneLoc()
+								  .getGame()
+								  .getPlayer();
+			
+			if(parent != player)
+			{
+				parent.getSceneLoc()
+					  .removeEntity(parent);
+			}
 		}
 	}
 	

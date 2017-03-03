@@ -1,0 +1,16 @@
+package Behavior;
+
+import java.time.Duration;
+
+import Entity.Entity;
+
+public class PetBehavior extends Behavior
+{
+	private int
+	@Override
+	public void update(Duration delta) 
+	{
+		Entity owner = null;
+		
+	}
+}

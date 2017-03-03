@@ -1,0 +1,24 @@
+package Party;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Entity.Entity;
+
+public class Party 
+{
+	private List<Entity> members;
+	
+	public Party()
+	{
+		members = new ArrayList<Entity>();
+	}
+	
+	public void addMember(Entity member) {
+		members.add(member);
+	}
+	
+	public void removeMember(Entity member) {
+		members.remove(member);
+	}
+}

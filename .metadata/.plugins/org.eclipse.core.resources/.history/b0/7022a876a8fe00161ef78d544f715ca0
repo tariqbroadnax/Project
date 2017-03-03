@@ -1,0 +1,60 @@
+package Quest;
+
+import Inventory.Inventory;
+import Inventory.InventoryComponent;
+import Item.Item;
+
+public class ItemTask extends Task 
+{
+	private Item item;
+	
+	private int target;
+	
+	public ItemTask()
+	{
+		item = null;
+		
+		target = 5;
+	}
+	
+	public ItemTask(Item item, int target)
+	{
+		this.item = item;
+		this.target = target;
+	}
+	
+	public ItemTask(ItemTask task)
+	{
+		item = task.item;
+		target = task.target;
+	}
+	
+	@Override
+	public void start() {}
+
+	public void finish()
+	{
+		Inventory invent = tasker.get(InventoryComponent.class)
+								 .getInventory();
+		
+		for(int i = 0; i < target; i++)
+			invent.removeItem(item);
+	}
+	
+	@Override
+	public boolean isFinished() 
+	{
+		Inventory invent = tasker.get(InventoryComponent.class)
+				 				 .getInventory();
+		
+		int quantity = invent.getQuantity(item);
+		
+		return quantity > target;
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

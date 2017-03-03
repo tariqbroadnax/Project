@@ -1,0 +1,8 @@
+package TestEntity;
+
+import Entity.Entity;
+
+public class Pet extends Entity
+{
+	
+}

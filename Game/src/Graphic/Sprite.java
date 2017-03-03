@@ -7,11 +7,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import Maths.Dimension2D;
+import Tileset.Tile;
 
 public class Sprite extends Graphic
-{
-	private static ImagePool pool = new ImagePool();
-	
+{	
 	private File file;
 	
 	private Dimension2D.Double size;
@@ -46,19 +45,23 @@ public class Sprite extends Graphic
 		else
 			tileBound = new Rectangle(
 					spr.tileBound.x, spr.tileBound.y,
-					spr.tileBound.width, spr.tileBound.height);
-		
+					spr.tileBound.width, spr.tileBound.height);	
 	}
 	
 	@Override
-	protected void _paint(GraphicsContext gc) 
+	public void _paint(GraphicsContext gc) 
 	{		
 		Graphics2D g2d = (Graphics2D)gc.g2d.create();
 		
-		BufferedImage img = pool.getImage(file);
+		BufferedImage img = ImagePool.instance.getImage(file);
 				
 		if(img == null)
+		{
+			System.out.println(file.getName());
+			new Exception().printStackTrace();
+			System.exit(1);
 			return;
+		}
 		
 		Rectangle2D.Double scrBound = 
 				gc.camera.boundOnScreen2D(loc.x, loc.y, 
@@ -86,11 +89,23 @@ public class Sprite extends Graphic
 	}
 	
 	public void setFile(File file)
-	{
-		pool.release(this.file);
-		pool.request(file);
+	{		
+		ImagePool.instance.release(this.file);
 		
 		this.file = file;
+		
+		ImagePool.instance.request(this.file);
+
+	}
+	
+	public void setTile(Tile tile)
+	{
+		File file = tile.src.getFile();
+			
+		Rectangle bound = tile.getBound();
+			
+		setFile(file);
+		setTileBound(bound);
 	}
 	
 	public void setSize(double width, double height) {
@@ -111,6 +126,23 @@ public class Sprite extends Graphic
 	public void setTileBound(int x, int y, int w, int h)
 	{
 		setTileBound(new Rectangle(x,y,w,h));
+	}
+	
+	public void setTileBound2(int row, int col, int rows, int cols)
+	{
+		if(file == null) return;
+		
+		BufferedImage img = ImagePool.instance.getImage(file);
+
+		int imgW = img.getWidth(),
+			imgH = img.getHeight();
+		
+		int x = col * imgW/cols,
+			y = row * imgH/rows,
+			w = imgW/cols,
+			h = imgH/rows;
+		
+		setTileBound(x, y, w, h);
 	}
 	
 	public File getFile() {

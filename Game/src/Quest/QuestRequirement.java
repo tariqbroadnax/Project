@@ -13,6 +13,11 @@ public class QuestRequirement implements Requirement
 		this.quest = quest;
 	}
 	
+	public QuestRequirement(QuestRequirement req)
+	{
+		this.quest = req.quest;
+	}
+	
 	@Override
 	public boolean isSatisfied(Entity ent) 
 	{
@@ -23,5 +28,13 @@ public class QuestRequirement implements Requirement
 	
 	public void setQuest(Quest quest) {
 		this.quest = quest;
+	}
+	
+	public Quest getQuest() {
+		return quest;
+	}
+	
+	public Object clone() {
+		return new QuestRequirement(this);
 	}
 }

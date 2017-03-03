@@ -1,0 +1,24 @@
+package Item;
+
+import java.util.List;
+
+import Entity.Entity;
+import Modifiers.Effect;
+
+public class ConsumableItem extends Item
+{
+	private List<Effect> effects;
+
+	public void use(Entity ent)
+	{
+		
+	}
+	
+	public void addEffect(Effect effect) {
+		effects.add(effect);
+	}
+	
+	public void removeEffect(Effect effect) {
+		effects.remove(effect);
+	}
+}

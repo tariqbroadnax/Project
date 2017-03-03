@@ -1,0 +1,8 @@
+package Item;
+
+public class EquipItem extends Item 
+{
+	private int requiredLvl;
+	
+	
+}

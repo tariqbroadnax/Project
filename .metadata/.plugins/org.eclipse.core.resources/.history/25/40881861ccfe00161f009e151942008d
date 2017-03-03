@@ -1,0 +1,31 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import EntityComponent.Lifetime;
+
+public abstract class TickEffect extends Effect
+{
+	private Lifetime ticktime, lifetime;
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		ticktime.update(delta);
+		lifetime.update(delta);
+		
+		if(ticktime.isLifeOver())
+		{
+			apply();
+
+			ticktime.reset();
+		}
+	}
+	
+	protected abstract void apply();
+	
+	@Override
+	public boolean isFinished() {
+		return lifetime.isLifeOver();
+	}
+}

@@ -1,0 +1,6 @@
+package Modifiers;
+
+public class TemporaryEffect extends UpdatableEffect
+{
+
+}

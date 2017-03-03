@@ -46,8 +46,6 @@ public class MouseController implements MouseListener
 		if(player.contains(ActionComponent.class))
 		{
 			move = new Move();
-			
-			move.setSpeed(30);
 	
 			player.get(ActionComponent.class)
 				  .startAction(move);
@@ -59,7 +57,9 @@ public class MouseController implements MouseListener
 	
 	private void makePlayerMoveToLoc(Point2D.Double loc)
 	{
-		if(move == null || move.isFinished())
+		if(move == null || move.isFinished() ||
+		  !player.get(ActionComponent.class)
+		  		 .contains(move))
 			startNewMovement();
 		
 		if(move != null)

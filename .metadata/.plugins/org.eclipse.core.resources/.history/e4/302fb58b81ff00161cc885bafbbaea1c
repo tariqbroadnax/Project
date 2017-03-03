@@ -1,0 +1,18 @@
+package Modifiers;
+
+public class Span 
+{
+	private long len, elapsed;
+	
+	public void setLength(long len) {
+		this.len = len;
+	}
+	
+	public boolean isFinished() {
+		return elapsed >= len;
+	}
+	
+	public void reset() {
+		elapsed = 0;;
+	}
+}

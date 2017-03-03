@@ -104,8 +104,8 @@ public class Stamp implements Tool
 		int row = tm.row(normLoc.y),
 			col = tm.col(normLoc.x);
 		
-		if(0 <= row && row < tm.rows && 
-		   0 <= col && col < tm.cols)
+		if(0 <= row && row < tm.rows() && 
+		   0 <= col && col < tm.cols())
 		{
 			SetTile edit = new SetTile(resources, tm, tile, row,  col);
 			UndoManager undoManager = resources.getUndoManager();

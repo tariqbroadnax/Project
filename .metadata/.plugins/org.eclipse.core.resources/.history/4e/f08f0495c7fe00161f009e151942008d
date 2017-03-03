@@ -1,0 +1,58 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Entity.Entity;
+import EntityComponent.CombatComponent;
+import EntityComponent.CombatListener;
+import EntityComponent.StatsComponent;
+
+public class HealOnKill extends Effect
+	implements CombatListener
+{
+	private double amount;
+
+	@Override
+	public void update(Duration delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void start() {
+		src.get(CombatComponent.class)
+		   .addCombatListener(this);
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean canBeApplied(Entity target) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected Effect _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void entityKilled(Entity ent) 
+	{
+		ent.get(StatsComponent.class)
+		   .getStats()
+		   .heal(amount);
+	}
+}

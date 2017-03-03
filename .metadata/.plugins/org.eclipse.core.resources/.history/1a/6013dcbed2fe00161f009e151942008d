@@ -1,0 +1,37 @@
+package Modifiers;
+
+import java.time.Duration;
+
+import Ability.ActiveAbility;
+
+public class HeavyDamageTrigger extends Effect
+{
+	private ActiveAbility ability;
+	
+	private double heavyDmgHpRatio;
+	
+	public HeavyDamageTrigger()
+	{
+		ability = null;
+		
+		heavyDmgHpRatio = .15;
+	}
+	
+	public HeavyDamageTrigger(HeavyDamageTrigger effect)
+	{
+		ability = (ActiveAbility) effect.ability.clone();
+		
+		heavyDmgHpRatio = effect.heavyDmgHpRatio;
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+
+	@Override
+	protected Effect _clone() {
+		return new HeavyDamageTrigger(this);
+	}
+}

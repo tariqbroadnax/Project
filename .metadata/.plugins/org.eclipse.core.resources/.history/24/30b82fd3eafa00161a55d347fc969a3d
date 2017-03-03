@@ -1,0 +1,94 @@
+package Editor;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.AbstractListModel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import Editor.tile.OpenTileset;
+import Editor.tile.TileSelector;
+import Tileset.Tileset;
+
+public class Selector extends JPanel
+	implements ListSelectionListener
+{	
+	private JList<Tileset> list;
+	
+	private TileSelector selector;
+
+	public Selector(EditorResources resources)
+	{
+		JToolBar toolbar = new JToolBar();
+		
+		selector = new TileSelector();
+		
+		list = new JList<Tileset>();
+
+		toolbar.add(new OpenTileset(selector));
+		
+		toolbar.setFloatable(false);
+				
+		MyModel model = new MyModel();
+		
+		list.setModel(model);
+		list.addListSelectionListener(this);
+		
+		setLayout(new GridBagLayout());
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+
+		gbc.gridx = 0; gbc.gridy = 0;
+		gbc.weightx = 1; gbc.weighty = 0;
+		gbc.fill = gbc.NONE;
+		gbc.anchor = gbc.LINE_START;
+		
+		add(toolbar, gbc);
+	
+		gbc.gridx = 0; gbc.gridy = 1;
+		gbc.weightx = 1; gbc.weighty = 1;
+		gbc.fill = gbc.BOTH;
+		gbc.anchor = gbc.LINE_START;
+		
+		add(new JScrollPane(list), gbc);
+		
+		gbc.gridx = 0; gbc.gridy = 2;
+		gbc.weightx = 1; gbc.weighty = 1;
+		gbc.fill = gbc.BOTH;
+		gbc.anchor = gbc.LINE_START;
+		
+		add(new JScrollPane(selector), gbc);	
+	}
+
+	private class MyModel extends AbstractListModel<Tileset>
+	{
+		@Override
+		public Tileset getElementAt(int index) 
+		{
+			return Editor.RESOURCES.getEditorAssets()
+			   					   .getTilesets()
+			   					   .get(index);
+		}
+
+		@Override
+		public int getSize() 
+		{
+			return Editor.RESOURCES.getEditorAssets()
+								   .getTilesets()
+								   .size();
+		}	
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) 
+	{
+		Tileset ts = list.getSelectedValue();
+		
+		selector.setTileset(ts);
+	}
+}

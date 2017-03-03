@@ -1,0 +1,9 @@
+package Ability;
+
+public class AbilityEntity extends Entity
+{
+	public AbilityEntity(AbilityEvent event)
+	{
+		
+	}
+}

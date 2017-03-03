@@ -1,0 +1,11 @@
+package Quest;
+
+import java.io.Serializable;
+
+public abstract class Task implements Serializable, Cloneable
+{
+	public Task()
+	{
+		
+	}
+}

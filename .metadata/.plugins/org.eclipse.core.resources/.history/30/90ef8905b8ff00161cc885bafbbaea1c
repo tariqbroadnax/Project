@@ -1,0 +1,14 @@
+package Modifiers;
+
+import java.util.List;
+
+import Ability.ActiveAbility;
+
+public class DamageModifier 
+{
+	private Modifier mod;
+	
+	private List<Class<? extends ActiveAbility>> targets;
+	
+	
+}

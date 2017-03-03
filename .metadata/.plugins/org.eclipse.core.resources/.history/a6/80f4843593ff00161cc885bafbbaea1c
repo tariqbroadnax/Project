@@ -1,0 +1,27 @@
+package Modifiers;
+
+import java.util.List;
+
+import Actions.Action;
+
+public class ActionDisable extends InstantEffect
+{
+	private boolean allDisabled;
+	
+	private List<? extends Action> disabledActions;
+
+	@Override
+	public void apply() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	
+}

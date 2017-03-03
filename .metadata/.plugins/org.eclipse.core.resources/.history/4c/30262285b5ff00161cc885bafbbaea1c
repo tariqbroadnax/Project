@@ -1,0 +1,84 @@
+package EntityComponent;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+import Entity.Entity;
+
+public class CombatComponent extends EntityComponent
+{
+	public final long OUT_OF_COMBAT_DUR = 5000;
+	
+	private List<CombatListener> lists;
+	
+	private long durSinceLastAttack;
+	
+	private boolean blockEnabled, dodgeEnabled;
+	
+	public CombatComponent()
+	{
+		lists = new ArrayList<CombatListener>();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		durSinceLastAttack += delta.toMillis();
+	}
+	
+	public void notifyOfAttack(Entity ent)
+	{
+		for(CombatListener list : lists)
+			list.entityAttacked(ent);
+	
+		durSinceLastAttack = 0;
+	}
+	
+	public void notifyOfBeingAttacked(Entity ent)
+	{
+		for(CombatListener list : lists)
+			list.entityAttacks(ent);
+		
+		durSinceLastAttack = 0;
+	}
+	
+	public void notifyOfKill(Entity ent)
+	{
+		for(CombatListener list : lists)
+			list.entityKilled(ent);
+	}
+	
+	public void setBlockEnabled(boolean blockEnabled) {
+		this.blockEnabled = blockEnabled;
+	}
+	
+	public void setDodgeEnabled(boolean dodgeEnabled) {
+		this.dodgeEnabled = dodgeEnabled;
+	}
+	
+	public boolean isBlockEnabled() {
+		return blockEnabled;
+	}
+	
+	public long getDurationSinceLastAttack() {
+		return durSinceLastAttack;
+	}
+	
+	public boolean isOutOfCombat() {
+		return durSinceLastAttack > OUT_OF_COMBAT_DUR;
+	}
+	
+	public void addCombatListener(CombatListener list) {
+		lists.add(list);
+	}
+	
+	public void removeCombatListener(CombatListener list) {
+		lists.remove(list);
+	}
+	
+	@Override
+	protected EntityComponent _clone() {
+		return new CombatComponent();
+	}
+}

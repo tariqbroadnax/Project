@@ -1,0 +1,8 @@
+package Ability;
+
+public class ProjectileSector 
+{
+	private double angle;
+	
+	private int pivots;
+}

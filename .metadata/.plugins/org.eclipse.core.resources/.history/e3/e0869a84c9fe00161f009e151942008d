@@ -1,0 +1,50 @@
+package EntityComponent;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+import Entity.Entity;
+
+public class CombatComponent extends EntityComponent
+{
+	private List<CombatListener> lists;
+	
+	private long durSinceLastAttack;
+	
+	public CombatComponent()
+	{
+		lists = new ArrayList<CombatListener>();
+	
+	}
+	
+	@Override
+	public void update(Duration delta) {
+		
+	}
+	
+	public void notifyOfAttack(Entity ent)
+	{
+		for(CombatListener list : lists)
+			list.entityAttacked(ent);
+	}
+	
+	public void notifyOfKill(Entity ent)
+	{
+		for(CombatListener list : lists)
+			list.entityKilled(ent);
+	}
+	
+	public void addCombatListener(CombatListener list) {
+		lists.add(list);
+	}
+	
+	public void removeCombatListener(CombatListener list) {
+		lists.remove(list);
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		return new CombatComponent();
+	}
+}

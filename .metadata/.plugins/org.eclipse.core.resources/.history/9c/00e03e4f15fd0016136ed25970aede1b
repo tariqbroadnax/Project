@@ -1,0 +1,24 @@
+package Item;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Modifiers.Effect;
+
+public class EquipItem extends Item 
+{
+	private int requiredLvl;
+	
+	private List<Effect> effects;
+	
+	public EquipItem()
+	{
+		requiredLvl = 1;
+		
+		effects = new ArrayList<Effect>();
+	}
+	
+	public void setRequiredLvl(int requiredLvl) {
+		this.requiredLvl = requiredLvl;
+	}
+}

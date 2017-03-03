@@ -1,0 +1,45 @@
+package Modifiers;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+import Entity.Entity;
+import EntityComponent.CombatListener;
+
+public class Bleed extends Effect
+	implements CombatListener
+{
+	private double rate;
+	
+	private Damage dot;
+
+	private List<Damage> dots;
+	
+	public Bleed()
+	{
+		rate = .15;
+		
+		dot = new Damage();
+		
+		dots = new ArrayList<Damage>();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		dots.removeIf(d -> d.isFinished());
+	}
+	
+	@Override
+	public void entityAttacked(Entity ent)
+	{
+		
+	}
+
+	@Override
+	protected Effect _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

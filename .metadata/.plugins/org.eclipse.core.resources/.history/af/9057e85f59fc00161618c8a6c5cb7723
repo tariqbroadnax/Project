@@ -1,0 +1,8 @@
+package CollisionResponses;
+
+import EntityComponent.CollisionResponse;
+
+public class ChangeScene implements CollisionResponse
+{
+
+}
