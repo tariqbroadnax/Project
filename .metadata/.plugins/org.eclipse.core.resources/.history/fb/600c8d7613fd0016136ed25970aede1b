@@ -1,6 +1,0 @@
-package Ability;
-
-public class BeamAbility extends PointAbility
-{
-	
-}

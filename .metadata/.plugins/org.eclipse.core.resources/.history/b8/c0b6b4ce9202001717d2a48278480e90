@@ -1,0 +1,13 @@
+package Behavior;
+
+import java.time.Duration;
+
+public class MonsterBehavior extends Behavior
+{
+
+	@Override
+	public void update(Duration delta) {
+		// TODO Auto-generated method stub
+		
+	} 
+}

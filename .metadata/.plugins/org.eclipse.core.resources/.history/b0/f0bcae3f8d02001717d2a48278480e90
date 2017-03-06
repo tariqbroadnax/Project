@@ -1,0 +1,24 @@
+package Entity;
+
+import EntityComponent.GraphicsComponent;
+import Graphic.TextGraphic;
+import Movement.MovementComponent;
+
+public class CombatText extends Entity
+{
+	public CombatText(String str)
+	{
+		GraphicsComponent graphComp = new GraphicsComponent();
+		
+		TextGraphic text = new TextGraphic(str);
+		
+		text.setLayer(1);
+		
+		graphComp.setGraphic(text);
+		
+		MovementComponent moveComp = new MovementComponent();
+		
+		Force force = new Force(10, Math.PI * 3 / 2);
+		
+	}
+}

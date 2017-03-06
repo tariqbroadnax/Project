@@ -1,0 +1,11 @@
+package GUI.Equip;
+
+import javax.swing.JComponent;
+
+public class EquipItemComponent extends JComponent
+{
+	public EquipItemComponent()
+	{
+		
+	}
+}

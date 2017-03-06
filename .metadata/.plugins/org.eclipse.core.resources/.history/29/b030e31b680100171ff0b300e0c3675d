@@ -1,0 +1,59 @@
+package Item;
+
+import java.io.File;
+
+import Graphic.ImagePool;
+
+public class Item
+{	
+	private int id;
+
+	private String name;
+
+	protected int weight, quantity, value;
+	
+	private File icon;
+	
+	public Item()
+	{
+		id = -1;
+		quantity = 50;
+	}
+	
+	public void setID(int id) {
+		this.id = id;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setIconFile(File icon) 
+	{
+		ImagePool.instance.release(this.icon);
+		
+		this.icon = icon;
+		
+		ImagePool.instance.request(this.icon);
+	}
+	
+	public int getID() {
+		return id;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+	
+	public File getIconFile() {
+		return icon;
+	}
+	
+	public int quantity() {
+		return quantity;
+	}
+}

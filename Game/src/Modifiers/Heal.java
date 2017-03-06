@@ -1,23 +1,48 @@
 package Modifiers;
 
-import Entity.Entity;
-import EntityComponent.StatsComponent;
-import Stat.Stats;
+import EntityComponent.CombatComponent;
 
-public class Heal
+public class Heal extends InstantEffect
 {
-	private double val;
+	private double flat, scale, perc;
 	
 	public Heal()
 	{
-		val = 10;
+		flat = 10;
+		scale = 0;
+		perc = 0;
 	}
 	
-	public void apply(Entity target)
+	public Heal(Heal heal)
 	{
-		Stats stats = target.get(StatsComponent.class)
-							.getStats();
+		super(heal);
 		
-		stats.heal(val);
+		flat = heal.flat;
+		scale = heal.scale;
+		perc = heal.perc;
+	}
+
+	@Override
+	public void apply() 
+	{
+		src.get(CombatComponent.class)
+		  .applyHeal(this);
+	}
+
+	public double getFlatAmount() {
+		return flat;
+	}
+	
+	public double getScaledAmount() {
+		return scale;
+	}
+	
+	public double getPercentAmount() {
+		return perc;
+	}
+
+	@Override
+	public Object clone() {
+		return new Heal(this);
 	}
 }

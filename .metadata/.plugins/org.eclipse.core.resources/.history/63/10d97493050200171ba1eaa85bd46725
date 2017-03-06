@@ -1,0 +1,27 @@
+package EntityComponent;
+
+import java.util.PriorityQueue;
+
+import Graphic.Graphic;
+
+public class GraphicBody
+{
+	private PriorityQueue<GraphicLimb> limbs;
+	
+	public GraphicBody()
+	{
+		
+	}
+	
+	public void addGraphic(
+			Graphic graph, double xOffset, double yOffset, int layer)
+	{
+		GraphicLimb limb = new GraphicLimb(
+				graph, xOffset, yOffset, layer);
+	}
+	
+	public void removeGraphic()
+	{
+		
+	}
+}

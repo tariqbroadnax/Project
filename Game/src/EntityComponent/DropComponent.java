@@ -1,0 +1,86 @@
+package EntityComponent;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+import Entity.ItemEntity;
+import Item.Item;
+import Maths.Circle2D;
+
+public class DropComponent extends EntityComponent
+{
+	private Map<Item, Double> drops;
+
+	public DropComponent()
+	{
+		drops = new HashMap<Item, Double>();
+	}
+	
+	public DropComponent(DropComponent comp)
+	{
+		for(Item item : comp.drops.keySet())
+		{
+			item = (Item) item.clone();
+			
+			drops.put(item, comp.drops.get(item));
+		}
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		boolean dead = parent.get(LifetimeComponent.class)
+							 .getLifetime()
+							 .isLifeOver();
+	
+		if(dead)
+			dropItems();
+	}
+	
+	private void dropItems()
+	{
+		double rand = Math.random();
+		
+		Point2D.Double parentLoc = parent.getLoc();
+		
+		Circle2D.Double dropArea = new Circle2D.Double(
+				parentLoc.x, parentLoc.y, 5);
+		
+		for(Item item : drops.keySet())
+		{
+			double dropRate = drops.get(item);
+			
+			if(rand < dropRate)
+			{
+				item = (Item) item.clone();
+				
+				ItemEntity ent = new ItemEntity(item);
+				
+				Point2D.Double loc = dropArea.randomPoint();
+				
+				ent.setLoc(loc);
+				
+				parent.getSceneLoc()
+					  .addEntity(ent);
+			}
+		}
+	}
+	
+	public void put(Item item, double dropRate) {
+		drops.put(item, dropRate);
+	}
+	
+	public double getDropRate(Item item) {
+		if(drops.containsKey(item))
+			return drops.get(item);
+		else
+			return -1;
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		return new DropComponent(this);
+	}
+}

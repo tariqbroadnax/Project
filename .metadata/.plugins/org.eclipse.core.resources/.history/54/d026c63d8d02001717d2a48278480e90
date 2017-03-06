@@ -1,0 +1,18 @@
+package Entity;
+
+import EntityComponent.GraphicsComponent;
+import Graphic.TextGraphic;
+
+public class CombatText extends Entity
+{
+	public CombatText(String str)
+	{
+		GraphicsComponent graphComp = new GraphicsComponent();
+		
+		TextGraphic text = new TextGraphic(str);
+		
+		graphComp.setGraphic(text);
+		
+		
+	}
+}

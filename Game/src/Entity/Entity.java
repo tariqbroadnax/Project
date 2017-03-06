@@ -14,9 +14,11 @@ import java.util.Map;
 
 import EntityComponent.EntityComponent;
 import Game.Scene;
+import Game.Updatable;
+import Movement.MovementComponent;
 
 public class Entity
-	implements Serializable, Cloneable, Transferable
+	implements Updatable, Serializable, Cloneable, Transferable
 {			
 	private String name;
 	
@@ -49,6 +51,18 @@ public class Entity
 		
 		copy(e);
 	}
+	
+	public void start()
+	{
+		for(EntityComponent comp : comps.values())
+			comp.start();
+	}
+	
+	public void stop()
+	{
+		for(EntityComponent comp : comps.values())
+			comp.stop();
+	}
 
 	public void update(Duration delta)
 	{		
@@ -57,8 +71,17 @@ public class Entity
 	
 	public void updateComponents(Duration delta)
 	{
+		if(comps.containsKey(MovementComponent.class))
+			comps.get(MovementComponent.class)
+				 .update(delta);
+		
 		for(EntityComponent comp : comps.values())
+		{
+			if(comp instanceof MovementComponent)
+				continue;
+			
 			comp.update(delta);
+		}
 	}
 	
 	public void copy(Entity model)

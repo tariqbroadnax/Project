@@ -1,0 +1,22 @@
+package Game;
+
+import java.time.Duration;
+
+public class Spawner implements Updatable
+{
+	private int size;
+	
+	private double x, y, rad;
+	
+	public Spawner()
+	{
+		
+	}
+
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+	
+}

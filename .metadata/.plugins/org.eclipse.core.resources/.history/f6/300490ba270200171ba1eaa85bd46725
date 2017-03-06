@@ -1,0 +1,98 @@
+package EntityComponent;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Rectangle2D.Double;
+import java.time.Duration;
+import java.util.PriorityQueue;
+
+import Graphic.Graphic;
+import Graphic.GraphicsContext;
+
+public class GraphicBody extends Graphic
+{
+	private PriorityQueue<GraphicLimb> limbs;
+	
+	public GraphicBody()
+	{
+		limbs = new PriorityQueue<GraphicLimb>();
+	}
+	
+	public GraphicBody(GraphicBody body)
+	{
+		limbs = new PriorityQueue<GraphicLimb>();
+
+		for(GraphicLimb limb : body.limbs)
+			limbs.add((GraphicLimb) limb.clone());
+	}
+	
+	public void addGraphic(
+			Graphic graph, double xOffset, double yOffset, int layer)
+	{
+		GraphicLimb limb = new GraphicLimb(
+				graph, xOffset, yOffset, layer);
+		
+		limbs.add(limb);
+	}
+	
+	public void addGraphic(
+			Graphic graph)
+	{
+		addGraphic(graph, 0, 0, 0);
+	}
+	public void removeGraphic(
+			Graphic graph)
+	{
+		limbs.removeIf(l -> l.graphic == graph);
+	}
+	
+	public void update(Duration delta)
+	{
+		for(GraphicLimb limb : limbs)
+			limb.graphic.update(delta);
+	}
+
+	@Override
+	protected void _paint(GraphicsContext gc) 
+	{
+		for(GraphicLimb limb : limbs)
+			limb.paintGraphic(gc);
+	}
+	
+	public void setLoc(Point2D.Double loc) 
+	{
+		super.setLoc(loc);
+		
+		for(GraphicLimb limb : limbs)
+			limb.updateGraphicLocation(loc);
+	}
+
+	@Override
+	public Double getBound() 
+	{
+		if(limbs.size() == 0)
+			return new Rectangle2D.Double();
+		
+		double minX = Integer.MAX_VALUE,
+			   minY = minX,
+			   maxX = Integer.MIN_VALUE,
+			   maxY = maxX;
+		
+		for(GraphicLimb limb : limbs)
+		{
+			Rectangle2D.Double bound = limb.graphic.getBound();
+			
+			minX = bound.x < minX ? bound.x : minX;
+			minY = bound.y < minY ? bound.y : minY;
+			maxX = bound.getMaxX() > maxX ? bound.getMaxX() : maxX;
+			maxY = bound.getMaxY() > maxY ? bound.getMaxY() : maxY;
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Object clone() {
+		return new GraphicBody(this);
+	}
+}

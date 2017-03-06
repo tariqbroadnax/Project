@@ -23,6 +23,8 @@ public class StatsComponent extends EntityComponent
 	@Override
 	public void update(Duration delta)
 	{
+		stats.update(delta);
+		
 		double health = stats.getHealth();
 		
 		if(health == 0 && parent.contains(LifetimeComponent.class))
@@ -39,6 +41,19 @@ public class StatsComponent extends EntityComponent
 			parent.get(MovementComponent.class)
 				  .getMovement()
 				  .setDefaultSpeed(speed);
+		}
+		
+		if(parent.contains(AbilityComponent.class))
+		{
+			long atkSpeedCastTime = (long) (1000.0 / stats.getAttackSpeed());
+					
+			parent.get(AbilityComponent.class)
+				  .getBasicAttack()
+				  .setCooldown(atkSpeedCastTime);
+			
+			parent.get(AbilityComponent.class)
+			  .getBasicAttack()
+			  .setCastTime(atkSpeedCastTime);
 		}
 	}
 	

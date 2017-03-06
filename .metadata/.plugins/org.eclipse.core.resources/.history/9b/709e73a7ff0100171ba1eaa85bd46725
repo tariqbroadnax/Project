@@ -1,0 +1,38 @@
+package GUI.Equip;
+
+import java.awt.Graphics;
+
+import javax.swing.JComponent;
+
+import EditorGUI.MouseListener;
+import Entity.Entity;
+import EntityComponent.EquipmentComponent;
+import Item.Equipment;
+
+public class EquipPane extends JComponent
+	implements MouseListener
+{
+	private Equipment equip;
+	
+	private EquipItemComponent hatComp, hatDecorComp,
+							   sprintComp,
+							   weaponComp, shieldComp,
+							   access1Comp, access2Comp,
+							   cardComp, drillComp,
+							   petComp,
+							   beltComp, tailComp, capeComp;
+							   
+							   
+	public EquipPane(Entity player)
+	{
+		equip = player.get(EquipmentComponent.class)
+					  .getEquipment();	
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		
+	}
+}

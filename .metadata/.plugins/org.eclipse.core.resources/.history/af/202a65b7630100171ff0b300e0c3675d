@@ -1,0 +1,124 @@
+package Inventory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import Item.EquipItem;
+import Item.Item;
+import Item.UseItem;
+
+public class Inventory 
+{
+	private List<EquipItem> equips;
+	
+	private List<UseItem> consumables;
+	
+	private List<InventoryListener> lists;
+	
+	private int cap;
+	
+	public Inventory()
+	{
+		equips = new ArrayList<EquipItem>();
+		
+		consumables = new ArrayList<UseItem>();
+	
+		lists = new ArrayList<InventoryListener>();
+		
+		cap = 300;
+		
+		UseItem item = new UseItem();
+		
+		item.setIconFile(new File("SwordIcon.PNG"));
+		
+		addUseItem(item);		
+	}
+	
+	private void itemAdded() 
+	{
+		List<InventoryListener> copy = new ArrayList<InventoryListener>(lists);
+	
+		for(InventoryListener list : copy)
+			list.itemAdded();
+	}
+	
+	public void addEquipItem(EquipItem equip) 
+	{
+		equips.add(equip);	
+		
+		itemAdded();
+	}
+
+	public void removeEquipItem(EquipItem equip) {
+		equips.remove(equip);
+	}
+	
+	public void addItem(Item item) {
+		
+	}
+	
+	public void removeItem(Item item) {
+		
+	}
+	
+	public void addUseItem(
+			UseItem consumable) 
+	{
+		consumables.add(consumable);
+	
+		itemAdded();
+	}
+	
+	public void removeUseItem(UseItem consumable) {
+		consumables.remove(consumable);
+	}
+	
+	public int itemCount(int id) 
+	{
+		int count = 0;
+		
+		for(Item item : equips)
+			if(item.getID() == id)
+				count++;
+		
+		for(Item item : consumables)
+			if(item.getID() == id)
+				count++;
+		
+		return count;
+	}
+	
+	public List<UseItem> getUseItems() {
+		return consumables;
+	}
+	
+	public int getQuantity(Item item) {
+		return -1;
+	}
+	
+	public int size() 
+	{
+		int size = 0;
+		
+		for(Item item : equips)
+			size += item.quantity();
+		
+		for(Item item : consumables)
+			size += item.quantity();
+		
+		return size;
+	}
+	
+	public int capacity() {
+		return cap;
+	}
+	
+	public void addInventoryListener(InventoryListener list) {
+		lists.add(list);
+	}
+	
+	public void removeInventoryListener(InventoryListener list) {
+		lists.remove(list);
+	}
+}

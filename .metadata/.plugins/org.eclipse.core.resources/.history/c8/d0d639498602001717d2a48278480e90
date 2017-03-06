@@ -1,0 +1,5 @@
+package EntityComponent;
+
+public class DropComponent {
+
+}

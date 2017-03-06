@@ -1,0 +1,89 @@
+package GUI.Item;
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.Border;
+
+import EditorGUI.MouseListener;
+import Item.Item;
+import Item.UseItem;
+
+public class UseItemList extends JList<Item>
+	implements MouseListener
+{
+	private List<? extends Item> items;
+	
+	public UseItemList(List<? extends Item> items)
+	{
+		this.items = items;		
+	
+		setModel(new MyModel());
+		setCellRenderer(new MyRenderer());
+		
+		setPreferredSize(new Dimension(300, 200));
+		
+		addMouseListener(this);
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e) 
+	{
+		int clickCount = e.getClickCount();
+		
+		if(clickCount == 2)
+		{
+			Point p = e.getPoint();
+			
+			int index = locationToIndex(p);
+			
+			if(index > -1 && getCellBounds(index, index).contains(p))
+			{
+				
+			}
+		}
+	}
+	
+	private class MyModel extends AbstractListModel<E extends Item>
+	{
+		@Override
+		public UseItem getElementAt(int index) {
+			return items.get(index);
+		}
+
+		@Override
+		public int getSize() {
+			return items.size();
+		}
+	}
+	
+	private class MyRenderer implements ListCellRenderer<UseItem>
+	{
+		private ItemComponent comp;
+		
+		MyRenderer()
+		{
+			comp = new ItemComponent();
+		}
+		
+		@Override
+		public Component getListCellRendererComponent(
+				JList<? extends UseItem> list, UseItem item,
+				int i,
+				boolean selected, boolean focused) 
+		{
+			Border border = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+			
+			comp.setBorder(border);
+			comp.setItem(item);
+						
+			return comp;
+		}
+	}
+}

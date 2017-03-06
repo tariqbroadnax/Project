@@ -1,0 +1,11 @@
+package Ability;
+
+import Entity.Entity;
+
+public class HomingProjectile extends Entity
+{
+	public HomingProjectile()
+	{
+		
+	}
+}

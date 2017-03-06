@@ -1,0 +1,6 @@
+package Modifiers;
+
+public enum Stat 
+{
+	HEALTH, MANA, SPEED;
+}

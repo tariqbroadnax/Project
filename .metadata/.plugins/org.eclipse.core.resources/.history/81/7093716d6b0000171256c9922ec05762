@@ -1,0 +1,54 @@
+package Modifiers;
+
+import java.util.EnumSet;
+
+import Entity.Entity;
+import EntityComponent.CombatComponent;
+import EntityComponent.CombatListener;
+
+public class CombatEffect extends GradualEffect
+	implements CombatListener
+{
+	private EnumSet<CombatEvent> set;
+		
+	public CombatEffect()
+	{
+		set = EnumSet.noneOf(CombatEvent.class);		
+	}
+	
+	public CombatEffect(CombatEffect effect)
+	{
+		set = EnumSet.copyOf(effect.set);
+	}
+	
+	@Override
+	public void start() 
+	{
+		super.start();
+		
+		src.get(CombatComponent.class)
+		   .addCombatListener(this);
+	}
+	
+	@Override
+	public void stop()
+	{
+		super.stop();
+		
+		src.get(CombatComponent.class)
+		   .removeCombatListener(this);
+	}
+
+	public void entityAttacked(Entity ent, double damage) 
+	{
+		if(set.contains(CombatEvent.ENTITY_ATTACKED))
+			effect.apply();
+	}
+	
+	@Override
+	public Object clone() {
+		return new CombatEffect(this);
+	}
+	
+
+}

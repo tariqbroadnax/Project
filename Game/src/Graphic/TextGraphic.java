@@ -51,6 +51,13 @@ public class TextGraphic extends Graphic
 		charWidth = graphic.charWidth;
 	}
 			
+	public TextGraphic(String str) 
+	{
+		this();
+		
+		text = str;
+	}
+
 	protected void _paint(GraphicsContext gc)
 	{
 		Font font = new Font(fontName, style, 30);		

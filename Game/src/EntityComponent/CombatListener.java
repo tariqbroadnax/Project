@@ -7,4 +7,5 @@ public interface CombatListener
 	public default void entityAttacked(Entity ent, double damage){}
 	public default void entityAttacks(Entity ent){}
 	public default void entityKilled(Entity ent){}
+	public default void entityKills(Entity ent){}
 }

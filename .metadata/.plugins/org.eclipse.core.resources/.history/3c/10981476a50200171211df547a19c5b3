@@ -1,0 +1,12 @@
+package Ability;
+
+public class HomingProjectileAbility 
+	extends TargetUnitAbility
+{	
+	private HomingProjectile proj;
+	
+	public HomingProjectileAbility()
+	{
+		
+	}
+}

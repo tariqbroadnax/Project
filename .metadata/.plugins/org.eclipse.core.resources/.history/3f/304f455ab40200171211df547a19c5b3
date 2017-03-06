@@ -1,0 +1,29 @@
+package Ability;
+
+import java.io.Serializable;
+
+import Entity.Entity;
+import Game.Updatable;
+
+public abstract class Ability
+	implements Serializable, Updatable, Cloneable
+{	
+	protected Entity src;
+	
+	private int lvl;
+	
+	public Ability()
+	{
+		lvl = 1;
+	}
+	
+	public void setSrc(Entity src) {
+		this.src = src;
+	}
+	
+	public Entity getSrc() {
+		return src;
+	}
+	
+	public abstract Object clone();
+}

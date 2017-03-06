@@ -1,0 +1,55 @@
+package EntityComponent;
+
+import java.awt.geom.Point2D;
+
+import Graphic.Graphic;
+import Graphic.GraphicsContext;
+import Graphic.Vector2D;
+
+public class GraphicLimb implements Comparable<GraphicLimb>,
+	Cloneable
+{
+	int layer;
+	
+	Vector2D.Double offset;
+	
+	Graphic graphic;
+	
+	public GraphicLimb(
+			Graphic graph, 
+			double xOffset, double yOffset,
+			int layer)
+	{
+		this.graphic = graph;
+		
+		offset = new Vector2D.Double(xOffset, yOffset);
+		
+		this.layer = layer;
+	}
+	
+	public GraphicLimb(GraphicLimb limb)
+	{
+		graphic = (Graphic) limb.graphic.clone();
+		
+		offset = (Vector2D.Double) limb.offset.clone();
+		
+		layer = limb.layer;
+	
+	}
+	
+	public void updateGraphicLocation(
+			Point2D.Double srcLoc) 
+	{
+		graphic.setLoc(srcLoc.x + offset.x,
+					   srcLoc.y + offset.y);
+	}
+	
+	public void paintGraphic(GraphicsContext gc) {
+		graphic.paint(gc);
+	}
+
+	@Override
+	public int compareTo(GraphicLimb limb) {
+		return Integer.compare(layer, limb.layer);
+	}
+}

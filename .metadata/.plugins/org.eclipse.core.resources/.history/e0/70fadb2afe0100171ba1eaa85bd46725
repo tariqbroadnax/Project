@@ -1,0 +1,19 @@
+package GUI.Equip;
+
+import javax.swing.JComponent;
+
+import Item.EquipItem;
+
+public class EquipItemComponent extends JComponent
+{
+	private EquipItem item;
+	
+	public EquipItemComponent()
+	{
+		
+	}
+	
+	public void setEquipItem(EquipItem item) {
+		this.item = item;
+	}
+}

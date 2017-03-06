@@ -1,0 +1,88 @@
+package Behavior;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Ability.BasicAttack;
+import Entity.Entity;
+import EntityComponent.AbilityComponent;
+import EntityComponent.CombatListener;
+
+public class MonsterBehavior extends Behavior
+	implements CombatListener
+{
+	private static final long RECENTLY_DUR = 3000;
+	
+	private Entity player;
+	
+	private AbilityComponent abilityComp;
+	private BasicAttack attack;
+	
+	private double viewRange = 30;
+	
+	private long durSinceLastAttack = 0;
+	
+	public void start()
+	{
+		player = src.getSceneLoc()
+					.getGame()
+					.getPlayer();
+		
+		abilityComp = player.get(AbilityComponent.class);
+		
+		attack = abilityComp.getBasicAttack();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		durSinceLastAttack += delta.toMillis();
+		
+		if(playerInRange() || playerAttackedRecently())
+		{
+			if(playerInAttackRange())
+			{
+				attackPlayer();
+			}
+			else
+				moveCloser();
+		}
+	}
+
+	private void attackPlayer() 
+	{
+		abilityComp.castTargetUnitAbility(0, player);
+	}
+
+	private boolean playerInAttackRange() 
+	{
+		Point2D.Double playerLoc = player.getLoc(),
+				   	   srcLoc = src.getLoc();
+		
+		double atkRange = attack.getRange();
+		
+		return playerLoc.distanceSq(srcLoc) < 
+			   atkRange * atkRange;
+	}
+
+	private boolean playerAttackedRecently() {
+		return durSinceLastAttack < RECENTLY_DUR;
+	}
+
+	private boolean playerInRange() 
+	{
+		Point2D.Double playerLoc = player.getLoc(),
+					   srcLoc = src.getLoc();
+	
+		return playerLoc.distanceSq(srcLoc) < 
+			   viewRange * viewRange;
+	}
+	
+	@Override
+	public void entityAttacks(Entity ent)
+	{
+		if(ent == player)
+			durSinceLastAttack = 0;
+	}
+
+}

@@ -1,0 +1,31 @@
+package Ability;
+
+import EntityComponent.EffectComponent;
+import Modifiers.Damage;
+
+public class BasicAttack extends TargetUnitAbility
+{
+	private Damage damage;
+	
+	public BasicAttack()
+	{
+		damage = new Damage();
+		setRange(15);
+	}
+	
+	@Override
+	public void start()
+	{
+		damage.setSource(src);
+	}
+	
+	public void cast()
+	{
+		super.cast();	
+		
+//		Damage dmg = (Damage) damage.clone();
+//		
+//		target.get(EffectComponent.class)
+//			  .apply(dmg);
+	}
+}

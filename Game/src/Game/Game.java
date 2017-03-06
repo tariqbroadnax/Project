@@ -10,9 +10,13 @@ import java.time.Duration;
 import Ability.DashAbility;
 import Ability.PointAbility;
 import Actions.ActionComponent;
-import Behavior.BehaviorComponent;
 import Entity.Entity;
+import Entity.Monster;
 import EntityComponent.AbilityComponent;
+import EntityComponent.CombatComponent;
+import EntityComponent.EffectComponent;
+import EntityComponent.EquipmentComponent;
+import EntityComponent.EventGraphicsComponent;
 import EntityComponent.GraphicsComponent;
 import EntityComponent.Limb;
 import EntityComponent.RigidBodyComponent;
@@ -21,7 +25,6 @@ import GUI.UI;
 import Inventory.InventoryComponent;
 import Movement.MovementComponent;
 import Quest.QuestComponent;
-import TestEntity.Pet;
 import Utilities.Scheduler;
 
 public class Game
@@ -44,18 +47,21 @@ public class Game
 
 		scheduler = new Scheduler();
 		
-		updater.addUpdatable(
-				delta -> update(delta));
-		
 		player = new Entity();
+		
+		updater.addUpdatable(scene, scheduler);
 		
 		player.add(new GraphicsComponent(),
 				   new MovementComponent(),
+				   new CombatComponent(),
+				   new EffectComponent(),
 				   new AbilityComponent(),
 				   new InventoryComponent(),
+				   new EquipmentComponent(),
 				   new QuestComponent(),
 				   new StatsComponent(),
-				   new RigidBodyComponent());
+				   new RigidBodyComponent(),
+				   new EventGraphicsComponent());
 		
 		ui = new UI(scene, updater, player,
 					UI.FRAME_MODE);
@@ -76,29 +82,15 @@ public class Game
 		
 		scene.addEntityNow(player);
 	
-		Entity npc = new Entity();
-		
-		npc.add(new GraphicsComponent(),
-				new MovementComponent(),
-				new BehaviorComponent(),
-				new RigidBodyComponent());
-		
-		npc.get(RigidBodyComponent.class)
-		   .getRigidBody()
-		   .addLimb(new Limb(new Rectangle2D.Double(0,0,10,10)));
+		Entity npc = new Monster();
 	
 		npc.setLoc(0, -50);
+		
+		scene.addEntityNow(npc);
+
 //		npc.get(BehaviourComponent.class)
 //		   .addBehaviour(new TestBehaviour());
 //		
-		Pet pet = new Pet();
-		
-		pet.setOwner(player);
-		pet.setLoc(0, -50);
-		
-		scene.addEntity(npc);
-		scene.addEntity(pet);
-		
 //		try {
 //			File file = new File("C:\\Users\\Tariq Broadnax\\Downloads\\Deep.wav");
 //			System.out.println(file.exists());

@@ -1,0 +1,37 @@
+package GUI;
+
+import java.awt.Dimension;
+
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+
+import GUI.Item.ItemFrame;
+
+public class GMenu extends JToolBar
+{
+	private HUD hud;
+	
+	public GMenu(HUD hud)
+	{
+		this.hud = hud;
+		
+		JButton butt = new JButton("Item");
+		butt.setFocusable(false);
+		butt.addActionListener(e -> toggleItemFrame());
+		
+		add(butt);
+		
+		setFloatable(false);
+		
+		setPreferredSize(new Dimension(300, 30));
+	}
+	
+	private void toggleItemFrame()
+	{
+		ItemFrame frame = hud.getItemFrame();
+
+		boolean visible = frame.isVisible();
+		
+		frame.setVisible(!visible);
+	}
+}

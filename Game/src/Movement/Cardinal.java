@@ -9,6 +9,9 @@ public enum Cardinal
 	public static Cardinal angleToCardinal(
 			double angle)
 	{
+		while(angle < 0)
+			angle += Math.PI * 2;
+		
 		if(angle < PI / 4)
 			return EAST;
 		else if(angle < 3 * PI / 4)

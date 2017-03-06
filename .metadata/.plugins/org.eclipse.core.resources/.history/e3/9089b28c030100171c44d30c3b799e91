@@ -1,0 +1,13 @@
+package GUI.Item;
+
+import javax.swing.JInternalFrame;
+
+public class ItemFrame extends JInternalFrame
+{
+	public ItemFrame()
+	{
+		setTitle("Item");
+		
+		setSize(300, 200);		
+	}
+}

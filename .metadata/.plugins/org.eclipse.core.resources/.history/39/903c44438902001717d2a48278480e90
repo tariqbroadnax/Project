@@ -1,0 +1,32 @@
+package Entity;
+
+import java.io.File;
+
+import EntityComponent.GraphicsComponent;
+import Graphic.Sprite;
+import Item.Item;
+
+public class ItemEntity extends Entity
+{
+	private Item item;
+	
+	public ItemEntity(Item item)
+	{
+		this.item = item;
+		
+		GraphicsComponent comp = new GraphicsComponent();
+		
+		File file = item.getIconFile();
+		
+		Sprite sprite = new Sprite(file);
+		
+		comp.setGraphic(sprite);
+		
+		add(comp);
+	}
+	
+	public void pickUp(Entity ent)
+	{
+		
+	}
+}

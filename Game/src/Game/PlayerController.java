@@ -6,11 +6,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.time.Duration;
+import java.util.List;
 
-import Actions.ActionBuffer;
+import Ability.BasicAttack;
 import EditorGUI.MouseListener;
 import EditorGUI.MouseMotionListener;
 import Entity.Entity;
+import Entity.Monster;
 import EntityComponent.AbilityComponent;
 import Graphic.Camera;
 import Movement.Force;
@@ -21,11 +23,11 @@ public class PlayerController implements KeyListener, MouseListener, MouseMotion
 {
 	private Entity player;
 	
+	private BasicAttack basicAtk;
+	
 	private Camera camera;
 	
 	private Force force;
-	
-	private ActionBuffer buffer;
 	
 	private enum VertDir {UP, DOWN, NONE}
 	private enum HorzDir {LEFT, RIGHT, NONE}
@@ -34,6 +36,8 @@ public class PlayerController implements KeyListener, MouseListener, MouseMotion
 	private HorzDir horz = HorzDir.NONE;
 	
 	private Point p;
+	
+	private Entity targetEnt;
 	
 	public PlayerController(
 			Entity player, Camera camera,
@@ -50,10 +54,15 @@ public class PlayerController implements KeyListener, MouseListener, MouseMotion
 		player.get(MovementComponent.class)
 			  .getMovement()
 			  .addForce(force);
+	
+		basicAtk = player.get(AbilityComponent.class)
+						 .getBasicAttack();
 	}
 	
 	public void update(Duration delta)
 	{
+		force.setSpeed(0); // reset
+
 		double pi = Math.PI;
 		
 		double x = horz == HorzDir.LEFT ? -1 :
@@ -61,31 +70,92 @@ public class PlayerController implements KeyListener, MouseListener, MouseMotion
 		       y = vert == VertDir.UP ? -1 :
 		    	   vert == VertDir.DOWN ? 1 : 0;
 		
-		if(x == 0 && y == 0)
+		if(!(x == 0 && y == 0))
 		{
-			force.setSpeed(0);
-		}
-		else
-		{
-			force.setSpeed(-1);
-			
 			double angle = Math.atan2(y, x);
 			
 			force.setDirection(angle);
+			force.setSpeed(-1);
+			
+			targetEnt = null;
 		}
 		
 		if(p != null)
+			updateTargetEntity();
+		
+		if(targetEnt != null)
 		{
-			Point2D.Double loc = camera.normalLocation(p);
-			
-			player.get(AbilityComponent.class)
-				  .castPointAbility(0, loc);
+			if(!targetInRangeForBasicAttack())
+				moveCloser();
+			else
+				doBasicAttack();
 		}
+	}
+	
+	private void updateTargetEntity()
+	{
+		// System.out.println("updateTargetEntity");
+
+		Point2D.Double loc = camera.normalLocation(p);
+		
+		List<Entity> ents = player.getSceneLoc()
+								  .entitiesVisibleAtLocation(loc);
+	
+		for(int i = 0; i < ents.size(); i++)
+		{
+			Entity ent = ents.get(i);
+			
+			if(ent instanceof Entity)
+			{
+				targetEnt = ent;
+				break;
+			}
+		}
+		
+		p = null;
+	}
+	
+	private boolean targetInRangeForBasicAttack()
+	{
+//		double atkRange = basicAtk.getRange();
+//		
+		double atkRange = player.get(AbilityComponent.class)
+								.getTargetUnitAbility(1)
+								.getRange();
+		
+		return playerTargetRange() < atkRange;
+	}
+	
+	private double playerTargetRange()
+	{
+		return player.getLoc().distance(
+			   targetEnt.getLoc());
+	}
+	
+	private void doBasicAttack()
+	{
+		player.get(AbilityComponent.class)
+		 	  .castTargetUnitAbility(1, targetEnt);		
+	}
+	
+	private void moveCloser()
+	{
+		// System.out.println("moveCloser");
+		
+		Point2D.Double playerLoc = player.getLoc(),
+					   targetLoc = targetEnt.getLoc();
+		
+		double angle = Math.atan2(targetLoc.y - playerLoc.y,
+								  targetLoc.x - playerLoc.x);
+		
+		force.setDirection(angle);
+		force.setSpeed(-1);
 	}
 	
 	@Override
 	public void mousePressed(MouseEvent e) 
 	{
+		//System.out.println("mousePressed");
 		p = e.getPoint();
 	}
 	
@@ -100,7 +170,8 @@ public class PlayerController implements KeyListener, MouseListener, MouseMotion
 	}
 		
 	@Override
-	public void keyPressed(KeyEvent e) {
+	public void keyPressed(KeyEvent e) 
+	{
 		if(e.getKeyChar() == 'w')
 			vert = VertDir.UP;
 		else if(e.getKeyChar() == 's')

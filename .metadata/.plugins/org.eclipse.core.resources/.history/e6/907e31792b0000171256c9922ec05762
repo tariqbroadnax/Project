@@ -1,0 +1,91 @@
+package Modifiers;
+
+import Entity.Entity;
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public class StatModifier extends InstantEffect
+{
+	private Stat stat;
+	
+	private Modifier mod;
+	
+	public StatModifier()
+	{
+		stat = Stat.SPEED;
+		
+		mod = new AddModifier(50);
+	}
+	
+	public StatModifier(StatModifier effect)
+	{
+		super(effect);
+		
+		stat = effect.stat;
+		
+		mod = (Modifier) effect.mod.clone();
+	}
+
+	@Override
+	public void apply() 
+	{
+		Stats stats = src.get(StatsComponent.class)
+						 .getStats();
+		
+		switch(stat)
+		{
+			case HEALTH: stats.addHealthModifier(mod);
+						 break;
+			case MANA: stats.addManaModifier(mod);
+						 break;
+			case HP_REGEN: stats.addHpRegenModifier(mod);
+						 break;
+			case MP_REGEN: stats.addMpRegenModifier(mod);
+			case SPEED: stats.addSpeedModifier(mod);
+						 break;
+		}
+	}
+
+	@Override
+	public void unapply() 
+	{
+		Stats stats = src.get(StatsComponent.class)
+				 .getStats();
+
+		switch(stat)
+		{
+			case HEALTH: stats.removeHealthModifier(mod);
+						 break;
+			case MANA: stats.removeManaModifier(mod);
+						break;
+			case SPEED: stats.removeSpeedModifier(mod);
+						 break;
+		}
+	}
+
+	@Override
+	public boolean canBeApplied(Entity target) {
+		return target.contains(StatsComponent.class);
+	}
+	
+	public void setStat(Stat stat) {
+		this.stat = stat;
+	}
+	
+	public void setModifier(Modifier mod) {
+		this.mod = mod;
+	}
+	
+	public Stat getStat() {
+		return stat;
+	}
+	
+	public Modifier getModifier() {
+		return mod;
+	}
+	
+	@Override
+	public Object clone() {
+		return new StatModifier(this);
+	}
+}

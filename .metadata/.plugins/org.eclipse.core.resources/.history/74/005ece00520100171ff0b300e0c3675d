@@ -1,0 +1,59 @@
+package GUI.Item;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.swing.JComponent;
+
+import Graphic.ImagePool;
+import Item.Item;
+
+public class ItemComponent extends JComponent
+{
+	private Item item;
+	
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		File icon = item.getIconFile();
+		
+		BufferedImage img = ImagePool.instance.getImage(icon);
+		
+		g.drawImage(img, 0, 0, null);
+		
+		int quantity = item.quantity();
+		
+		int imgW = img.getWidth(),
+			imgH = img.getHeight();
+		
+		int width = getWidth(),
+			height = getHeight();
+		
+		width = Math.min(imgW, width);
+		height = Math.min(imgH, height);
+		
+		String str = "" + quantity;
+		
+		int strW = g.getFontMetrics()
+					.stringWidth(str);
+		
+		g.drawString(str, width - strW, height);		
+	}
+	
+	public void setItem(Item item)
+	{
+		this.item = item;
+		
+		File icon = item.getIconFile();
+		
+		BufferedImage img = ImagePool.instance.getImage(icon);
+		
+		int imgW = img.getWidth(),
+			imgH = img.getHeight();
+				
+		setPreferredSize(new Dimension(imgW, imgH));
+	}
+}

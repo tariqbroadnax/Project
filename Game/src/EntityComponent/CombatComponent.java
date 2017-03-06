@@ -4,8 +4,12 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import Entity.CombatText;
 import Entity.Entity;
+import Modifiers.Damage;
 import Modifiers.DamageModifier;
+import Modifiers.Heal;
+import Stat.Stats;
 
 public class CombatComponent extends EntityComponent
 {
@@ -34,12 +38,81 @@ public class CombatComponent extends EntityComponent
 		durSinceLastAttack += delta.toMillis();
 	}
 	
-	public void notifyOfAttack(Entity ent)
+	public void applyHeal(Heal heal)
 	{
-		for(CombatListener list : lists)
-			list.entityAttacked(ent);
+		Entity target = heal.getTarget();
 	
+		Stats srcStats = parent.get(StatsComponent.class)
+							   .getStats(),
+			  targetStats = parent.get(StatsComponent.class)
+			  					  .getStats();
+		
+		double flat = heal.getFlatAmount(),
+			   scale = heal.getScaledAmount(),
+			   perc = heal.getPercentAmount();
+			   
+		double maxHp = targetStats.getMaxHealth(),
+			   maAtk = srcStats.getMagicAttack();
+		
+		double val = flat + scale * maAtk + perc * maxHp;
+		
+		targetStats.heal(val);	   
+		
+		showCombatText("" + (int)val, target);
+	}
+	
+	public void applyDamage(Damage damage)
+	{
+		Entity target = damage.getTarget();
+
+		Stats targetStats = target.get(StatsComponent.class)
+								  .getStats();
+		
+		double dodgeRate = targetStats.getDodgeRate(),
+			   blockRate = targetStats.getBlockRate();
+		
+		if(Math.random() < dodgeRate)
+		{
+			showCombatText("MISS", target);
+			return;
+		}
+		else if(Math.random() < blockRate)
+		{
+			showCombatText("DODGE", target);
+			return;
+		}
+		
+		Stats srcStats = parent.get(StatsComponent.class)
+							   .getStats();
+		
+		double attack = srcStats.getAttack(),
+			   value = damage.getFlatAmount() +
+			   		   damage.getScaleAmount() * attack;
+		
+		double critRate = srcStats.getCritRate();
+		
+		if(Math.random() < critRate)
+		{
+			value *= 2;
+		}
+		
+		targetStats.damage(value);
+		showCombatText("" + (int)value, target);
+		
+		for(CombatListener list : lists)
+			list.entityAttacked(target, value);
+		
 		durSinceLastAttack = 0;
+	}
+	
+	private void showCombatText(String message, Entity target)
+	{
+		CombatText text = new CombatText(message);
+		
+		text.setLoc(target.getLoc());
+		
+		parent.getSceneLoc()
+			  .addEntity(text);
 	}
 	
 	public void notifyOfBeingAttacked(Entity ent)

@@ -1,0 +1,45 @@
+package GUI;
+
+import java.awt.event.ComponentEvent;
+
+import javax.swing.JPanel;
+
+import Editor.ComponentListener;
+import Entity.Entity;
+
+public class HUD extends JPanel
+	implements ComponentListener
+{		
+	private DialogueArea area;
+	
+	private HealthBar healthBar;
+	
+	public HUD(Entity player)
+	{	
+		area = new DialogueArea();
+		
+		healthBar = new HealthBar(player);
+		
+		area.setVisible(false);
+		
+		setOpaque(false);
+		setLayout(null);
+		
+		add(area);
+		add(healthBar);
+	
+		healthBar.setLocation(0, 0);
+		healthBar.setSize(healthBar.getPreferredSize());
+	
+		addComponentListener(this);
+	}
+	
+	@Override
+	public void componentResized(ComponentEvent e)
+	{
+	}
+	
+	public DialogueArea getDialogueArea() {
+		return area;
+	}
+}

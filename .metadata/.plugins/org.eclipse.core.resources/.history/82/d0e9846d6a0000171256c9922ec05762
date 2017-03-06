@@ -1,0 +1,34 @@
+package Modifiers;
+
+import EntityComponent.CombatComponent;
+import EntityComponent.CombatListener;
+
+public class CombatEffect extends InstantEffect
+	implements CombatListener
+{
+	private CombatEvent event;
+	
+	public CombatEffect()
+	{
+		event = CombatEvent.ENTITY_ATTACKED;
+	}
+	
+	@Override
+	public void apply() 
+	{
+		src.get(CombatComponent.class)
+		   .addCombatListener(this);
+	}
+	
+	@Override
+	public void unapply()
+	{
+		src.get(CombatComponent.class)
+		   .removeCombatListener(this);
+	}
+
+	@Override
+	public Object clone() {
+		return null;
+	}
+}

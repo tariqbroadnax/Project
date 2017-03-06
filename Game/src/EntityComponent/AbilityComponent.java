@@ -8,26 +8,33 @@ import java.util.List;
 
 import Ability.AbilityListener;
 import Ability.ActiveAbility;
+import Ability.BasicAttack;
 import Ability.CastingIndicator;
+import Ability.InstantFriendlyUnitAbility;
 import Ability.PassiveAbility;
 import Ability.PointAbility;
+import Ability.TargetUnitAbility;
 import Entity.Entity;
+import Movement.MovementComponent;
+import Movement.MovementListener;
 
 public class AbilityComponent extends EntityComponent
+	implements CombatListener, MovementListener
 {
-	private ArrayList<PassiveAbility> passives;
-	private ArrayList<ActiveAbility> actives;
-	private ArrayList<PointAbility> points;
+	private List<PassiveAbility> passives;
+	private List<ActiveAbility> actives;
+	private List<PointAbility> points;
+	private List<TargetUnitAbility> targets;
 	
-	private ArrayList<AbilityListener> lists;
-		
-	private ActiveAbility castingAbility;
-	
-	private Root castRoot;
-	
-	private CastingIndicator indicator;
+	private List<AbilityListener> lists;
 	
 	private List<Class<? extends ActiveAbility>> disabledAbilities;
+	
+	private ActiveAbility castingAbility;
+		
+	private CastingIndicator indicator;
+	
+	private boolean castInterruptedOnAttack;
 	
 	public AbilityComponent()
 	{
@@ -36,6 +43,7 @@ public class AbilityComponent extends EntityComponent
 		passives = new ArrayList<PassiveAbility>();
 		actives = new ArrayList<ActiveAbility>();
 		points = new ArrayList<PointAbility>();
+		targets = new ArrayList<TargetUnitAbility>();
 		
 		lists = new ArrayList<AbilityListener>();
 		
@@ -44,6 +52,11 @@ public class AbilityComponent extends EntityComponent
 		indicator = new CastingIndicator();
 		
 		disabledAbilities = new ArrayList<Class<? extends ActiveAbility>>();
+	
+		castInterruptedOnAttack = true;
+		
+		addTargetUnitAbility(new BasicAttack());
+		addTargetUnitAbility(new InstantFriendlyUnitAbility());
 	}
 	
 	public AbilityComponent(AbilityComponent comp)
@@ -54,6 +67,60 @@ public class AbilityComponent extends EntityComponent
 			actives.add((ActiveAbility)active.clone());
 	}
 	
+	@Override
+	public void start()
+	{
+//		parent.get(CombatComponent.class)
+//			  .addCombatListener(this);
+		
+		parent.get(MovementComponent.class)
+			  .addMovementListener(this);
+		
+		for(ActiveAbility ability : actives)
+			ability.start();
+		for(ActiveAbility ability : points)
+			ability.start();
+		for(ActiveAbility ability : targets)
+			ability.start();
+	}
+	
+	@Override
+	public void stop()
+	{
+		parent.get(CombatComponent.class)
+			  .addCombatListener(this);
+		
+//		parent.get(MovementComponent.class)
+//		  	  .removeMovementListener(this);
+	}
+	
+	@Override
+	public void entityAttacked(Entity ent, double damage){}
+	{
+		tryAndStopCasting();
+	}
+	
+	@Override
+	public void movementContinued(MovementComponent src)
+	{
+		tryAndStopCasting();
+	}
+	
+	private void tryAndStopCasting()
+	{
+		if(castInterruptedOnAttack && castingAbility != null)
+		{
+			castingAbility.stopCast();
+			
+			if(parent.contains(GraphicsComponent.class))
+				parent.get(GraphicsComponent.class)
+					  .getDecorations()
+					  .remove(indicator);
+			
+			castingAbility = null;
+		}
+	}
+
 	@Override
 	public void update(Duration delta)
 	{				
@@ -70,11 +137,13 @@ public class AbilityComponent extends EntityComponent
 			}
 		}
 		
-		
 		for(ActiveAbility ability : actives)
 			ability.update(delta);
 		for(ActiveAbility ability : points)
 			ability.update(delta);
+		for(ActiveAbility ability : targets)
+			ability.update(delta);
+		
 	}
 	
 	public void castActiveAbility(int i) 
@@ -97,7 +166,7 @@ public class AbilityComponent extends EntityComponent
 				parent.get(GraphicsComponent.class)
 					  .getDecorations()
 					  .add(indicator, 0, -10);
-				
+								
 				indicator.setActiveAbility(ability);	
 			}
 		}
@@ -110,6 +179,43 @@ public class AbilityComponent extends EntityComponent
 		ability.setTarget(loc);
 		
 		tryAndCast(ability);
+	}
+	
+	public void castTargetUnitAbility(int i, Entity target)
+	{
+		TargetUnitAbility ability = targets.get(i);
+		
+		ability.setTarget(target);
+		
+		tryAndCast(ability);
+	}
+	
+	public void setCastInterruptedOnAttack(boolean castInterruptedOnAttack) {
+		this.castInterruptedOnAttack = castInterruptedOnAttack;
+	}
+	
+	public void setParent(Entity parent)
+	{
+		super.setParent(parent);
+		
+		for(ActiveAbility a : actives)
+			a.setSrc(parent);
+		for(ActiveAbility a : targets)
+			a.setSrc(parent);
+		for(ActiveAbility a : points)
+			a.setSrc(parent);
+	}
+	
+	public boolean isCasting() {
+		return castingAbility != null;
+	}
+
+	public boolean isCastInterruptedOnAttack() {
+		return castInterruptedOnAttack;
+	}
+	
+	public BasicAttack getBasicAttack() {
+		return (BasicAttack) targets.get(0);
 	}
 	
 	public void addPassiveAbility(PassiveAbility ability) {
@@ -142,10 +248,18 @@ public class AbilityComponent extends EntityComponent
 		ability.setSrc(null);
 	}
 	
-	private void addCastRoot()
-	{
-		parent.get(EffectComponent.class)
-		  	  .add(castRoot);
+	public void addTargetUnitAbility(TargetUnitAbility ability) {
+		targets.add(ability);
+		ability.setSrc(parent);
+	}
+	
+	public void removeTargetUnitAbility(TargetUnitAbility ability) {
+		targets.remove(ability);
+		ability.setSrc(null);
+	}
+	
+	public TargetUnitAbility getTargetUnitAbility(int i) {
+		return targets.get(i);
 	}
 	
 	private void addCastingIndicator(
@@ -157,22 +271,12 @@ public class AbilityComponent extends EntityComponent
 			  .getDecorations()
 			  .add(indicator, 0, -15);
 	}
-		
-	private void removeCastRoot()
-	{
-		parent.get(EffectComponent.class)
-			  .remove(castRoot);
-	}
 	
 	private void removeCastingIndicator()
 	{
 		parent.get(GraphicsComponent.class)
 			  .getDecorations()
 			  .remove(indicator);
-	}
-	
-	public boolean isCasting() {
-		return castingAbility != null;
 	}
 
 	public void addAbilityListener(AbilityListener list) {
@@ -183,33 +287,20 @@ public class AbilityComponent extends EntityComponent
 		lists.remove(list);
 	}
 
-	public void setParent(Entity parent)
-	{
-		super.setParent(parent);
-		
-		for(ActiveAbility a : actives)
-			a.setSrc(parent);
-		
-		//castRoot.setTarget(parent);
-	}
-	
-	public void notifyEntityKilled(Entity ent) 
-	{
-		List<AbilityListener> copy = 
-				new ArrayList<AbilityListener>(lists);
-	
-		for(AbilityListener list : copy)
-			list.entityKilled(ent);
+	public void addDisabledAbility(Class<? extends ActiveAbility> c) {
+		disabledAbilities.add(c);		
 	}
 
+	public void removeDisabledAbility(Class<? extends ActiveAbility> c) {
+		disabledAbilities.remove(c);
+	}
+	
 	private void readObject(java.io.ObjectInputStream in)
 		     throws IOException, ClassNotFoundException
-     {
+	{
 		in.defaultReadObject();
-						
-		castRoot = new Root();		
-     }
-	 
+	}
+	
 	@Override
 	protected EntityComponent _clone() {
 		return new AbilityComponent(this);
@@ -226,13 +317,4 @@ public class AbilityComponent extends EntityComponent
 		return str;
 	}
 
-	public void addDisabledAbility(Class<? extends ActiveAbility> c) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void removeDisabledAbility(Class<? extends ActiveAbility> c) {
-		// TODO Auto-generated method stub
-		
-	}
 }

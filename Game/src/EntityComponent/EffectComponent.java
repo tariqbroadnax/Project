@@ -5,20 +5,22 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import Modifiers.Effect;
+import Modifiers.GradualEffect;
+import Modifiers.InstantEffect;
 
 public class EffectComponent extends EntityComponent
 {
-	private Collection<Effect> effects;
+	private Collection<GradualEffect> effects;
 	
 	public EffectComponent()
 	{
-		effects = new LinkedList<Effect>();
+		effects = new LinkedList<GradualEffect>();
 	}
 	
 	@Override
 	public void update(Duration delta) 
 	{
-		for(Effect effect : effects)
+		for(GradualEffect effect : effects)
 		{
 			effect.update(delta);
 			
@@ -29,11 +31,34 @@ public class EffectComponent extends EntityComponent
 			}
 		}
 			
-		
 		effects.removeIf(eff -> eff.isFinished());
 	}
 	
-	public void add(Effect effect) 
+	public void apply(Effect effect)
+	{
+		if(effect instanceof InstantEffect)
+		{
+			InstantEffect instEff = (InstantEffect) effect;
+			
+			apply(instEff);
+		}
+		else
+		{
+			GradualEffect gradEff = (GradualEffect) effect;
+			
+			apply(gradEff);
+		}
+	}
+	public void apply(InstantEffect effect) 
+	{
+		if(effect.canBeApplied(parent))
+		{
+			effect.setTarget(parent);
+			effect.apply();
+		}
+	}
+	
+	public void apply(GradualEffect effect)
 	{
 		if(effect.canBeApplied(parent))
 		{
@@ -43,24 +68,23 @@ public class EffectComponent extends EntityComponent
 		}
 	}
 
-	public void remove(Effect effect) 
+	public void unapply(Effect eff) 
 	{
-		effects.remove(effect);
-		effect.stop();
-		effect.setTarget(null);
+		if(effects.contains(eff))
+		{
+			effects.remove(eff);
+			eff.setTarget(null);
+			
+			((GradualEffect) eff).stop();
+		}
 	}
 	
-	public void remove(Class<? extends Effect> c)
-	{
-		Effect target = null;
-		
-		for(Effect effect : effects)
-			if(effect.getClass().equals(c))
-				target = effect;
-		
-		if(target != null)
-			remove(target);
-	}
+//	public void remove(GradualEffect effect) 
+//	{
+//		effects.remove(effect);
+//		effect.setTarget(null);
+//	}
+//	
 	
 	public boolean contains(Effect effect) 
 	{
@@ -71,4 +95,5 @@ public class EffectComponent extends EntityComponent
 	protected EntityComponent _clone() {
 		return new EffectComponent();
 	}
+
 }

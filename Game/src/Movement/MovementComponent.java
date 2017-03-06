@@ -38,7 +38,7 @@ public class MovementComponent extends EntityComponent
 	
 		prevLoc = new Point2D.Double();
 		
-		dir = prevDir = Cardinal.NORTH;
+		dir = prevDir = Cardinal.SOUTH;
 	}
 	
 	public MovementComponent(MovementComponent comp)
@@ -50,7 +50,7 @@ public class MovementComponent extends EntityComponent
 	
 	@Override
 	public void update(Duration delta)
-	{		
+	{				
 		prevLoc.setLocation(parentLoc);
 
 		movement.move(parentLoc, delta);
@@ -76,20 +76,23 @@ public class MovementComponent extends EntityComponent
 			for(MovementListener listener : listeners)
 				listener.movementStopped(this);
 		}
-		
+				
 		if(moving)
-		{
+		{			
 			prevDir = dir;
 			
-			double angle = Math.atan2(prevLoc.y - parentLoc.y,
-									  prevLoc.x - parentLoc.x);
+			double angle = Math.atan2(parentLoc.y - prevLoc.y,
+									  parentLoc.x - prevLoc.x);
 			
 			dir = Cardinal.angleToCardinal(angle);
+		
+			for(MovementListener listener : listeners)
+				listener.movementContinued(this);
 		}
 		if(!prevDir.equals(dir) && moving)
 		{
-//			for(MovementListener listener : listeners)
-//				listener.directionChanged(this);
+			for(MovementListener listener : listeners)
+				listener.directionChanged(this);
 		}
 	}
 	
@@ -114,6 +117,10 @@ public class MovementComponent extends EntityComponent
 	public Cardinal getPreviousDirection()
 	{
 		return prevDir;
+	}
+	
+	public Point2D.Double getPrevLoc() {
+		return prevLoc;
 	}
 	
 	public boolean isMoving() {

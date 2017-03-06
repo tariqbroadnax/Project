@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import Actions.Action;
 import Entity.Entity;
 import EntityComponent.EntityComponent;
 
@@ -13,13 +12,11 @@ public class BehaviorComponent extends EntityComponent
 {
 	private List<Behavior> behaviors;
 	
-	private List<Action> actions;
+	private boolean started = false;
 	
 	public BehaviorComponent() 
 	{
-		behaviors = new ArrayList<Behavior>();
-		
-		actions = new ArrayList<Action>();
+		behaviors = new ArrayList<Behavior>();		
 	}
 	
 	public BehaviorComponent(BehaviorComponent comp)
@@ -30,6 +27,17 @@ public class BehaviorComponent extends EntityComponent
 //			behaviors.add((Behavior)beh.clone());
 	}
 	
+	public void start()
+	{
+		started = true;
+		
+		for(Behavior beh : behaviors)
+		{
+			beh.setSrc(parent);
+			beh.start();
+		}
+	}
+	
 	@Override
 	public void update(Duration delta) 
 	{	
@@ -37,44 +45,24 @@ public class BehaviorComponent extends EntityComponent
 		{
 			Behavior b = behaviors.get(i);
 			
-			b.update(delta);
-			
-			Action prev = actions.get(i),
-				   curr = b.getCurrentAction();
-			
-			if(prev != curr)
-			{
-				if(prev != null)
-					prev.stop();
-				if(curr != null)
-					curr.start();
-			}
-			
-			actions.set(i, curr);
-			
-			if(curr != null)
-				curr.update(delta);
+			b.update(delta);		
 		}
 	}
 	
 	public void addBehavior(Behavior behavior) 
 	{
 		behaviors.add(behavior);
-		actions.add(null);
 		
-		if(parent != null)
+		if(started)
+		{
 			behavior.setSrc(parent);
+			behavior.start();
+		}
 	}
 	
 	public void removeBehavior(Behavior behavior) 
 	{
-		int i = behaviors.indexOf(behavior);
 		
-		if(i > -1)
-		{
-			behaviors.remove(behavior);
-			actions.remove(i);
-		}
 	}
 	
 	public <E extends Behavior> E getBehavior(
@@ -88,12 +76,6 @@ public class BehaviorComponent extends EntityComponent
 	
 	public Collection<Behavior> getBehaviors() {
 		return behaviors;
-	}
-	
-	public void setParent(Entity parent) {
-		super.setParent(parent);
-		for(Behavior b : behaviors)
-			b.setSrc(parent);
 	}
 
 	@Override

@@ -57,6 +57,10 @@ public class Updater implements Runnable
 		lastUpdate = lastMaintanance = System.nanoTime();
 		makeUpSleep = Duration.ZERO;
 		
+
+		for(Updatable u : updatables)
+			u.start();
+		
 		thread.start();
 	}
 	

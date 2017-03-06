@@ -28,7 +28,7 @@ public class Span implements Updatable,
 	}
 	
 	public void update(Duration delta) {
-		len += delta.toMillis();
+		elapsed += delta.toMillis();
 	}
 	
 	public void setLength(long len) {

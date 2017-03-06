@@ -1,0 +1,33 @@
+package Ability;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Entity.Entity;
+import Modifiers.Effect;
+
+public class HomingProjectile extends Entity
+{
+	private double speed;
+	
+	private List<Effect> effects;
+	
+	private Entity target;
+	
+	public HomingProjectile()
+	{
+		speed = 10;
+		
+		effects = new ArrayList<Effect>();
+	}
+	
+	public void start()
+	{
+		
+	}
+	
+	public void setTarget(Entity target)
+	{
+		this.target = target;
+	}
+}

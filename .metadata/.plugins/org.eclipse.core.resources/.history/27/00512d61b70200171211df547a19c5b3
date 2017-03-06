@@ -1,0 +1,25 @@
+package Modifiers;
+
+import Entity.Entity;
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public class Heal
+{
+	private double flat, scale, perc;
+	
+	public Heal()
+	{
+		flat = 10;
+		scale = 0;
+		perc = 0;
+	}
+	
+	public void apply(Entity target)
+	{
+		Stats stats = target.get(StatsComponent.class)
+							.getStats();
+		
+		stats.heal(val);
+	}
+}

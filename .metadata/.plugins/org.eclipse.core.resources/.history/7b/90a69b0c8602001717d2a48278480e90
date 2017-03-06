@@ -1,0 +1,17 @@
+package Entity;
+
+public class Monster extends Entity
+{
+//	Stats stats; 
+//	Combat combat
+	
+//	dropList;
+//	
+//	Abilitys
+//	
+//	Behavior 
+//	
+//	Movement
+	
+	
+}

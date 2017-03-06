@@ -4,7 +4,9 @@ import java.time.Duration;
 import java.util.TreeSet;
 
 import Game.Updatable;
-import Modifiers.Modifier;
+import Modifiers.Span;
+import Modifiers.Stat;
+import Modifiers.StatModifier;
 
 public class Stats implements Updatable
 {
@@ -14,13 +16,20 @@ public class Stats implements Updatable
 	
 	private int gold;
 	
-	private double maxHealth, health, healthRegen;
+	private double maxHealth, health, healthRegen,
+				   maxMana, mana, manaRegen,
+				   atk, maAtk,
+				   def, maDef,
+				   speed, atkSpeed;
 	
-	private double speed;
+	private double fireAtk, waterAtk, windAtk, electAtk, soilAtk,
+				   fireDef, waterDef, windDef, electDef, soilDef;
 	
 	private double critRate;
+
+	private TreeSet<StatModifier> mods;
 	
-	private TreeSet<Modifier> expMods, healthMods, speedMods;
+	private Span nextTick;
 	
 	public Stats()
 	{
@@ -28,24 +37,38 @@ public class Stats implements Updatable
 		
 		exp = 0; expNextLvl = 100;
 		
-		health = maxHealth = 100;
+		health = 50; maxHealth = 100;
+		mana = maxMana = 100;
+		healthRegen = manaRegen = 5;
 		
-		healthRegen = 5;
+		atk = maAtk = 10;
+		
+		def = maDef = 0;
 		
 		speed = 50;
+		atkSpeed = 2;
 		
-		critRate = .50;
+		critRate = .05;
+
+		mods = new TreeSet<StatModifier>();
 		
-		expMods = new TreeSet<Modifier>();
-		healthMods = new TreeSet<Modifier>();
-		speedMods = new TreeSet<Modifier>();
+		nextTick = new Span(500);
 	}
 	
 	public void update(Duration delta)
-	{
-		double t = delta.toMillis() / 1000.0;
+	{				
+		nextTick.update(delta);
 		
-		health += healthRegen * t;
+		while(nextTick.isFinished())
+		{
+			nextTick.reverse(500);
+		
+			double healthRegen = getHealthRegen(),
+				   manaRegen = getManaRegen();
+			
+			heal(healthRegen * 250.0 / 1000);
+			restoreMana(manaRegen * 250.0 / 1000);	
+		}		
 	}
 	
 	public void heal(double val)
@@ -56,6 +79,22 @@ public class Stats implements Updatable
 		double maxHealth = getMaxHealth();
 		health += val;
 		health = health > maxHealth ? maxHealth : health;
+	}
+	
+	public void useMana(double val)
+	{
+		mana -= val;
+	}
+	
+	public void restoreMana(double val)
+	{
+		if(val < 0)
+			throw new IllegalArgumentException();
+		
+		double maxMana = getMaxHealth();
+		
+		mana += val;
+		mana = mana > maxMana ? maxMana : mana;
 	}
 	
 	public void damage(double val)
@@ -69,9 +108,10 @@ public class Stats implements Updatable
 	
 	public void addExp(int exp)
 	{
-		for(Modifier mod : expMods)
-			exp = (int) mod.modify(exp);
-		
+		for(StatModifier mod : mods)
+			if(mod.getStat() == Stat.EXP)
+				exp = (int) mod.getModifier()
+							   .modify(exp);
 		this.exp += exp;
 		
 		while(exp > expNextLvl)
@@ -84,6 +124,10 @@ public class Stats implements Updatable
 	
 	public void setBaseMaxHealth(double maxHealth) {
 		this.maxHealth = maxHealth;
+	}
+	
+	public void setBaseMaxMana(double maxMana) {
+		this.maxMana = maxMana;
 	}
 	
 	public void setBaseSpeed(double speed) {
@@ -101,33 +145,131 @@ public class Stats implements Updatable
 	public double getHealth() {
 		return health;
 	}
+	
+	public double getMana() {
+		return mana;
+	}
 
-	public double getMaxHealth() 
+	private double modify(double val, Stat stat)
 	{
-		double maxHealth = this.maxHealth;
+		for(StatModifier mod : mods)
+			if(mod.getStat() == stat)
+				val = mod.getModifier()
+						 .modify(val);
 		
-		for(Modifier mod : healthMods)
-			maxHealth = mod.modify(maxHealth);
-		
+		return val;
+	}
+	
+	public double getMaxHealth() {
+		return modify(maxHealth, Stat.HEALTH);
+	}
+	
+	public double getMaxMana() {
+		return modify(maxMana, Stat.MANA);
+	}
+	
+	public double getHealthRegen() {
+		return modify(healthRegen, Stat.HP_REGEN);
+	}
+	
+	public double getManaRegen() {
+		return modify(manaRegen, Stat.MP_REGEN);
+	}
+	
+	public double getAttack() {
+		return modify(atk, Stat.ATK);
+	}
+	
+	public double getMagicAttack() {
+		return modify(maAtk, Stat.MA_ATK);
+	}
+	
+	
+	public double getDefense() {
+		return modify(def, Stat.DEF);
+	}
+	
+	public double getMagicDefense() {
+		return modify(maDef, Stat.MA_DEF);
+	}
+	
+	public double getAttackSpeed() {
+		return modify(atkSpeed, Stat.ATK_SPEED);
+	}
+	
+	public double getSpeed()  {		
+		return modify(speed, Stat.SPEED);
+	}
+	
+	public double getFireAttack() {
+		return modify(fireAtk, Stat.FIRE_ATK);
+	}
+	
+	public double getWaterAttack() {
+		return modify(waterAtk, Stat.WATER_ATK);
+	}
+	
+	public double getWindAttack() {
+		return modify(windAtk, Stat.WIND_ATK);
+	}
+	
+	public double getElectAttack() {
+		return modify(electAtk, Stat.ELECT_ATK);
+	}
+	
+	public double getSoilAttack() {
+		return modify(soilAtk, Stat.SOIL_ATK);
+	}
+	
+	public double getFireDefense() {
+		return modify(fireDef, Stat.FIRE_DEF);
+	}
+	
+	public double getWaterDefense() {
+		return modify(waterDef, Stat.WATER_DEF);
+	}
+	
+	public double getWindDefense() {
+		return modify(windDef, Stat.WIND_DEF);
+	}
+	
+	public double getElectDefense() {
+		return modify(electDef, Stat.ELECT_DEF);
+	}
+	
+	public double getSoilDefense() {
+		return modify(soilDef, Stat.SOIL_DEF);
+	}
+	public double getBaseMaxHealth() {
 		return maxHealth;
 	}
 	
-	public double getBaseMaxHealth() {
-		return maxHealth;
+	public double getBaseMaxMana() {
+		return maxMana;
+	}
+	
+	public double getBaseHealthRegen() {
+		return healthRegen;
+	}
+	
+	public double getBaseManaRegen() {
+		return manaRegen;
+	}
+	
+	public double getBaseAttack() {
+		return atk;
+	}
+	
+	public double getBaseMagicAttack() {
+		return maAtk;
 	}
 	
 	public double getBaseSpeed() {
 		return speed;
 	}
 	
-	public double getSpeed() 
-	{
-		double speed = this.speed;
-		
-		for(Modifier mod : speedMods)
-			speed = mod.modify(speed);
-		
-		return speed;
+	public double getBaseAttackSpeed() {
+		return atkSpeed;
 	}
 	
 	public int getLevel() {
@@ -158,27 +300,11 @@ public class Stats implements Updatable
 		return 0;
 	}
 	
-	public void addExpModifier(Modifier mod) {
-		expMods.add(mod);
+	public void addStatModifier(StatModifier mod) {
+		mods.add(mod);
 	}
 	
-	public void removeExpModifier(Modifier mod) {
-		expMods.remove(mod);
-	}
-	
-	public void addHealthModifier(Modifier mod) {
-		healthMods.add(mod);
-	}
-	
-	public void removeHealthModifier(Modifier mod) {
-		healthMods.remove(mod);
-	}
-	
-	public void addSpeedModifier(Modifier mod) {
-		speedMods.add(mod);
-	}
-	
-	public void removeSpeedModifier(Modifier mod) {
-		speedMods.remove(mod);
+	public void removeStatModifier(StatModifier mod) {
+		mods.remove(mod);
 	}
 }

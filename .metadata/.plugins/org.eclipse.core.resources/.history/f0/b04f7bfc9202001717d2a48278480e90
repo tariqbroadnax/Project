@@ -1,0 +1,36 @@
+package Behavior;
+
+import java.time.Duration;
+
+import Entity.Entity;
+
+public class MonsterBehavior extends Behavior
+{
+	private Entity player;
+	
+	public void start()
+	{
+		player = src.getSceneLoc()
+					.getGame()
+					.getPlayer();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		if(playerInRange() || playerAttackedRecently())
+		{
+			if(playerInAttackRange())
+			{
+				attackPlayer();
+			}
+			else
+				moveCloser();
+		}
+	}
+
+	private boolean playerInRange() 
+	{
+		return false;
+	} 	
+}

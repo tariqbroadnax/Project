@@ -60,7 +60,7 @@ public class QuestComponent extends EntityComponent
 			if(finished)
 			{
 				for(Task task : quest.getTasks())
-					task.finish();
+					task.stop();
 				
 				completed.add(quest);
 				remove.add(quest);

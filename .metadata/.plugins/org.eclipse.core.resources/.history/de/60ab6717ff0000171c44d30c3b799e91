@@ -1,0 +1,13 @@
+package GUI;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
+public class GMenu extends JMenu
+{
+	public GMenu()
+	{
+		add(new JMenuItem("TESTING"));
+		
+	}
+}

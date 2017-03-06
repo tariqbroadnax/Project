@@ -1,0 +1,12 @@
+package GUI;
+
+import javax.swing.JPanel;
+
+public class HealthBar extends JPanel
+{
+	
+	public static void paintComponent()
+	{
+		
+	}
+}

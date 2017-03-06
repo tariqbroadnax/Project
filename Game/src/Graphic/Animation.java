@@ -55,14 +55,30 @@ public class Animation extends Graphic
 		}
 
 		for(Graphic graph : graphics)
-			graph.update(delta);
-		
+			graph.update(delta);	
 	}
 	
 	@Override
-	protected void _paint(GraphicsContext gc) {
+	protected void _paint(GraphicsContext gc) 
+	{
 		if(curr != null)
 			curr.paint(gc);
+	}
+	
+	public static Animation of(String fileName, int rows, int cols, int start, int end)
+	{
+		Animation ani = new Animation();
+		
+		for(int i = start; i <= end; i++)
+		{
+			Sprite sprite = new Sprite(fileName);
+			
+			sprite.setTileBound(i, rows, cols);
+					
+			ani.addGraphic(sprite);
+		}
+		
+		return ani;
 	}
 	
 	public void reset()
@@ -120,9 +136,18 @@ public class Animation extends Graphic
 	public void setLoc(Point2D.Double loc) 
 	{
 		super.setLoc(loc);
-		
+				
 		for(Graphic graphic : graphics)
 			graphic.setLoc(loc);
+	}
+	
+	@Override
+	public void setLoc(double x, double y)
+	{
+		super.setLoc(x, y);
+		
+		for(Graphic graphic : graphics)
+			graphic.setLoc(x, y);
 	}
 	
 	@Override

@@ -1,0 +1,28 @@
+package Game;
+
+import java.time.Duration;
+import java.util.List;
+
+import Entity.Entity;
+import Maths.Circle2D;
+
+public class Spawner implements Updatable
+{
+	private int size;
+	
+	private Circle2D.Double area;
+
+	private Entity model;
+	
+	private List<Entity> model;
+	
+	public Spawner()
+	{
+	}
+
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+}

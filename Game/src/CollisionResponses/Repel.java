@@ -1,5 +1,6 @@
 package CollisionResponses;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.RectangularShape;
 import java.util.Arrays;
 
@@ -8,6 +9,7 @@ import EntityComponent.CollisionEvent;
 import EntityComponent.CollisionResponse;
 import EntityComponent.RigidBodyComponent;
 import Maths.Vector2D;
+import Movement.MovementComponent;
 
 public class Repel implements CollisionResponse
 {
@@ -17,9 +19,11 @@ public class Repel implements CollisionResponse
 
 	@Override
 	public void collisionOccurred(CollisionEvent e)
-	{
+	{		
 		findShifts(e.colliderComp, e.collidedComp);
+
 		findSmallestShift();
+		
 		moveCollided(e.collided);
 	}
 	

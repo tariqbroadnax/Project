@@ -30,13 +30,14 @@ public class RigidBody implements Cloneable, Serializable
 			limb = (Limb) limb.clone();
 			 
 			limbs.add(limb);
+			
 		}
 	}
 	
 	public void updateLimbs(Point2D.Double pt)
 	{
 		for(Limb limb : limbs)
-		{
+		{			
 			Vector2D.Double offset = limb.getOffset();
 			
 			RectangularShape shape = limb.getShape();
@@ -46,7 +47,7 @@ public class RigidBody implements Cloneable, Serializable
 			
 			shape.setFrame(pt.x - width/2 + offset.x,
 						   pt.y - height/2 + offset.y,
-						   width, height);
+						   width, height);					
 		}
 	}
 	
@@ -120,6 +121,16 @@ public class RigidBody implements Cloneable, Serializable
 		limbs.add(limb);
 	}
 
+	public void addLimbs(Rectangle2D.Double... rects)
+	{
+		for(Rectangle2D.Double rect : rects)
+		{
+			Limb limb = new Limb(rect);
+			
+			addLimb(limb);
+		}
+	}
+	
 	public void removeLimb(Limb limb) {
 		limbs.remove(limb);
 	}

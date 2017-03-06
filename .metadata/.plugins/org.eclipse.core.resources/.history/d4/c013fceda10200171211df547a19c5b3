@@ -1,0 +1,14 @@
+package Behavior;
+
+import java.time.Duration;
+
+public class Follow extends Behavior
+{
+
+	@Override
+	public void update(Duration delta) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}

@@ -1,0 +1,29 @@
+package EntityComponent;
+
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+import Item.Item;
+
+public class DropComponent extends EntityComponent
+{
+	private Map<Item, Double> drops;
+
+	public DropComponent()
+	{
+		drops = new HashMap<Item, Double>();
+	}
+	
+	@Override
+	public void update(Duration delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

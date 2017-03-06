@@ -1,0 +1,38 @@
+package Behavior;
+
+import java.time.Duration;
+
+import Entity.Entity;
+import Movement.Force;
+import Movement.MovementComponent;
+
+public class Follow extends Behavior
+{
+	private Entity target;
+	
+	private Force force;
+	
+	private double speed, minDist;
+	
+	public Follow(Entity target)
+	{
+		this.target = target;
+		
+		force = new Force();
+	
+		speed = 10; minDist = 5;
+	}
+	
+	public void start()
+	{
+		src.get(MovementComponent.class)
+		   .getMovement()
+		   .addForce(force);
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+}

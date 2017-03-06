@@ -1,0 +1,104 @@
+package Modifiers;
+
+import java.util.EnumSet;
+
+import Entity.Entity;
+import EntityComponent.CombatComponent;
+import EntityComponent.CombatListener;
+
+public class CombatEffect extends GradualEffect
+	implements CombatListener
+{
+	private EnumSet<CombatEvent> set;
+	
+	private boolean sourceTarget;
+		
+	public CombatEffect()
+	{
+		set = EnumSet.noneOf(CombatEvent.class);		
+		
+		sourceTarget = false;
+	}
+	
+	public CombatEffect(CombatEffect effect)
+	{
+		set = EnumSet.copyOf(effect.set);
+		
+		sourceTarget = effect.sourceTarget;
+	}
+	
+	@Override
+	public void start() 
+	{
+		super.start();
+	
+		src.get(CombatComponent.class)
+		   .addCombatListener(this);
+	}
+	
+	@Override
+	public void stop()
+	{
+		super.stop();
+		
+		src.get(CombatComponent.class)
+		   .removeCombatListener(this);
+	}
+
+	@Override
+	public void entityAttacked(Entity ent, double damage) 
+	{
+		if(set.contains(CombatEvent.ENTITY_ATTACKED))
+		{
+			if(!sourceTarget)
+				effect.setTarget(ent);
+			
+			effect.apply();
+		}
+	}
+	
+	@Override
+	public void entityAttacks(Entity ent)
+	{
+		if(set.contains(CombatEvent.ENTITY_ATTACKS))
+		{
+			if(!sourceTarget)
+				effect.setTarget(ent);
+			
+			effect.apply();
+		}
+	}
+	
+	@Override
+	public void entityKilled(Entity ent)
+	{
+		if(set.contains(CombatEvent.ENTITY_KILLED))
+		{
+			if(!sourceTarget)
+				effect.setTarget(ent);
+			
+			effect.apply();
+		}
+	}
+	
+	public void setEventSourceTarget(boolean sourceTarget) {
+		this.sourceTarget = sourceTarget;
+	}
+	
+	public boolean isEventSourceTarget(boolean sourceTarget) {
+		return sourceTarget;
+	}
+	
+	public void addCombatEvent(CombatEvent e) {
+		set.add(e);
+	}
+	
+	public void removeCombatEvent(CombatEvent e) {
+		set.remove(e);
+	}
+	
+	@Override
+	public Object clone() {
+		return new CombatEffect(this);
+	}
+}

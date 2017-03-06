@@ -3,10 +3,8 @@ package Modifiers;
 import java.util.ArrayList;
 import java.util.List;
 
-import Ability.Ability;
 import Ability.ActiveAbility;
 import EntityComponent.AbilityComponent;
-
 
 public class AbilityDisable extends InstantEffect
 {

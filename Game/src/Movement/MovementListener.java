@@ -7,4 +7,10 @@ public interface MovementListener
 	
 	default public void movementStopped(
 			MovementComponent src){}
+	
+	default public void movementContinued(
+			MovementComponent src){}
+	
+	default public void directionChanged(
+			MovementComponent src){}
 }

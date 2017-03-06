@@ -1,0 +1,9 @@
+package Modifiers;
+
+public enum Stat 
+{
+	HEALTH, MANA,
+	HP_REGEN, MP_REGEN,
+	ATK, MA_ATK, DEF, MA_DEF, 
+	SPEED, ATK_SPEED;
+}

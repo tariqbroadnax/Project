@@ -1,0 +1,17 @@
+package Ability;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Modifiers.Effect;
+
+public class InstantFriendlyUnitAbility 
+	extends FriendlyUnitAbility
+{
+	private List<Effect> effects;
+	
+	public InstantFriendlyUnitAbility()
+	{
+		effects = new ArrayList<Effect>();
+	}
+}

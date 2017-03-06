@@ -1,0 +1,115 @@
+package GUI.Item;
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.util.List;
+
+import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.Border;
+
+import EditorGUI.MouseListener;
+import Entity.Entity;
+import Inventory.Inventory;
+import Inventory.InventoryComponent;
+import Item.Item;
+import Item.UseItem;
+
+public class ItemList extends JList<Item>
+	implements MouseListener
+{
+	public final static int EQUIP = 0, USE = 1, PET = 2, ETC = 3;
+	
+	private List<? extends Item> items;
+	
+	private InventoryComponent comp;
+	
+	public ItemList(Entity player, int itemType)
+	{
+		comp = player.get(InventoryComponent.class);
+		
+		Inventory inventory = comp.getInventory();
+		
+		if(itemType == USE)
+			items = inventory.getUseItems();
+		else if(itemType == EQUIP)
+			items = inventory.getEquipItems();
+		else if(itemType == PET)
+			items = inventory.getPetItems();
+		else
+			items = inventory.getEtcItems();
+		
+		setModel(new MyModel());
+		setCellRenderer(new MyRenderer());
+		
+		setPreferredSize(new Dimension(300, 200));
+		
+		addMouseListener(this);
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e) 
+	{
+		int clickCount = e.getClickCount();
+		
+		if(clickCount == 2)
+		{
+			Point p = e.getPoint();
+			
+			int index = locationToIndex(p);
+			
+			if(index > -1 && getCellBounds(index, index).contains(p))
+			{
+				Item item = getModel().getElementAt(index);
+				
+				if(item instanceof UseItem)
+				{
+					UseItem useItem = (UseItem) item;
+					
+					comp.useItem(useItem);
+				}
+			}
+		}
+	}
+	
+	private class MyModel extends AbstractListModel<Item>
+	{
+		@Override
+		public Item getElementAt(int index) {
+			return items.get(index);
+		}
+
+		@Override
+		public int getSize() {
+			return items.size();
+		}
+	}
+	
+	private class MyRenderer implements ListCellRenderer<Item>
+	{
+		private ItemComponent comp;
+		
+		MyRenderer()
+		{
+			comp = new ItemComponent();
+		}
+		
+		@Override
+		public Component getListCellRendererComponent(
+				JList<? extends Item> list, Item item,
+				int i,
+				boolean selected, boolean focused) 
+		{
+			Border border = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+			
+			comp.setBorder(border);
+			comp.setItem(item);
+						
+			return comp;
+		}
+	}
+}

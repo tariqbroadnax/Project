@@ -60,21 +60,28 @@ public class ScenePainter
 			Rectangle2D.Double bound = graph.getBound(),
 							   bound2 = graph2.getBound();
 			
-			double bottom = bound.y + bound.height,
-				   bottom2 = bound2.y + bound2.height;
-			
-			if(bottom < bottom2)
+			if(bound == null)
 				return -1;
-			else if(bottom > bottom2)
+			else if(bound2 == null)
 				return 1;
 			else
 			{
-				if(bound.y > bound2.y)
+				double bottom = bound.y + bound.height,
+					   bottom2 = bound2.y + bound2.height;
+				
+				if(bottom < bottom2)
 					return -1;
-				else if(bound.y < bound2.y)
+				else if(bottom > bottom2)
 					return 1;
-				else 
-					return 0;
+				else
+				{
+					if(bound.y > bound2.y)
+						return -1;
+					else if(bound.y < bound2.y)
+						return 1;
+					else 
+						return 0;
+				}
 			}
 		}
 	}

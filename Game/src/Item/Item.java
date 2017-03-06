@@ -2,19 +2,22 @@ package Item;
 
 import java.io.File;
 
+import Graphic.ImagePool;
+
 public class Item
 {	
 	private int id;
 
 	private String name;
 
-	private int weight, value;
+	protected int weight, quantity, value;
 	
 	private File icon;
 	
 	public Item()
 	{
 		id = -1;
+		quantity = 1;
 	}
 	
 	public void setID(int id) {
@@ -25,8 +28,13 @@ public class Item
 		this.name = name;
 	}
 	
-	public void setIconFile(File icon) {
+	public void setIconFile(File icon) 
+	{
+		ImagePool.instance.release(this.icon);
+		
 		this.icon = icon;
+		
+		ImagePool.instance.request(this.icon);
 	}
 	
 	public int getID() {
@@ -43,5 +51,9 @@ public class Item
 	
 	public File getIconFile() {
 		return icon;
+	}
+	
+	public int quantity() {
+		return quantity;
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Rectangle2D.Double;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -17,8 +18,10 @@ import java.util.Map;
 import java.util.Set;
 
 import Entity.Entity;
+import EntityComponent.BodyType;
 import EntityComponent.EntityComponent;
 import EntityComponent.GraphicsComponent;
+import EntityComponent.RigidBodyComponent;
 import EntityManager.CollisionManager;
 import Graphic.Camera;
 import Graphic.Graphic;
@@ -46,6 +49,10 @@ public class Scene implements Updatable, Paintable,
 	private boolean gridVisible;
 
 	private Game game;
+	
+	private Rectangle2D.Double bound;
+	
+	private Spawner spawner;
 	
 	// private LightMap lightMap;
 	// private TerrainMap terrMap;
@@ -93,10 +100,49 @@ public class Scene implements Updatable, Paintable,
 		
 		graphics = new ArrayList<Graphic>();
 		
+		bound = new Rectangle2D.Double(-300, -300, 600, 600);
+	
+		spawner = new Spawner(this);
+		
 		//background.add(tileMap);
 		// background.add(new TileMap());
 		
 		addManagers();
+	}
+	
+	public void start()
+	{
+		createBoundWalls();
+		
+		for(Entity e : entities)
+			e.start();	
+	}
+	
+	private void createBoundWalls()
+	{
+		Entity walls = new Entity();
+		
+		RigidBodyComponent comp = new RigidBodyComponent();
+		
+		Rectangle2D.Double left = new Rectangle2D.Double(
+				bound.x - 50, bound.y,
+				50, bound.height),
+						  right = new Rectangle2D.Double(
+				bound.x + bound.width, bound.y - 50,
+				50, bound.height + 100),
+						  up = new Rectangle2D.Double(
+				bound.x - 50, bound.y - 50, bound.width + 100, 50),
+						  down = new Rectangle2D.Double(
+				bound.x - 50, bound.y + bound.height, bound.width + 100, 50);
+		
+		comp.getRigidBody()
+			.addLimbs(left, right, up, down);
+		
+		comp.setBodyType(BodyType.STATIC);
+		
+		walls.add(comp);
+		
+		addEntity(walls);
 	}
 
 	@Override
@@ -105,7 +151,7 @@ public class Scene implements Updatable, Paintable,
 		//addAndRemoveEntitiesFromQueue();
 		
 		//updateTileMap();
-		
+		spawner.update(delta);
 		clearAddQueue();
 		clearRemoveQueue();
 		// clock.update(delta);
@@ -304,7 +350,7 @@ public class Scene implements Updatable, Paintable,
 	{
 		if(entity == null)
 			throw new NullPointerException();
-	
+			
 		addQ.add(entity);
 		entity.setSceneLoc(this);
 	}
@@ -330,6 +376,8 @@ public class Scene implements Updatable, Paintable,
 				
 				compMap.get(c).add(e);
 			}
+			
+			e.start();
 		}
 		
 		addQ.clear();
@@ -422,5 +470,9 @@ public class Scene implements Updatable, Paintable,
 	
 	public Object clone() {
 		return new Scene(this);
+	}
+
+	public Double getBound() {
+		return bound;
 	}
 }

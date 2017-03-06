@@ -1,0 +1,61 @@
+package GUI.Item;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+import Entity.Entity;
+import Inventory.Inventory;
+import Inventory.InventoryComponent;
+import Inventory.InventoryListener;
+
+public class ItemFrame extends JInternalFrame
+	implements InventoryListener
+{
+	private Inventory inventory;
+	
+	public ItemFrame(Entity player)
+	{
+		super("", false, true, false, false);
+		
+		inventory = player.get(InventoryComponent.class)
+						  .getInventory();
+		
+		inventory.addInventoryListener(this);
+		
+		JPanel panel = new JPanel();
+		
+		JTabbedPane pane = new JTabbedPane();
+		
+		pane.addTab("Use", new ItemList(player, ItemList.USE));
+		pane.addTab("Equip", new ItemList(player, ItemList.EQUIP));
+		pane.addTab("Pet", new ItemList(player, ItemList.PET));
+		pane.addTab("Etc", new ItemList(player, ItemList.ETC));
+		
+		panel.add(pane);
+		
+		setContentPane(panel);
+		
+		updateTitle();
+		
+		setSize(300, 200);		
+	}
+
+	private void updateTitle()
+	{
+		int size = inventory.size(),
+			cap = inventory.capacity();
+			
+		setTitle("Item(" + size + "/" + cap + ")");	
+	}
+	
+	@Override
+	public void itemAdded() {
+		updateTitle();
+	}
+	
+	@Override
+	public void itemRemoved() {
+		updateTitle();
+	}
+}

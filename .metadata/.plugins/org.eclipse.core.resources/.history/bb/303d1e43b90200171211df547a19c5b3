@@ -1,0 +1,7 @@
+package Ability;
+
+public class InstantFriendlyUnitAbility 
+	extends FriendlyUnitAbility
+{
+
+}

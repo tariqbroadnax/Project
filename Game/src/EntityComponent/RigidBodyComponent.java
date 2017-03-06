@@ -1,12 +1,10 @@
 package EntityComponent;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import CollisionResponses.Repel;
@@ -35,7 +33,7 @@ public class RigidBodyComponent extends EntityComponent
 		type = BodyType.DYNAMIC;
 
 		indicator = new RigidBodyIndicator();
-		
+				
 		indicator.setRigidBody(body);
 	}
 	
@@ -63,7 +61,9 @@ public class RigidBodyComponent extends EntityComponent
 	public void update(Duration delta)
 	{
 		if(enabled)
+		{
 			updateLimbs();
+		}
 	}
 	
 	public void updateLimbs()

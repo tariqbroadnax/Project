@@ -1,0 +1,49 @@
+package Behavior;
+
+import java.awt.geom.Point2D;
+import java.time.Duration;
+
+import Entity.Entity;
+
+public class MonsterBehavior extends Behavior
+{
+	private static final long RECENTLY_DUR = 3000;
+	
+	private Entity player;
+	
+	private double viewRange = 30;
+	
+	private long durSinceLastAttack = 0;
+	
+	public void start()
+	{
+		player = src.getSceneLoc()
+					.getGame()
+					.getPlayer();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		durSinceLastAttack += delta.toMillis();
+		
+		if(playerInRange() || playerAttackedRecently())
+		{
+			if(playerInAttackRange())
+			{
+				attackPlayer();
+			}
+			else
+				moveCloser();
+		}
+	}
+
+	private boolean playerInRange() 
+	{
+		Point2D.Double playerLoc = player.getLoc(),
+					   srcLoc = src.getLoc();
+	
+		return playerLoc.distanceSq(srcLoc) < 
+			   viewRange * viewRange;
+	}
+}

@@ -3,6 +3,7 @@ package Inventory;
 import java.time.Duration;
 
 import EntityComponent.EntityComponent;
+import Item.UseItem;
 
 public class InventoryComponent extends EntityComponent
 {
@@ -13,10 +14,12 @@ public class InventoryComponent extends EntityComponent
 		inventory = new Inventory();
 	}
 	
+	public void useItem(UseItem item) {
+		inventory.useItem(item, parent);
+	}
+	
 	@Override
-	public void update(Duration delta) {
-		// TODO Auto-generated method stub
-		
+	public void update(Duration delta) {		
 	}
 	
 	public Inventory getInventory() {

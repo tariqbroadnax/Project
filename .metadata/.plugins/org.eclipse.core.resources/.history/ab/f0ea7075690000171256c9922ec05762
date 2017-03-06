@@ -1,0 +1,8 @@
+package Modifiers;
+
+public class DamageEffect extends InstantEffect
+{
+	private double dmg;
+	
+	
+}

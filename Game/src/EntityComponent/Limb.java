@@ -21,14 +21,20 @@ public class Limb implements Serializable, Cloneable
 	
 	public Limb(RectangularShape shape)
 	{
-		this(shape, new Vector2D.Double());
+		this(shape, shape.getX() + shape.getWidth()/2,
+					shape.getY() + shape.getHeight()/2);
+	}
+	
+	public Limb(RectangularShape shape, double x, double y)
+	{
+		this(shape, new Vector2D.Double(x, y));
 	}
 	
 	public Limb(RectangularShape shape, Vector2D.Double offset)
 	{
 		this.shape = shape;
 		
-		this.offset = offset;
+		this.offset = offset;				
 	}
 	
 	public Limb(Limb limb)

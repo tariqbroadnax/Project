@@ -1,0 +1,17 @@
+package Modifiers;
+
+public class CastInterruptDisable extends InstantEffect
+{
+
+	@Override
+	public void apply() 
+	{
+		target.get(Com)
+	}
+
+	@Override
+	public Object clone() {
+		return new CastInterruptDisable();
+	}
+
+}

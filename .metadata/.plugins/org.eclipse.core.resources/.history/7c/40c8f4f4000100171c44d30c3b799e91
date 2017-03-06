@@ -1,0 +1,8 @@
+package GUI.Item;
+
+import javax.swing.JInternalFrame;
+
+public class ItemFrame extends JInternalFrame
+{
+
+}

@@ -1,0 +1,386 @@
+package Stat;
+
+import java.time.Duration;
+import java.util.TreeSet;
+
+import Game.Updatable;
+import Modifiers.Modifier;
+import Modifiers.Span;
+import Modifiers.Stat;
+import Modifiers.StatModifier;
+
+public class Stats implements Updatable
+{
+	private int level;
+	
+	private int exp, expNextLvl;
+	
+	private int gold;
+	
+	private double maxHealth, health, healthRegen,
+				   maxMana, mana, manaRegen,
+				   atk, maAtk,
+				   def, maDef,
+				   speed, atkSpeed;
+	
+	private double critRate;
+
+	private TreeSet<StatModifier> mods;
+	
+	private Span nextTick;
+	
+	public Stats()
+	{
+		level = 1;
+		
+		exp = 0; expNextLvl = 100;
+		
+		health = maxHealth = 100;
+		mana = maxMana;
+		healthRegen = manaRegen = 5;
+		
+		atk = maAtk = 10;
+		
+		def = maDef = 0;
+		
+		speed = 50;
+		atkSpeed = 1;
+		
+		critRate = .50;
+
+		mods = new TreeSet<StatModifier>();
+		
+		nextTick = new Span(250);
+	}
+	
+	public void update(Duration delta)
+	{
+		nextTick.update(delta);
+		
+		while(nextTick.isFinished())
+		{
+			nextTick.reverse(250);
+		
+			double healthRegen = getHealthRegen(),
+				   manaRegen = getManaRegen();
+			
+			health += healthRegen * 250.0 / 1000;
+			mana += manaRegen * 250.0 / 1000;
+		}		
+	}
+	
+	public void heal(double val)
+	{
+		if(val < 0)
+			throw new IllegalArgumentException();
+		
+		double maxHealth = getMaxHealth();
+		health += val;
+		health = health > maxHealth ? maxHealth : health;
+	}
+	
+	public void damage(double val)
+	{
+		if(val < 0)
+			throw new IllegalArgumentException();
+		
+		health -= val;
+		health = health < 0 ? 0 : health;
+	}
+	
+	public void addExp(int exp)
+	{
+		for(StatModifier mod : mods)
+			if(mod.getStat() == Stat.EXP)
+				exp = (int) mod.getModifier()
+							   .modify(exp);
+		this.exp += exp;
+		
+		while(exp > expNextLvl)
+		{
+			exp -= expNextLvl;
+			level++;
+			expNextLvl *= 2;
+		}
+	}
+	
+	public void setBaseMaxHealth(double maxHealth) {
+		this.maxHealth = maxHealth;
+	}
+	
+	public void setBaseMaxMana(double maxMana) {
+		this.maxMana = maxMana;
+	}
+	
+	public void setBaseSpeed(double speed) {
+		this.speed = speed;
+	}
+	
+	public void addGold(int gold) {
+		this.gold += gold;
+	}
+	
+	public void removeGold(int gold) {
+		this.gold -= gold;
+	}
+	
+	public double getHealth() {
+		return health;
+	}
+	
+	public double getMana() {
+		return mana;
+	}
+
+	public double getMaxHealth() 
+	{
+		double maxHealth = this.maxHealth;
+		
+		for(StatModifier mod : mods)
+			if(mod.getStat() == Stat.HEALTH)
+				maxHealth = mod.getModifier()
+							   .modify(maxHealth);
+		
+		return maxHealth;
+	}
+	
+	public double getMaxMana() 
+	{
+		double maxMana = this.maxMana;
+		
+		for(StatModifier mod : mods)
+			if(mod.getStat() == Stat.MANA)
+				maxMana = mod.getModifier()
+						     .modify(maxHealth);
+		
+		return maxMana;
+	}
+	
+	public double getHealthRegen() 
+	{
+		double healthRegen = this.healthRegen;
+		
+		for(Modifier mod : hpRegenMods)
+			healthRegen = mod.modify(healthRegen);
+		
+		return healthRegen;
+	}
+	
+	public double getManaRegen()
+	{
+		double manaRegen = this.manaRegen;
+		
+		for(Modifier mod : mpRegenMods)
+			manaRegen = mod.modify(manaRegen);
+		
+		return manaRegen;
+	}
+	
+	public double getAttack() 
+	{
+		double atk = this.atk;
+		
+		for(Modifier mod : atkMods)
+			atk = mod.modify(atk);
+		
+		return atk;
+	}
+	
+	public double getMagicAttack()
+	{
+		double maAtk = this.maAtk;
+		
+		for(Modifier mod : maAtkMods)
+			maAtk = mod.modify(maAtk);
+		
+		return maAtk;
+	}
+	
+	public double getDefense() 
+	{
+		double def = this.def;
+		
+		for(Modifier mod : defMods)
+			def = mod.modify(def);
+		
+		return def;
+	}
+	
+	public double getMagicDefense()
+	{
+		double maDef = this.maDef;
+		
+		for(Modifier mod : maDefMods)
+			maDef = mod.modify(maDef);
+		
+		return maDef;
+	}
+	
+	public double getAttackSpeed()
+	{
+		double atkSpeed = this.atkSpeed;
+		
+		for(Modifier mod : atkSpeedMods)
+			atkSpeed = mod.modify(atkSpeed);
+		
+		return atkSpeed;
+	}
+	
+	public double getSpeed() 
+	{
+		double speed = this.speed;
+		
+		for(Modifier mod : speedMods)
+			speed = mod.modify(speed);
+		
+		return speed;
+	}
+	
+	public double getBaseMaxHealth() {
+		return maxHealth;
+	}
+	
+	public double getBaseMaxMana() {
+		return maxMana;
+	}
+	
+	public double getBaseHealthRegen() {
+		return healthRegen;
+	}
+	
+	public double getBaseManaRegen() {
+		return manaRegen;
+	}
+	
+	public double getBaseAttack() {
+		return atk;
+	}
+	
+	public double getBaseMagicAttack() {
+		return maAtk;
+	}
+	
+	public double getBaseSpeed() {
+		return speed;
+	}
+	
+	public double getBaseAttackSpeed() {
+		return atkSpeed;
+	}
+	
+	public int getLevel() {
+		return level;
+	}
+	
+	public int getExp() {
+		return exp;
+	}
+	
+	public int getExpNextLvl() {
+		return expNextLvl;
+	}
+	
+	public int getGold() {
+		return gold;
+	}
+	
+	public double getCritRate() {
+		return critRate;
+	}
+	
+	public double getBlockRate() {
+		return 0;
+	}
+	
+	public double getDodgeRate() {
+		return 0;
+	}
+	
+	public void addExpModifier(Modifier mod) {
+		expMods.add(mod);
+	}
+	
+	public void removeExpModifier(Modifier mod) {
+		expMods.remove(mod);
+	}
+	
+	public void addHealthModifier(Modifier mod) {
+		healthMods.add(mod);
+	}
+	
+	public void removeHealthModifier(Modifier mod) {
+		healthMods.remove(mod);
+	}
+	
+	public void addManaModifier(Modifier mod) {
+		manaMods.add(mod);
+	}
+	
+	public void removeManaModifier(Modifier mod) {
+		manaMods.remove(mod);
+	}
+	
+	public void addHpRegenModifier(Modifier mod) {
+		hpRegenMods.add(mod);
+	}
+	
+	public void removeHpRegenModifier(Modifier mod) {
+		hpRegenMods.remove(mod);
+	}
+	
+	public void addMpRegenModifier(Modifier mod) {
+		mpRegenMods.add(mod);
+	}
+	
+	public void removeMpRegenModifier(Modifier mod) {
+		mpRegenMods.remove(mod);
+	}
+	
+	public void addAttackModifier(Modifier mod) {
+		atkMods.add(mod);
+	}
+	
+	public void removeAttackModifier(Modifier mod) {
+		atkMods.remove(mod);
+	}
+	
+	public void addMagicAttackModifier(Modifier mod) {
+		maAtkMods.add(mod);
+	}
+	
+	public void removeMagicAttackModifier(Modifier mod) {
+		maAtkMods.remove(mod);
+	}
+	
+	public void addDefenseModifier(Modifier mod) {
+		defMods.add(mod);
+	}
+	
+	public void removeDefenseModifier(Modifier mod) {
+		defMods.remove(mod);
+	}
+	
+	public void addMagicDefenseModifier(Modifier mod) {
+		maDefMods.add(mod);
+	}
+	
+	public void removeMagicDefenseModifier(Modifier mod) {
+		maDefMods.remove(mod);
+	}
+	
+	public void addSpeedModifier(Modifier mod) {
+		speedMods.add(mod);
+	}
+	
+	public void removeSpeedModifier(Modifier mod) {
+		speedMods.remove(mod);
+	}
+	
+	public void addAttackSpeedModifier(Modifier mod) {
+		atkSpeedMods.add(mod);
+	}
+	
+	public void removeAttackSpeedModifier(Modifier mod) {
+		atkSpeedMods.remove(mod);
+	}
+}

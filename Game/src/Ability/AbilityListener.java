@@ -1,11 +1,16 @@
 package Ability;
 
-import Entity.Entity;
-
 public interface AbilityListener 
 {
-	public default void abilityCasted(
+	public default void castingStarted(
 			ActiveAbility ability){}
 	
-	public default void entityKilled(Entity ent){}
+	public default void castingStopped(
+			ActiveAbility ability){}
+	
+	public default void basicAttackStarted() {}
+	
+	public default void basicAttackStopped() {}
+	
+	public default void basicAttackWaiting() {}
 }

@@ -6,7 +6,9 @@ import Stat.Stats;
 
 public class Damage extends InstantEffect
 {
-	private double flatAmount, scaleAmount;
+	private double flatAmount, scaleAmount, percAmount;
+	
+	private double splashRad;
 	
 	private AttackAttribute atkAttr;
 
@@ -21,6 +23,8 @@ public class Damage extends InstantEffect
 	{
 		this.flatAmount = flatAmount;
 		this.scaleAmount = scaleAmount;
+	
+		splashRad = 0;
 		
 		atkAttr = AttackAttribute.PHYSICAL;
 		eleAttr = ElementAttribute.NONE;
@@ -33,34 +37,16 @@ public class Damage extends InstantEffect
 		flatAmount = damage.flatAmount;
 		scaleAmount = damage.scaleAmount;
 		
+		splashRad = damage.splashRad;
+		
 		atkAttr = damage.atkAttr;
 		eleAttr = damage.eleAttr;
 	}
 	
 	public void apply()
 	{
-		double damage = flatAmount;
-		
-		double critRate = src.get(StatsComponent.class)
-							 .getStats()
-							 .getCritRate();
-		
-		if(Math.random() > critRate) 
-			damage *= 2;
-		
-		Stats stats = target.get(StatsComponent.class)
-							.getStats();
-
-		stats.damage(damage);
-		
-		CombatComponent srcCombComp = src.get(CombatComponent.class),
-						tarCombComp = target.get(CombatComponent.class);
-		
-		srcCombComp.notifyOfAttack(target);
-		tarCombComp.notifyOfBeingAttacked(src);
-		
-		if(stats.getHealth() == 0)
-			srcCombComp.notifyOfKill(target);
+		src.get(CombatComponent.class)
+		   .applyDamage(this);
 	}
 	
 	public void setFlatAmount(double flatAmount) 
@@ -73,6 +59,10 @@ public class Damage extends InstantEffect
 	
 	public void setScaleAmount(double scaleAmount) {
 		this.scaleAmount = scaleAmount;
+	}
+	
+	public void setSplashRadius(double splashRad) {
+		this.splashRad = splashRad;
 	}
 	
 	public void setAttackAttribute(AttackAttribute atkAttr) {
@@ -89,6 +79,10 @@ public class Damage extends InstantEffect
 	
 	public double getScaleAmount() {
 		return scaleAmount;
+	}
+	
+	public double getSplashRad() {
+		return splashRad;
 	}
 	
 	public AttackAttribute getAttackAttribute() {

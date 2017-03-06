@@ -1,0 +1,16 @@
+package GUI.Equip;
+
+import javax.swing.JInternalFrame;
+
+import Entity.Entity;
+
+public class EquipFrame extends JInternalFrame
+{
+	public EquipFrame(Entity player)
+	{
+		super("Equip", false, true, false, false);
+		
+		setSize(200, 300);
+		setBorder(null);
+	}
+}

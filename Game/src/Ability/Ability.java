@@ -1,24 +1,56 @@
 package Ability;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
 import Entity.Entity;
 import Game.Updatable;
-import Modifiers.Effect;
 
 public abstract class Ability
 	implements Serializable, Updatable, Cloneable
 {	
-	protected Entity src;
+	private String name;
 	
+	protected int lvl, maxLvl;
+
+	protected Entity src;
+
 	public Ability()
 	{
+		name = "unnamed";
+		lvl = 1;
+		maxLvl = 5;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setLevel(int lvl) {
+		this.lvl = lvl;
+	}
+	
+	public void setMaxLevel(int maxLvl) {
+		this.maxLvl = maxLvl;
+	}
+	
+	public void levelUp() {
+		lvl++;
 	}
 	
 	public void setSrc(Entity src) {
 		this.src = src;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getLevel() {
+		return lvl;
+	}
+	
+	public int getMaxLevel() {
+		return maxLvl;
 	}
 	
 	public Entity getSrc() {

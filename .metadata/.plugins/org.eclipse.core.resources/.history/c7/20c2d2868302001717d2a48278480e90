@@ -1,0 +1,43 @@
+package Game;
+
+import java.time.Duration;
+import java.util.List;
+
+import Entity.Entity;
+import EntityComponent.GraphicsComponent;
+import EntityComponent.LifetimeComponent;
+import Maths.Circle2D;
+
+public class Spawner implements Updatable
+{
+	private int size;
+	
+	private Circle2D.Double area;
+
+	private Entity model;
+	
+	private List<Entity> clones;
+	
+	public Spawner()
+	{
+		size = 5;
+		
+		area = new Circle2D.Double(0, 0, 100);
+		
+		model = new Entity();
+		
+		LifetimeComponent life = new LifetimeComponent();
+		
+		life.getLifetime()
+			.setRemaining(3000);
+		
+		model.add(new GraphicsComponent(),
+				  life);
+	}
+
+	@Override
+	public void update(Duration delta) 
+	{
+		
+	}
+}

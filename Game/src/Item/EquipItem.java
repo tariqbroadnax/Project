@@ -27,7 +27,7 @@ public class EquipItem extends Item
 			EffectComponent comp = ent.get(EffectComponent.class);
 		
 			for(Effect effect : effects)
-				comp.add(effect);
+				comp.apply(effect);
 		}
 		else
 		{

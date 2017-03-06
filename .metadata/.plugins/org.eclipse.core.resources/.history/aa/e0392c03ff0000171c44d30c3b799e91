@@ -1,0 +1,17 @@
+package GUI;
+
+import java.awt.Dimension;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+public class GMenu extends JPanel
+{
+	public GMenu()
+	{
+//		setLayout(null);
+//		add(new JButton("TESTING"));
+//		
+		setPreferredSize(new Dimension(300, 20));
+	}
+}

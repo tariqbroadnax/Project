@@ -1,0 +1,158 @@
+package Ability;
+
+import java.time.Duration;
+
+import EntityComponent.StatsComponent;
+import Stat.Stats;
+
+public abstract class ActiveAbility extends Ability
+{
+	private long[] cooldowns, castTimes;
+	
+	private long elapsedSinceCast;
+	
+	private double[] manaCosts;
+	
+	private boolean casting, enabled;
+	
+	protected RangeIndicator indicator;
+		
+	private Stats stats;
+	
+	public ActiveAbility() 
+	{
+		cooldowns = new int[maxLvl]();
+		
+		cooldown = 0;
+		
+		castTime = 0;
+		elapsedSinceCast = 500;
+		manaCost = 5;
+		
+		casting = false;
+		enabled = true;		
+	}
+	
+	public ActiveAbility(ActiveAbility ability)
+	{
+		cooldown = ability.cooldown;
+		castTime = ability.castTime;
+		
+		casting = false;
+		enabled = true;
+	}
+	
+	public void start()
+	{
+		stats = src.get(StatsComponent.class)
+				   .getStats();
+	}
+	
+	public void update(Duration delta)
+	{
+		elapsedSinceCast += delta.toMillis();
+		
+		if(canBeActivated()) 
+			activate();
+	}
+	
+	public void cast()
+	{
+		if(canBeCast())
+		{
+			stats.useMana(manaCost);
+
+			if(castTime == 0)
+				activate();
+			else
+				casting = true;
+			
+			elapsedSinceCast = 0;	
+		}
+	}
+	
+	public void stopCast()
+	{
+		casting = false;
+	}
+	
+	protected void activate()
+	{
+		casting = false;
+	}
+			
+	public void setCooldown(long cooldown) 
+	{
+		if(cooldown < 0 || cooldown < castTime)
+			throw new IllegalArgumentException();
+		
+		this.cooldown = cooldown;
+	}
+	
+	public void setCastTime(long castTime) 
+	{
+		if(castTime < 0 || castTime > cooldown)
+			throw new IllegalArgumentException();
+
+		this.castTime = castTime;
+	}
+	
+	public void setManaCost(double manaCost) {
+		this.manaCost = manaCost;
+	}
+	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}	
+
+	public boolean isCasting() {
+		return casting;
+	}
+	
+	public boolean onCooldown() {
+		return elapsedSinceCast < cooldown;
+	}
+
+	public boolean canBeCast()
+	{
+		double mana = stats.getMana();
+		
+		return enabled && elapsedSinceCast >= cooldown &&
+			   mana >= manaCost;
+	}
+
+	protected boolean canBeActivated()
+	{
+		return casting && 
+			   elapsedSinceCast >= castTime;	
+	}
+	
+	public long getCastTime() {
+		return castTime;
+	}
+	
+	public long getElapsedSinceCast() {
+		return elapsedSinceCast;
+	}
+	
+	public double getManaCost() {
+		return manaCost;
+	}
+	
+	public RangeIndicator getRangeIndicator() {
+		return indicator;
+	}
+	
+	public String toString()
+	{
+		String str = super.toString();
+		
+		str += "\ncooldown: " + cooldown +
+			   "\ncast time: " + castTime +
+			   "\nelapsed since cast: " + elapsedSinceCast +
+			   "\ncasting: " + casting +
+			   "\nenabled: " + enabled;
+		
+		return str;
+	}
+}

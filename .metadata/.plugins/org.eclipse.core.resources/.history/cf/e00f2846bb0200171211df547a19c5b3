@@ -1,0 +1,30 @@
+package Ability;
+
+import java.time.Duration;
+import java.util.List;
+
+import Modifiers.GradualEffect;
+
+public class PassiveAbility extends Ability
+{			
+	private List<GradualEffect> effect;
+	
+	public void start() {
+		
+	}
+	
+	public void stop() {
+		
+	}
+
+	@Override
+	public void update(Duration delta) {
+		
+	}
+
+	@Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

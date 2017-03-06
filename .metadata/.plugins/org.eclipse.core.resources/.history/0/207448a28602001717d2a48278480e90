@@ -1,0 +1,36 @@
+package EntityComponent;
+
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+import Item.Item;
+
+public class DropComponent extends EntityComponent
+{
+	private Map<Item, Double> drops;
+
+	public DropComponent()
+	{
+		drops = new HashMap<Item, Double>();
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		boolean dead = parent.get(LifetimeComponent.class)
+							 .getLifetime()
+							 .isLifeOver();
+	}
+	
+	public void put(Item item, double dropRate)
+	{
+		
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

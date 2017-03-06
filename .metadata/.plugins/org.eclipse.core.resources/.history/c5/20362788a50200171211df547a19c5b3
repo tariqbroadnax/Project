@@ -1,0 +1,20 @@
+package Ability;
+
+public class HomingProjectileAbility 
+	extends TargetUnitAbility
+{	
+	private HomingProjectile proj;
+	
+	public HomingProjectileAbility()
+	{
+		proj = new HomingProjectile();
+	}
+	
+	public void activate()
+	{
+		super.activate();
+		
+		proj.setSource(src);
+		
+	}
+}

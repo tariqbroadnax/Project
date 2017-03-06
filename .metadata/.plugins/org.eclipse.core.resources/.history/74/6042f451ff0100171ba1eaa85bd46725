@@ -1,0 +1,36 @@
+package GUI.Equip;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.swing.JComponent;
+
+import EditorGUI.MouseListener;
+import Entity.Entity;
+import EntityComponent.EquipmentComponent;
+import Graphic.ImagePool;
+import Item.ArmorItem;
+import Item.Equipment;
+import Item.Item;
+import Item.WeaponItem;
+
+public class EquipPane extends JComponent
+	implements MouseListener
+{
+	private Equipment equip;
+	
+	public EquipPane(Entity player)
+	{
+		equip = player.get(EquipmentComponent.class)
+					  .getEquipment();	
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		
+	}
+}

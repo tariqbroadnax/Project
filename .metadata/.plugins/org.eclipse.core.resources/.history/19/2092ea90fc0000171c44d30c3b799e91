@@ -1,0 +1,295 @@
+package Stat;
+
+import java.time.Duration;
+import java.util.TreeSet;
+
+import Game.Updatable;
+import Modifiers.Span;
+import Modifiers.Stat;
+import Modifiers.StatModifier;
+
+public class Stats implements Updatable
+{
+	private int level;
+	
+	private int exp, expNextLvl;
+	
+	private int gold;
+	
+	private double maxHealth, health, healthRegen,
+				   maxMana, mana, manaRegen,
+				   atk, maAtk,
+				   def, maDef,
+				   speed, atkSpeed;
+	
+	private double fireAtk, waterAtk, windAtk, electAtk, soilAtk,
+				   fireDef, waterDef, windDef, electDef, soilDef;
+	
+	private double critRate;
+
+	private TreeSet<StatModifier> mods;
+	
+	private Span nextTick;
+	
+	public Stats()
+	{
+		level = 1;
+		
+		exp = 0; expNextLvl = 100;
+		
+		health = 50; maxHealth = 100;
+		mana = maxMana = 100;
+		healthRegen = manaRegen = 5;
+		
+		atk = maAtk = 10;
+		
+		def = maDef = 0;
+		
+		speed = 50;
+		atkSpeed = 1;
+		
+		critRate = .50;
+
+		mods = new TreeSet<StatModifier>();
+		
+		nextTick = new Span(1000);
+	}
+	
+	public void update(Duration delta)
+	{				
+		nextTick.update(delta);
+		
+		while(nextTick.isFinished())
+		{
+			nextTick.reverse(250);
+		
+			double healthRegen = getHealthRegen(),
+				   manaRegen = getManaRegen();
+			
+			health += healthRegen * 250.0 / 1000;
+			mana += manaRegen * 250.0 / 1000;
+		
+		}		
+	}
+	
+	public void heal(double val)
+	{
+		if(val < 0)
+			throw new IllegalArgumentException();
+		
+		double maxHealth = getMaxHealth();
+		health += val;
+		health = health > maxHealth ? maxHealth : health;
+	}
+	
+	public void damage(double val)
+	{
+		if(val < 0)
+			throw new IllegalArgumentException();
+		
+		health -= val;
+		health = health < 0 ? 0 : health;
+	}
+	
+	public void addExp(int exp)
+	{
+		for(StatModifier mod : mods)
+			if(mod.getStat() == Stat.EXP)
+				exp = (int) mod.getModifier()
+							   .modify(exp);
+		this.exp += exp;
+		
+		while(exp > expNextLvl)
+		{
+			exp -= expNextLvl;
+			level++;
+			expNextLvl *= 2;
+		}
+	}
+	
+	public void setBaseMaxHealth(double maxHealth) {
+		this.maxHealth = maxHealth;
+	}
+	
+	public void setBaseMaxMana(double maxMana) {
+		this.maxMana = maxMana;
+	}
+	
+	public void setBaseSpeed(double speed) {
+		this.speed = speed;
+	}
+	
+	public void addGold(int gold) {
+		this.gold += gold;
+	}
+	
+	public void removeGold(int gold) {
+		this.gold -= gold;
+	}
+	
+	public double getHealth() {
+		return health;
+	}
+	
+	public double getMana() {
+		return mana;
+	}
+
+	private double modify(double val, Stat stat)
+	{
+		for(StatModifier mod : mods)
+			if(mod.getStat() == stat)
+				val = mod.getModifier()
+						 .modify(val);
+		
+		return val;
+	}
+	
+	public double getMaxHealth() {
+		return modify(maxHealth, Stat.HEALTH);
+	}
+	
+	public double getMaxMana() {
+		return modify(maxMana, Stat.MANA);
+	}
+	
+	public double getHealthRegen() {
+		return modify(healthRegen, Stat.HP_REGEN);
+	}
+	
+	public double getManaRegen() {
+		return modify(manaRegen, Stat.MP_REGEN);
+	}
+	
+	public double getAttack() {
+		return modify(atk, Stat.ATK);
+	}
+	
+	public double getMagicAttack() {
+		return modify(maAtk, Stat.MA_ATK);
+	}
+	
+	
+	public double getDefense() {
+		return modify(def, Stat.DEF);
+	}
+	
+	public double getMagicDefense() {
+		return modify(maDef, Stat.MA_DEF);
+	}
+	
+	public double getAttackSpeed() {
+		return modify(atkSpeed, Stat.ATK_SPEED);
+	}
+	
+	public double getSpeed()  {		
+		return modify(speed, Stat.SPEED);
+	}
+	
+	public double getFireAttack() {
+		return modify(fireAtk, Stat.FIRE_ATK);
+	}
+	
+	public double getWaterAttack() {
+		return modify(waterAtk, Stat.WATER_ATK);
+	}
+	
+	public double getWindAttack() {
+		return modify(windAtk, Stat.WIND_ATK);
+	}
+	
+	public double getElectAttack() {
+		return modify(electAtk, Stat.ELECT_ATK);
+	}
+	
+	public double getSoilAttack() {
+		return modify(soilAtk, Stat.SOIL_ATK);
+	}
+	
+	public double getFireDefense() {
+		return modify(fireDef, Stat.FIRE_DEF);
+	}
+	
+	public double getWaterDefense() {
+		return modify(waterDef, Stat.WATER_DEF);
+	}
+	
+	public double getWindDefense() {
+		return modify(windDef, Stat.WIND_DEF);
+	}
+	
+	public double getElectDefense() {
+		return modify(electDef, Stat.ELECT_DEF);
+	}
+	
+	public double getSoilDefense() {
+		return modify(soilDef, Stat.SOIL_DEF);
+	}
+	public double getBaseMaxHealth() {
+		return maxHealth;
+	}
+	
+	public double getBaseMaxMana() {
+		return maxMana;
+	}
+	
+	public double getBaseHealthRegen() {
+		return healthRegen;
+	}
+	
+	public double getBaseManaRegen() {
+		return manaRegen;
+	}
+	
+	public double getBaseAttack() {
+		return atk;
+	}
+	
+	public double getBaseMagicAttack() {
+		return maAtk;
+	}
+	
+	public double getBaseSpeed() {
+		return speed;
+	}
+	
+	public double getBaseAttackSpeed() {
+		return atkSpeed;
+	}
+	
+	public int getLevel() {
+		return level;
+	}
+	
+	public int getExp() {
+		return exp;
+	}
+	
+	public int getExpNextLvl() {
+		return expNextLvl;
+	}
+	
+	public int getGold() {
+		return gold;
+	}
+	
+	public double getCritRate() {
+		return critRate;
+	}
+	
+	public double getBlockRate() {
+		return 0;
+	}
+	
+	public double getDodgeRate() {
+		return 0;
+	}
+	
+	public void addStatModifier(StatModifier mod) {
+		mods.add(mod);
+	}
+	
+	public void removeStatModifier(StatModifier mod) {
+		mods.remove(mod);
+	}
+}

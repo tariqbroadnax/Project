@@ -1,0 +1,43 @@
+package Game;
+
+import java.awt.geom.Rectangle2D;
+import java.time.Duration;
+
+import Entity.Entity;
+import Graphic.Camera;
+
+public class CameraController implements Updatable
+{
+	private Scene scene;
+	
+	private Entity player;
+	
+	private Camera camera;
+	
+	public CameraController(Scene scene, Entity player, Camera camera)
+	{
+		this.scene = scene;
+		this.player = player;
+		this.camera = camera;
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		camera.setFocus(player.getLoc());
+		
+		Rectangle2D.Double scnBound = scene.getBound(),
+						   bound = camera.normalScreenBound();
+		
+		double x = player.getLoc().x,
+			   y = player.getLoc().y;
+		
+		x = scnBound.x < bound.x ? bound.x : x;
+		x = x > bound.x + bound.width ? bound.x + bound.width : x;
+		
+		y = y < bound.y ? bound.y : y;
+		y = y > bound.y + bound.height ? bound.y + bound.height : y;
+		
+		camera.setFocus(x, y);
+	}
+}

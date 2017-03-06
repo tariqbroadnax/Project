@@ -1,0 +1,122 @@
+package EntityComponent;
+
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+import Ability.AbilityListener;
+import Ability.ActiveAbility;
+import Graphic.Animation;
+import Movement.Cardinal;
+import Movement.MovementComponent;
+import Movement.MovementListener;
+
+public class EventGraphicsComponent extends EntityComponent
+	implements MovementListener, AbilityListener, 
+			   CombatListener
+{
+	private Map<Cardinal, GraphicBody> defaultGraphs,
+									   moveGraphs,
+									   castingGraphs,
+									   attackGraphs,
+									   attackLagGraphs,
+									   attackedGraphs,
+									   curr;
+	
+	public EventGraphicsComponent()
+	{
+		defaultGraphs = new HashMap<Cardinal, GraphicBody>();
+		moveGraphs = new HashMap<Cardinal, GraphicBody>();
+		castingGraphs = new HashMap<Cardinal, GraphicBody>();
+		attackGraphs = new HashMap<Cardinal, GraphicBody>();
+		attackLagGraphs = new HashMap<Cardinal, GraphicBody>();
+		attackedGraphs = new HashMap<Cardinal, GraphicBody>();
+		
+		for(Cardinal c : Cardinal.values())
+		{
+			defaultGraphs.put(c, new GraphicBody());
+			moveGraphs.put(c, new GraphicBody());
+			castingGraphs.put(c, new GraphicBody());
+			attackGraphs.put(c, new GraphicBody());
+			attackLagGraphs.put(c, new GraphicBody());
+			attackedGraphs.put(c, new GraphicBody());
+		}
+		
+		curr = defaultGraphs;
+	
+		_TEST();
+	}
+	
+	private void _TEST()
+	{		
+		String fileName = "ss.png";
+				
+		int rows = 8, cols = 8;
+		
+		Animation n = Animation.of(fileName, rows, cols, 0, 7),
+				  s = Animation.of(fileName, rows, cols, 0, 7),
+				  e = Animation.of(fileName, rows, cols, 0, 7),
+				  w = Animation.of(fileName, rows, cols, 0, 7);
+		
+		defaultGraphs.get(Cardinal.NORTH).addGraphic(n);
+		defaultGraphs.get(Cardinal.SOUTH).addGraphic(s);
+		defaultGraphs.get(Cardinal.EAST).addGraphic(e);
+		defaultGraphs.get(Cardinal.WEST).addGraphic(w);
+	}
+	
+	@Override
+	public void update(Duration delta) 
+	{
+		Cardinal c = parent.get(MovementComponent.class)
+						   .getDirection();
+		
+		GraphicBody body = curr.get(c);
+		
+		parent.get(GraphicsComponent.class)
+			  .setGraphic(body);
+	}
+	
+	@Override
+	public void movementStarted(MovementComponent src) {
+		curr = moveGraphs;
+	}
+	
+	@Override
+	public void movementStopped(MovementComponent src) {
+		curr = defaultGraphs;
+	}
+	
+	@Override
+	public void castingStarted(ActiveAbility src) {
+		curr = castingGraphs;
+	}
+	
+	public GraphicBody getDefaultGraphicBody(Cardinal c) {
+		return defaultGraphs.get(c);
+	}
+	
+	public GraphicBody getMovementGraphicBody(Cardinal c) {
+		return moveGraphs.get(c);
+	}
+	
+	public GraphicBody getCastingGraphicBody(Cardinal c) {
+		return moveGraphs.get(c);
+	}
+	
+	public GraphicBody getAttackGraphicBody(Cardinal c) {
+		return attackGraphs.get(c);
+	}
+	
+	public GraphicBody getAttackLagGraphicBody(Cardinal c) {
+		return attackLagGraphs.get(c);
+	}
+	
+	public GraphicBody getAttackedGraphicBody(Cardinal c) {
+		return attackedGraphs.get(c);
+	}
+
+	@Override
+	protected EntityComponent _clone() {
+		return null;
+	}
+}

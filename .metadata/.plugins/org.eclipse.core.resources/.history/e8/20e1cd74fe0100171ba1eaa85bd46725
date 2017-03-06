@@ -1,0 +1,29 @@
+package GUI.Equip;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+import javax.swing.JComponent;
+
+import Item.EquipItem;
+
+public class EquipItemComponent extends JComponent
+{
+	private EquipItem item;
+	
+	public EquipItemComponent()
+	{
+		setPreferredSize(new Dimension(45, 45));
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		
+	}
+	
+	public void setEquipItem(EquipItem item) {
+		this.item = item;
+	}
+}

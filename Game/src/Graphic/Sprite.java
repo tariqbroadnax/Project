@@ -22,11 +22,23 @@ public class Sprite extends Graphic
 		this((File)null);
 	}
 	
+	public Sprite(String filename)
+	{
+		this(new File(filename));
+	}
+	
+	public Sprite(String filename, int index, int rows, int cols)
+	{
+		this(new File(filename));
+		
+		setTileBound(index, rows, cols);
+	}
+	
 	public Sprite(File file)
 	{
 		setFile(file);
 		
-		size = new Dimension2D.Double(10, 10);
+		size = new Dimension2D.Double(20, 20);
 		
 		tileBound = null;
 	}
@@ -74,13 +86,13 @@ public class Sprite extends Graphic
 		
 		g2d.scale(scrBound.width / imgW,
 				  scrBound.height / imgH);
-
+		
 		if(tileBound == null)
 			g2d.drawImage(img, 0, 0, null);
 		else
 			g2d.drawImage(img, 0, 0,
-						  tileBound.x + img.getWidth(),
-						  tileBound.y + img.getHeight(), 
+						  img.getWidth(),
+						  img.getHeight(), 
 						  tileBound.x, tileBound.y,
 						  tileBound.x + tileBound.width,
 						  tileBound.y + tileBound.height, null);
@@ -126,6 +138,14 @@ public class Sprite extends Graphic
 	public void setTileBound(int x, int y, int w, int h)
 	{
 		setTileBound(new Rectangle(x,y,w,h));
+	}
+	
+	public void setTileBound(int index, int rows, int cols)
+	{
+		int row = index / cols,
+			col = index % cols;
+		
+		setTileBound2(row, col, rows, cols);
 	}
 	
 	public void setTileBound2(int row, int col, int rows, int cols)

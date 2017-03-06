@@ -1,0 +1,30 @@
+package GUI.Item;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+public class ItemFrame extends JInternalFrame
+{
+	public ItemFrame()
+	{
+		super("Item", false, true, false, false);
+		
+		JPanel panel = new JPanel();
+		
+		JTabbedPane pane = new JTabbedPane();
+		
+		pane.addTab("Use", null);
+		pane.addTab("Equip", null);
+		pane.addTab("Pet", null);
+		pane.addTab("Etc", null);
+		
+		panel.add(pane);
+		
+		setContentPane(panel);
+		
+		setTitle("Item");
+		
+		setSize(300, 200);		
+	}
+}

@@ -1,0 +1,9 @@
+package Ability;
+
+public class FriendlyUnitAbility extends TargetUnitAbility
+{
+	public boolean canBeCast()
+	{
+		return super.canBeCast() && target == src;
+	}
+}

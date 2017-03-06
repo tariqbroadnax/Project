@@ -1,0 +1,12 @@
+package GUI;
+
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+
+public class GMenu extends JToolBar
+{
+	public GMenu()
+	{
+		add(new JButton("TESTING"));
+	}
+}

@@ -1,0 +1,25 @@
+package EntityComponent;
+
+import Graphic.Graphic;
+import Graphic.Vector2D;
+
+public class GraphicLimb 
+{
+	private int layer;
+	
+	private Vector2D.Double offset;
+	
+	private Graphic graphic;
+	
+	public GraphicLimb(
+			Graphic graph, 
+			double xOffset, double yOffset,
+			int layer)
+	{
+		this.graphic = graph;
+		
+		offset = new Vector2D.Double(xOffset, yOffset);
+		
+		this.layer = layer;
+	}
+}

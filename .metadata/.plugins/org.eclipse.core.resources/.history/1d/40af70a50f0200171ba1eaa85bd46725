@@ -1,0 +1,9 @@
+package Ability;
+
+public interface AbilityListener 
+{
+	public default void abilityCasted(
+			ActiveAbility ability){}
+	
+	
+}

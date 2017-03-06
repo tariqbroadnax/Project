@@ -60,7 +60,7 @@ public class Movement implements Cloneable, Serializable
 				{
 					netDX += force.dx(t);
 					netDY += force.dy(t);
-				}
+				}				
 			}
 			
 			loc.x += netDX; loc.y += netDY;

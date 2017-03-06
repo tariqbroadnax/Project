@@ -9,6 +9,7 @@ public abstract class Effect implements Serializable, Cloneable
 	protected Entity src, target;
 	
 	public Effect() {}
+	
 	public Effect(Effect effect)
 	{
 		effect.setSource(src);
@@ -20,6 +21,14 @@ public abstract class Effect implements Serializable, Cloneable
 	
 	public void setTarget(Entity target) {
 		this.target = target;
+	}
+	
+	public Entity getSource() {
+		return src;
+	}
+	
+	public Entity getTarget() {
+		return target;
 	}
 	
 	public boolean canBeApplied(Entity target) {

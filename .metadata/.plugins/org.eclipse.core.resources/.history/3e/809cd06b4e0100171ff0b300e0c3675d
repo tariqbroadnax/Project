@@ -1,0 +1,37 @@
+package GUI.Item;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+import Entity.Entity;
+import Inventory.Inventory;
+import Inventory.InventoryComponent;
+
+public class ItemFrame extends JInternalFrame
+{
+	public ItemFrame(Entity player)
+	{
+		super("Item", false, true, false, false);
+		
+		Inventory inventory = player.get(InventoryComponent.class)
+									.getInventory();
+		
+		JPanel panel = new JPanel();
+		
+		JTabbedPane pane = new JTabbedPane();
+		
+		pane.addTab("Use", new UseItemList(inventory.getUseItems()));
+		pane.addTab("Equip", new JPanel());
+		pane.addTab("Pet", new JPanel());
+		pane.addTab("Etc", new JPanel());
+		
+		panel.add(pane);
+		
+		setContentPane(panel);
+		
+		setTitle("Item");
+		
+		setSize(300, 200);		
+	}
+}

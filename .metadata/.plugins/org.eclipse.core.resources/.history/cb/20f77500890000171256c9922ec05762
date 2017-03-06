@@ -1,0 +1,13 @@
+package Ability;
+
+public class BasicAttack extends TargetUnitAbility
+{
+	private Damage damage;
+	
+	public void cast()
+	{
+		super.cast();
+		
+		
+	}
+}

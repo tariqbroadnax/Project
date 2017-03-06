@@ -1,0 +1,75 @@
+package Ability;
+
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import Behavior.BehaviorComponent;
+import Entity.Entity;
+import EntityComponent.CollisionEvent;
+import EntityComponent.CollisionResponse;
+import EntityComponent.GraphicsComponent;
+import EntityComponent.RigidBody;
+import EntityComponent.RigidBodyComponent;
+import Graphic.ShapeGraphic;
+import Modifiers.Effect;
+import Movement.MovementComponent;
+
+public class HomingProjectile extends Entity
+	implements CollisionResponse
+{
+	private double speed;
+	
+	private List<Effect> effects;
+	
+	private Entity src, target;
+	
+	public HomingProjectile()
+	{
+		speed = 10;
+		
+		effects = new ArrayList<Effect>();
+		
+		GraphicsComponent graphComp = new GraphicsComponent();
+		
+		ShapeGraphic shape = new ShapeGraphic();
+		
+		Rectangle2D.Double rect = new Rectangle2D.Double(0, 0, 5, 5);
+		
+		shape.setShape(rect);
+		graphComp.setGraphic(shape);
+		shape.setLayer(1);
+				
+		RigidBodyComponent bodyComp = new RigidBodyComponent();
+		
+		RigidBody body = new RigidBody();
+		
+		Rectangle2D.Double box = new Rectangle2D.Double(-2.5, -2.5, 5, 5);
+		
+		body.addLimbs(box);
+		bodyComp.setRigidBody(body);
+		
+		add(graphComp, bodyComp,
+			new MovementComponent(),
+			new BehaviorComponent());
+	}
+	
+	public void start()
+	{
+		
+	}
+	
+	public void setTarget(Entity target)
+	{
+		this.target = target;
+	}
+
+	@Override
+	public void collisionOccurred(CollisionEvent e)
+	{
+		if(e.collided == target || e.collider == target)
+		{
+			
+		}
+	}
+}

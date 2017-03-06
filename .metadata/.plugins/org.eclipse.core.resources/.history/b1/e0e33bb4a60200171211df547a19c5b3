@@ -1,0 +1,119 @@
+package Ability;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import Behavior.BehaviorComponent;
+import Behavior.Follow;
+import Entity.Entity;
+import EntityComponent.BodyType;
+import EntityComponent.CollisionEvent;
+import EntityComponent.CollisionResponse;
+import EntityComponent.EffectComponent;
+import EntityComponent.GraphicsComponent;
+import EntityComponent.RigidBody;
+import EntityComponent.RigidBodyComponent;
+import Graphic.ShapeGraphic;
+import Modifiers.Effect;
+import Movement.MovementComponent;
+
+public class HomingProjectile extends Entity
+	implements CollisionResponse
+{
+	private double speed;
+	
+	private List<Effect> effects;
+	
+	private Entity src, target;
+	
+	public HomingProjectile()
+	{
+		speed = 10;
+		
+		effects = new ArrayList<Effect>();
+		
+		GraphicsComponent graphComp = new GraphicsComponent();
+		
+		ShapeGraphic shape = new ShapeGraphic();
+		
+		Rectangle2D.Double rect = new Rectangle2D.Double(0, 0, 5, 5);
+		
+		shape.setShape(rect);
+		graphComp.setGraphic(shape);
+		shape.setLayer(1);
+				
+		RigidBodyComponent bodyComp = new RigidBodyComponent();
+		
+		RigidBody body = new RigidBody();
+		
+		Rectangle2D.Double box = new Rectangle2D.Double(-2.5, -2.5, 5, 5);
+		
+		body.addLimbs(box);
+		bodyComp.setRigidBody(body);
+		bodyComp.setBodyType(BodyType.NONE);
+		
+		add(graphComp, bodyComp,
+			new MovementComponent(),
+			new BehaviorComponent());
+	}
+	
+	public HomingProjectile(HomingProjectile proj)
+	{
+		super(proj);
+	}
+	
+	public void start()
+	{	
+		BehaviorComponent behavComp = get(BehaviorComponent.class);
+		
+		Follow follow = new Follow(target);
+	
+		behavComp.addBehavior(follow);
+	
+		RigidBodyComponent bodyComp = get(RigidBodyComponent.class);
+		
+		bodyComp.add(this);
+
+		Point2D.Double srcLoc = src.getLoc(),
+				   targetLoc = target.getLoc();
+	
+		double angle = Math.atan2(targetLoc.y - srcLoc.y,
+								  targetLoc.x - srcLoc.x);
+		
+		setLoc(srcLoc.x + 5 * Math.cos(angle),
+			   srcLoc.y + 5 * Math.sin(angle));
+		
+		super.start();
+	}
+	
+	public void setSource(Entity src)
+	{
+		this.src = src;
+	}
+	
+	public void setTarget(Entity target)
+	{
+		this.target = target;
+	}
+
+	@Override
+	public void collisionOccurred(CollisionEvent e)
+	{
+		if(e.collided == target || e.collider == target)
+		{
+			EffectComponent effectComp = target.get(EffectComponent.class);
+			
+			for(Effect eff : effects)
+				effectComp.apply(eff);
+			
+			src.getSceneLoc()
+			   .removeEntity(this);
+		}
+	}
+	
+	public Object clone() {
+		return new HomingProjectile(this);
+	}
+}

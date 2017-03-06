@@ -107,7 +107,9 @@ public class Painter
 				try {
 					EventQueue.invokeAndWait(() -> window.paintComponents(g));
 				} catch (InvocationTargetException e) {
+					System.out.println(e.getMessage());
 					e.printStackTrace();
+					System.exit(1);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

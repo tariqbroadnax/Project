@@ -1,8 +1,0 @@
-package GUI;
-
-import javax.swing.JPanel;
-
-public class LoadScreen extends JPanel
-{
-
-}

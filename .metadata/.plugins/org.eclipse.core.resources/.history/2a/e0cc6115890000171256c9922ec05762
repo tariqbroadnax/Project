@@ -1,0 +1,18 @@
+package Ability;
+
+import Modifiers.Damage;
+
+public class BasicAttack extends TargetUnitAbility
+{
+	private Damage damage;
+	
+	public BasicAttack()
+	{
+		damage = new Damage();
+	}
+	
+	public void cast()
+	{
+		super.cast();	
+	}
+}

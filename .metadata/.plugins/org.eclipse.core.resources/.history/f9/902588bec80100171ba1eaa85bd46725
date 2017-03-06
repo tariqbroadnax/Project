@@ -1,0 +1,72 @@
+package Item;
+
+import Entity.Entity;
+import Inventory.Inventory;
+import Inventory.InventoryComponent;
+import TestEntity.PetItem;
+
+public class Equipment 
+{
+	private Entity src;
+	
+	private WeaponItem weapon;
+	
+	private ArmorItem armor;
+	
+	private Accessory access1, access2;
+	
+	private PetItem pet;
+	
+	private Inventory inventory;
+	
+	public void setPetItem(PetItem pet)
+	{
+		if(this.pet != null)
+		{
+			inventory.addPetItem(this.pet);
+			
+			this.pet.unequip(src);
+		}
+		
+		this.pet = pet;
+		
+		pet.equip(src);
+	}
+	
+	public void setArmorItem(ArmorItem armor)
+	{
+		if(this.armor != null)
+		{
+			inventory.addEquipItem(armor);
+			
+			this.armor.unequip(src);
+		}
+		
+		this.armor = armor;
+		
+		armor.equip(src);
+	}
+	
+	public void setWeaponItem(WeaponItem weapon)
+	{
+		
+	}
+	
+	public void setAccessory1(Accessory access1)
+	{
+		
+	}
+	
+	public void setAccessory2(Accessory access2)
+	{
+		
+	}
+	
+	public void setSource(Entity src) 
+	{
+		this.src = src;
+		
+		inventory = src.get(InventoryComponent.class)
+					   .getInventory();
+	}
+}

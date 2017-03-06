@@ -2,7 +2,6 @@ package Modifiers;
 
 import Entity.Entity;
 import EntityComponent.StatsComponent;
-import Stat.Stats;
 
 public class StatModifier extends InstantEffect
 {
@@ -29,31 +28,17 @@ public class StatModifier extends InstantEffect
 	@Override
 	public void apply() 
 	{
-		Stats stats = src.get(StatsComponent.class)
-						 .getStats();
-		
-		switch(stat)
-		{
-			case HEALTH: stats.addHealthModifier(mod);
-						 break;
-			case SPEED: stats.addSpeedModifier(mod);
-						 break;
-		}
+		src.get(StatsComponent.class)
+		   .getStats()
+		   .addStatModifier(this);
 	}
 
 	@Override
 	public void unapply() 
 	{
-		Stats stats = src.get(StatsComponent.class)
-				 .getStats();
-
-		switch(stat)
-		{
-			case HEALTH: stats.removeHealthModifier(mod);
-						 break;
-			case SPEED: stats.removeSpeedModifier(mod);
-						 break;
-		}
+		src.get(StatsComponent.class)
+		   .getStats()
+		   .removeStatModifier(this);
 	}
 
 	@Override

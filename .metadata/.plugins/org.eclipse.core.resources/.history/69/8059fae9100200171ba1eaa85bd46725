@@ -1,0 +1,10 @@
+package Ability;
+
+public interface AbilityListener 
+{
+	public default void castingStarted(
+			ActiveAbility ability){}
+	
+	public default void abilityStopped(
+			ActiveAbility ability){}
+}

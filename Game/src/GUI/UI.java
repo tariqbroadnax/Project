@@ -3,11 +3,10 @@ package GUI;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import Actions.ActionBuffer;
 import Entity.Entity;
+import Game.CameraController;
 import Game.PlayerController;
 import Game.Scene;
 import Game.Updater;
@@ -46,7 +45,7 @@ public class UI
 		
 		layers = new GLayeredPane();
 		
-		hud = new HUD();
+		hud = new HUD(player);
 		
 		camera = new Camera();
 		
@@ -62,10 +61,14 @@ public class UI
 			painter = new Painter(panel, camera);
 		
 		buffer = new ActionBuffer();
+
+		CameraController cameraCtrl = new CameraController(
+				scene, player, camera);
 		
 		painter.addPaintable(scene);
 		
-		updater.addUpdatable(d -> painter.paint(),
+		updater.addUpdatable(cameraCtrl,
+							 d -> painter.paint(),
 							 d -> buffer.invokeAll());
 		
 		camera.setFocus(player.getLoc());
@@ -95,11 +98,11 @@ public class UI
 		
 		loadScreen.setVisible(false);
 		
-	  try {
-          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-          ex.printStackTrace();
-      }
+//	  try {
+//          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+//          ex.printStackTrace();
+//      }
 	 
 	}
 	
@@ -183,5 +186,9 @@ public class UI
 	
 	public JPanel getPanel() {
 		return panel;
+	}
+	
+	public Camera getCamera() {
+		return camera;
 	}
 }

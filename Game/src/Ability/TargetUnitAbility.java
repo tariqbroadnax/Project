@@ -20,6 +20,8 @@ public class TargetUnitAbility extends TargetAbility
 	
 	public boolean canBeCast()
 	{
+//		System.out.println(super.canBeCast() + " " + (target != null) + " " + inRange());
+		
 		return super.canBeCast() && 
 			   target != null && inRange();
 	}

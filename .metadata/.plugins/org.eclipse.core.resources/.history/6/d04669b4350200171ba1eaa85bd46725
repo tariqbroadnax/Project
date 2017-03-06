@@ -1,0 +1,29 @@
+package Game;
+
+import java.time.Duration;
+
+import Entity.Entity;
+import Graphic.Camera;
+
+public class CameraController implements Updatable
+{
+	private Scene scene;
+	
+	private Entity player;
+	
+	private Camera camera;
+	
+	public CameraController(Scene scene, Entity player, Camera camera)
+	{
+		this.scene = scene;
+		this.player = player;
+		this.camera = camera;
+	}
+	
+	@Override
+	public void update(Duration delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
